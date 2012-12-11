@@ -22,7 +22,7 @@ main = do
   let threadFunc threadNum = forever (do
                  d0 <- getTimeDouble 
                  brd <- Agent.game (cutoff*threadNum)
-                 CairoRender.saveBoard brd "last-game.svg"
+                 -- CairoRender.saveBoard brd "last-game.svg"
                  withMVar dataHandle (Board.appendBoardCSVFile brd)
                  d1 <- getTimeDouble
                  putStrLn (printf "[%d] Time elapsed: %f seconds" (threadNum :: Int) (d1-d0))
