@@ -1,0 +1,21 @@
+:Base ABA-PRO.hlp
+1 Menus
+2 File menu		=MENU_FILE
+2 View menu		=MENU_VIEW
+2 Go menu		=MENU_GO
+2 Options menu	=MENU_OPTIONS
+2 Window menu	=MENU_WINDOW
+2 Help menu		=MENU_HELP
+1 Interface
+2 Game view		=INT_GAME
+2 Notation view	=INT_NOTATION
+2 Title Bar		=INT_TITLEBAR
+2 Toolbar		=INT_TOOLBAR
+2 Status Bar	=INT_STATUSBAR
+1 Rules
+2 Object of the game	=RULES_OBJECT
+2 Start of play			=RULES_STARTING
+2 Rules of moving		=RULES_MOVING
+2 Key words				=RULES_KEY
+2 Limited time variation=RULES_TIME
+2 Move notation			=RULES_NOTATION
