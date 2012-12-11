@@ -1,0 +1,23 @@
+Name:                abalone
+Version:             0.1
+-- Synopsis:            
+-- Description:         
+License:             BSD3
+License-file:        LICENSE
+Author:              Krzysztof Skrzętnicki
+Maintainer:          gtener@gmail.com
+Category:            Game
+Build-type:          Simple
+Cabal-version:       >=1.8
+
+Library
+  Hs-source-dirs:         lib
+  Exposed-modules:        Board, Agent, CairoRender, Simulation, MonteCarloTS
+  Build-depends:          base, cairo, mwc-random, grid, process
+
+Executable abalone
+  Main-is:                src/abalone.hs
+  Build-depends:          base, abalone
+  Ghc-options:            -rtsopts
+
+  
