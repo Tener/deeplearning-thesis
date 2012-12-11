@@ -1,10 +1,11 @@
-{-# LANGUAGE StandaloneDeriving, TypeSynonymInstances, FlexibleInstances #-} 
+{-# LANGUAGE CPP, StandaloneDeriving, TypeSynonymInstances, FlexibleInstances #-} 
 
 module Board where
 
 import Prelude hiding (lookup)
 
-import Data.List (nub, sort, group)
+import Data.List (nub, sort, group, intercalate)
+import System.IO
 
 import Math.Geometry.Grid
 import Math.Geometry.GridMap as GridMap hiding (map) 
@@ -13,8 +14,8 @@ type Position = (Int,Int)
 type Board = GridMap HexHexGrid Position (Maybe Color)
 type Direction = (Position, Position)
 
-instance Ord Board where
-    compare brd0 brd1 = compare (GridMap.toList brd0) (GridMap.toList brd1)
+-- instance Ord Board where
+--     compare brd0 brd1 = compare (GridMap.toList brd0) (GridMap.toList brd1)
 
 {-
 
@@ -42,11 +43,11 @@ instance Ord Board where
 data Color = Black | White deriving (Eq, Ord, Read, Show)
 
 data Field = Empty | Death | Ball | Opponent deriving (Eq, Ord, Read, Show)
-data Match = And Match Match 
-           | Or Match Match
-           | This Field
-           | Next Match
-           | Diag Match
+data Match = And {-# UNPACK #-} !Match {-# UNPACK #-} !Match 
+           | Or {-# UNPACK #-} !Match {-# UNPACK #-} !Match
+           | This {-# UNPACK #-} !Field
+           | Next {-# UNPACK #-} !Match
+           | Diag {-# UNPACK #-} !Match
              deriving (Eq, Ord, Read, Show)
 
 data Setter = SetHere Field | SetNext Setter | SetDiag Setter
@@ -58,6 +59,7 @@ type Move = [Setter]
 negColor Black = White
 negColor White = Black
 
+{-# INLINE rules #-}
 rules = [ (here,    move'here) 
         , (here2,   move'here2) 
         , (here3,   move'here3) 
@@ -70,6 +72,7 @@ rules = [ (here,    move'here)
 
     where
        -- mini DSL
+       mnext :: Int -> Match -> Match
        mnext 0 what = what
        mnext n what = Next (mnext (n-1) what)
 
@@ -88,10 +91,15 @@ rules = [ (here,    move'here)
         
        deadOrEmpty = (Or (This Death) (This Empty))
 
+#if 1
+       shove2 = mball `And` mnext 1 (mball `And` mnext 1 (mopponent `And` mnext 1 deadOrEmpty))
+       shove31 = mball `And` mnext 1 (mball `And` mnext 1 (mball `And` mnext 1 (mopponent `And` mnext 1 deadOrEmpty)))
+       shove32 = mball `And` mnext 1 (mball `And` mnext 1 (mball `And` mnext 1 (mopponent `And` mnext 1 (mopponent `And` mnext 1 deadOrEmpty))))
+#else
        shove2 = mball `And` mnext 1 mball `And` mnext 2 mopponent `And` mnext 3 deadOrEmpty
-
        shove31 = mball `And` mnext 1 mball `And` mnext 2 mball `And` mnext 3 mopponent `And` mnext 4 deadOrEmpty
        shove32 = mball `And` mnext 1 mball `And` mnext 2 mball `And` mnext 3 mopponent `And` mnext 4 mopponent `And` mnext 5 deadOrEmpty
+#endif
         
        -- ruchy na skos
        diag = And (This Ball) (Diag (This Empty))
@@ -100,6 +108,7 @@ rules = [ (here,    move'here)
 
        ---- same ruchy - tzn. funkcje modyfikujące planszę
 
+       next :: Int -> Setter -> Setter
        next 0 what = what
        next n what = SetNext (next (n-1) what)
 
@@ -122,13 +131,20 @@ rules = [ (here,    move'here)
                        dball, next 1 dball, next 2 dball]
 
 
-test col brd = [ let b = runMove col brd idx way setter
-              in (idx, way, rule, b) | idx <- (indices starting'board'default), way <- ways, (rule,setter) <- rules, tryMatch col brd idx way rule]
+--fix: old and non-maintained. keep DRY: check out getMoves
+--test col brd = [ let b = runMove col brd idx way setter
+--              in (idx, way, rule, b) | (idx,val) <- (toList brd), val == Just col, way <- ways, (rule,setter) <- rules, tryMatch col brd idx way rule]
 
 nubOrd xs = map head $ group $ sort xs
 
-getMoves col brd = nubOrd
-                   [ runMove col brd idx way setter | idx <- (indices starting'board'default), way <- ways, (rule,setter) <- rules, tryMatch col brd idx way rule]
+getMoves col brd = 
+                   [ runMove col brd idx way setter | 
+                     (rule,setter) <- rules
+                   , (idx,val) <- toList brd
+                   , val == Just col
+                   , way <- ways
+                   , tryMatch col brd idx way rule
+                   ]
 
 
 marbleCount col brd = length $ filter (== (Just col)) $ Prelude.map snd $ GridMap.toList brd
@@ -251,3 +267,13 @@ ways = aux n0 ++ aux n0'r
 
       aux xs = zip xs (drop 1 (cycle xs))
 
+
+--- 
+appendBoardCSVFile brd handle = do
+  let values = map snd $ sort $ GridMap.toList brd
+      fieldToDouble Nothing = 0
+      fieldToDouble (Just White) = 1
+      fieldToDouble (Just Black) = 2
+  hPutStr handle (intercalate "," (map (show . fieldToDouble) values))
+  hPutStr handle "\n"
+  hFlush handle

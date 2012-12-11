@@ -13,11 +13,12 @@ Cabal-version:       >=1.8
 Library
   Hs-source-dirs:         lib
   Exposed-modules:        Board, Agent, CairoRender, Simulation, MonteCarloTS
-  Build-depends:          base, cairo, mwc-random, grid, process
+  Build-depends:          base, cairo, mwc-random, grid == 2.1, process
+  Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -fprof-auto-calls -Wall
 
 Executable abalone
   Main-is:                src/abalone.hs
-  Build-depends:          base, abalone
-  Ghc-options:            -rtsopts
+  Build-depends:          base, abalone, clocked, async, time, process
+  Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -fprof-auto-calls -Wall -threaded
 
   

@@ -8,7 +8,6 @@ import Data.List (group, sort, nubBy, nub)
 
 main = do
 
-
   let testOne (i,(idx, way, rule, brd)) = do
          print (idx, way)
          print rule
