@@ -1,10 +1,15 @@
+{-# LANGUAGE CPP #-}
+
 module CairoRender where
 
 import Board
+import Text.Printf
+
+#ifdef CAIRO
+
 import Graphics.Rendering.Cairo
 import Math.Geometry.GridMap as GridMap
 import System.Process (rawSystem)
-import Text.Printf
 
 drawBoard :: Board -> Render ()
 drawBoard brd = do
@@ -94,8 +99,19 @@ drawTest = draw starting'board'default 0
 
 saveBoard brd name = do
   withSVGSurface name 800 600 (\ surf -> renderWith surf (drawBoard brd))
---  rawSystem "eog" [name]
 
 draw brd num = do
   let fname = printf "/tmp/abalone-draw.tmp.%04d.svg" (num :: Int)
   saveBoard brd fname
+
+#else
+
+saveBoard brd name = do
+  writeFile name (show brd)
+
+draw brd num = do
+  let fname = printf "/tmp/abalone-draw.tmp.%04d.txt" (num :: Int)
+  saveBoard brd fname
+
+
+#endif
