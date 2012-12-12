@@ -28,4 +28,8 @@ Executable abalone
   Build-depends:          base, abalone, clocked, async, time, process
   Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -fprof-auto-calls -Wall -threaded
 
-  
+Executable dense-to-sparse
+  Main-is:                src/dense-to-sparse.hs
+  Build-depends:          base, filepath
+  Ghc-options:            -rtsopts
+
