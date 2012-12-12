@@ -268,7 +268,7 @@ ways = aux n0 ++ aux n0'r
       aux xs = zip xs (drop 1 (cycle xs))
 
 
---- 
+--- mapuje każde pole do pojedynczej wartości -- 0, 1 lub 2
 appendBoardCSVFile brd handle = do
   let values = map snd $ sort $ GridMap.toList brd
       fieldToDouble Nothing = 0
@@ -277,3 +277,23 @@ appendBoardCSVFile brd handle = do
   hPutStr handle (intercalate "," (map (show . fieldToDouble) values))
   hPutStr handle "\n"
   hFlush handle
+
+--- mapuje każde pole do 3 wartości, każda może mieć wartość 0 lub 1.
+appendBoardCSVFileSparse brd handle = do
+  let values = map snd $ sort $ GridMap.toList brd
+
+      boolToDouble False = 0
+      boolToDouble True = 1
+
+      mkVector val = map boolToDouble $ map (==val) values
+
+      vecEmpty = mkVector Nothing
+      vecWhite = mkVector (Just White)
+      vecBlack = mkVector (Just Black)
+      
+      vecAll = vecEmpty ++ vecWhite ++ vecBlack
+
+  hPutStr handle (intercalate "," (map show vecAll))
+  hPutStr handle "\n"
+  hFlush handle
+

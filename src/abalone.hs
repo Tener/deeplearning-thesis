@@ -18,12 +18,19 @@ main = do
   threads <- getNumCapabilities
   starttime <- getPOSIXTime
   hostname <- fmap (head . words) (readProcess "hostname" [] "")
-  dataHandle <- newMVar =<< openFile (printf "data/games.%s.%d.%d-inc.csv" hostname (round starttime :: Integer) cutoff) WriteMode
+  dataHandle <- openFile (printf "data/games.%s.%d.%d-inc.csv" hostname (round starttime :: Integer) cutoff) WriteMode
+  dataHandle'sparse <- openFile (printf "data/games.%s.%d.%d-inc-sparse.csv" hostname (round starttime :: Integer) cutoff) WriteMode
+
+  handles <- newMVar (dataHandle, dataHandle'sparse)
+
   let threadFunc threadNum = forever (do
                  d0 <- getTimeDouble 
                  brd <- Agent.game (cutoff*threadNum)
-                 -- CairoRender.saveBoard brd "last-game.svg"
-                 withMVar dataHandle (Board.appendBoardCSVFile brd)
+                 withMVar handles (\ (h1,h2) -> do
+                                     -- CairoRender.saveBoard brd "last-game.svg"
+                                     Board.appendBoardCSVFile brd h1
+                                     Board.appendBoardCSVFileSparse brd h2
+                                  )
                  d1 <- getTimeDouble
                  putStrLn (printf "[%d] Time elapsed: %f seconds" (threadNum :: Int) (d1-d0))
                  >> putStrLn "-----------------------------------"
@@ -33,4 +40,6 @@ main = do
   waitAny asyncs
 
   putStrLn "Error occured and async thread has completed."
-  
+
+  hClose dataHandle
+  hClose dataHandle'sparse

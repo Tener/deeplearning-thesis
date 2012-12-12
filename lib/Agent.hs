@@ -31,14 +31,13 @@ play :: Int -> Int -> Board -> AgentSimple -> AgentSimple -> IO Board
 play cutoff cnt brd a'fst a'snd | (isFinished brd || cnt == cutoff) = do
   putStrLn (printf "Game is finished after %d moves!" cnt)
   putStrLn "Winner:"
---  let Just winner = 
   print (getWinner brd)
   -- saveBoard brd "finished-board.svg"
   return brd
   
 
                      | otherwise = do
-  when (cnt `mod` 1000 == 0) (saveBoard brd (printf "playing-board-%06d.svg" cnt))
+  -- when (cnt `mod` 1000 == 0) (saveBoard brd (printf "playing-board-%06d.svg" cnt))
   brd'new <- makeMove a'fst brd
   play cutoff (cnt+1) brd'new a'snd a'fst
 
