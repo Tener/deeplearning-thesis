@@ -22,7 +22,7 @@ type BoardHM = HashMap.HashMap Position Color
 data Board = Board { hashmap :: !BoardHM
                    , countWhite :: !Int
                    , countBlack :: !Int
-                   } deriving Show
+                   } deriving (Show, Eq)
 
 onHashMap :: (BoardHM -> BoardHM) -> Board -> Board
 onHashMap f brd = brd { hashmap = f (hashmap brd) } 
@@ -151,31 +151,11 @@ rules = [ (ways'straight, here,    move'here)
        move'diag3   = [empty, next 1 empty, next 2 empty, 
                        dball, next 1 dball, next 2 dball]
 
-
---fix: old and non-maintained. keep DRY: check out getMoves
---test col brd = [ let b = runMove col brd idx way setter
---              in (idx, way, rule, b) | (idx,val) <- (toList brd), val == Just col, way <- ways, (rule,setter) <- rules, tryMatch col brd idx way rule]
-
--- nubOrd xs = map head $ group $ sort xs
--- nubBoards brds = map (snd . head) $ groupBy cmpFst $ sortBy (comparing fst) $ map wrap $ brds
---     where
---       cmpFst (a,_) (b,_) = a == b
---       cast brd = sort $ GridMap.toList brd
---       wrap brd = (cast brd, brd)
-
--- getMoves col brd = -- nubBoards
---                    [ runMove col brd idx way setter | 
---                      (rule,setter) <- rules
---                    , (idx,val) <- toList brd
---                    , val == Just col
---                    , way <- ways
---                    , tryMatch col brd idx way rule
---                    ]
-
-getMoves col brd = [ runMove col brd idx way setter | 
-                     (ways,rule,setter) <- rules
-                   , (idx,val) <- HashMap.toList (hashmap brd)
+getMoves col brd = -- nub
+                   [ runMove col brd idx way setter | 
+                     (idx,val) <- HashMap.toList (hashmap brd)
                    , val == col
+                   , (ways,rule,setter) <- rules
                    , way <- ways
                    , tryMatch col brd idx way rule
                    ]
@@ -193,12 +173,28 @@ getWinner brd = case () of
 runMove :: Color -> Board -> Position -> Direction -> Move -> Board
 runMove col brd pos dir move = foldl (\ board setter -> runSetter col board pos dir setter) brd move
 
+updateCounts :: Board -> Maybe Color -> Maybe Color -> Board
+updateCounts brd a b | a == b = brd
+                     | otherwise = let t2 = b2i $ a == Just White
+                                       t3 = b2i $ a == Just Black
+                                       t5 = b2i $ b == Just White
+                                       t6 = b2i $ b == Just Black 
+                                       cw = countWhite brd
+                                       cb = countBlack brd
+                                       b2i b = if b then 1 else 0
+                                   in
+                                    brd { countWhite = cw-t2+t5, countBlack = cb-t3+t6 }
+                                       
+
+
 runSetter side brd pos dir@(dnext, ddiag) setter = 
     case setter of
-      (SetHere fld) -> case fld of
-                         Ball -> onHashMap (HashMap.insert pos side) brd 
-                         Opponent -> onHashMap (HashMap.insert pos (negColor side)) brd
-                         Empty -> onHashMap (HashMap.delete pos) brd
+      (SetHere fld) -> 
+          let current = HashMap.lookup pos (hashmap brd) in
+          case fld of
+                         Ball -> updateCounts (onHashMap (HashMap.insert pos side) brd) current (Just side)
+                         Opponent -> updateCounts (onHashMap (HashMap.insert pos (negColor side)) brd) current (Just (negColor side))
+                         Empty -> updateCounts (onHashMap (HashMap.delete pos) brd) current Nothing
                          Death -> error "Cant set DEATH anywhere!"
       (SetNext set) -> runSetter side brd (advancePosition pos dnext) dir set
       (SetDiag set) -> runSetter side brd (advancePosition pos ddiag) dir set
@@ -208,17 +204,19 @@ runSetter side brd pos dir@(dnext, ddiag) setter =
 gridPositionsHashset :: HashSet.HashSet Position
 gridPositionsHashset = HashSet.fromList (indices fresh'grid)
 
+{-# INLINE advancePosition #-}
 advancePosition :: Position -> Position -> Position
-advancePosition pos dir = (fst pos + fst dir, snd pos + snd dir)
+advancePosition pos@(f,s) dir@(df, ds) = (f + df, s + ds)
 
 tryMatch :: Color -> Board -> Position -> Direction -> Match -> Bool
 tryMatch side brd pos dir@(dnext, ddiag) match = 
     case match of
-      And m1 m2 -> (tryMatch side brd pos dir m1) && (tryMatch side brd pos dir m2)
-      Or m1 m2 -> (tryMatch side brd pos dir m1) || (tryMatch side brd pos dir m2)
-      Next m -> tryMatch side brd (advancePosition pos dnext) dir m
-      Diag m -> tryMatch side brd (advancePosition pos ddiag) dir m
-      This f -> case f of
+      And m1 m2 -> {-# SCC tryMatch_and #-} ((tryMatch side brd pos dir m1) && (tryMatch side brd pos dir m2))
+      Or m1 m2 -> {-# SCC tryMatch_or #-} ((tryMatch side brd pos dir m1) || (tryMatch side brd pos dir m2))
+      Next m -> {-# SCC tryMatch_next #-} tryMatch side brd (advancePosition pos dnext) dir m
+      Diag m -> {-# SCC tryMatch_diag #-} tryMatch side brd (advancePosition pos ddiag) dir m
+      This f -> {-# SCC tryMatch_this #-} 
+                case f of
                   Ball -> HashMap.lookup pos hashmap' == (Just side)
                   Opponent -> HashMap.lookup pos hashmap' == (Just (negColor side))
                   Empty -> HashMap.lookup pos hashmap' == Nothing
@@ -236,8 +234,19 @@ boardOldToBoard brd = Board newhashmap cnt'w cnt'b
               cnt'w = length $ filter (==(Just White)) (GridMap.elems brd)
               cnt'b = length $ filter (==(Just Black)) (GridMap.elems brd)
 
+-- | konwersja stary -> nowy
+--
+-- >>> boardOldToBoard (boardToBoardOld starting'board'default) == starting'board'default
+-- True
+
 boardToBoardOld :: Board -> BoardOld
-boardToBoardOld brd = foldl (\ brd' (k,v) -> GridMap.adjust (const (Just v)) k brd') (GridMap.lazyGridMap fresh'grid []) (HashMap.toList (hashmap brd))
+boardToBoardOld brd = foldl (\ old (k,v) -> GridMap.adjust (const v) k old) empty'board (zip keys vals)
+    where
+      keys = indices fresh'grid
+      vals = map (\ k -> HashMap.lookup k (hashmap brd)) keys
+      empty'vals = map (const Nothing) keys
+      empty'board = GridMap.lazyGridMap fresh'grid empty'vals
+      
 
 -- http://en.wikipedia.org/wiki/File:Abalone_standard.svg
 starting'board'default :: Board
@@ -294,9 +303,6 @@ starting'board'death = boardOldToBoard $ GridMap.lazyGridMap fresh'grid balls
 
 
 fresh'grid = hexHexGrid 5
-
--- fresh'board = GridMap.lazyGridMap fresh'grid  []
--- board'indices = indices fresh'grid
 
 -- wszystkie możliwe interpretacje kierunków "Next" oraz "Diag".
 ways'diag = aux n0 ++ aux n0'r
