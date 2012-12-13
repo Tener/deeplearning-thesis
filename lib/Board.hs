@@ -4,7 +4,8 @@ module Board where
 
 import Prelude hiding (lookup)
 
-import Data.List (nub, sort, group, intercalate)
+import Data.List (sortBy, nubBy, groupBy, nub, sort, group, intercalate)
+import Data.Ord
 import System.IO
 
 import Math.Geometry.Grid
@@ -60,15 +61,15 @@ negColor Black = White
 negColor White = Black
 
 {-# INLINE rules #-}
-rules = [ (here,    move'here) 
-        , (here2,   move'here2) 
-        , (here3,   move'here3) 
-        , (shove2,  move'shove2) 
-        , (shove31, move'shove31) 
-        , (shove32, move'shove32) 
-        , (diag,    move'diag) 
-        , (diag2,   move'diag2) 
-        , (diag3,   move'diag3)] 
+rules = [ (ways'straight, here,    move'here) 
+        , (ways'straight, here2,   move'here2) 
+        , (ways'straight, here3,   move'here3) 
+        , (ways'straight, shove2,  move'shove2) 
+        , (ways'straight, shove31, move'shove31) 
+        , (ways'straight, shove32, move'shove32) 
+        , (ways'diag, diag,    move'diag) 
+        , (ways'diag, diag2,   move'diag2) 
+        , (ways'diag, diag3,   move'diag3)]
 
     where
        -- mini DSL
@@ -137,9 +138,23 @@ rules = [ (here,    move'here)
 
 nubOrd xs = map head $ group $ sort xs
 
-getMoves col brd = 
-                   [ runMove col brd idx way setter | 
-                     (rule,setter) <- rules
+nubBoards brds = map (snd . head) $ groupBy cmpFst $ sortBy (comparing fst) $ map wrap $ brds
+    where
+      cmpFst (a,_) (b,_) = a == b
+      cast brd = sort $ GridMap.toList brd
+      wrap brd = (cast brd, brd)
+
+-- getMoves col brd = -- nubBoards
+--                    [ runMove col brd idx way setter | 
+--                      (rule,setter) <- rules
+--                    , (idx,val) <- toList brd
+--                    , val == Just col
+--                    , way <- ways
+--                    , tryMatch col brd idx way rule
+--                    ]
+
+getMoves col brd = [ runMove col brd idx way setter | 
+                     (ways,rule,setter) <- rules
                    , (idx,val) <- toList brd
                    , val == Just col
                    , way <- ways
@@ -260,21 +275,26 @@ fresh'board = lazyGridMap fresh'grid  []
 -- board'indices = indices fresh'grid
 
 -- wszystkie możliwe interpretacje kierunków "Next" oraz "Diag".
-ways = aux n0 ++ aux n0'r
+ways'diag = aux n0 ++ aux n0'r
     where
       n0 = neighbours (0,0) fresh'grid
       n0'r = reverse n0
 
       aux xs = zip xs (drop 1 (cycle xs))
 
+ways'straight = zip n0 (cycle [(0,0)]) 
+    where
+      n0 = neighbours (0,0) fresh'grid
+
 
 --- mapuje każde pole do pojedynczej wartości -- 0, 1 lub 2
 appendBoardCSVFile brd handle = do
   let values = map snd $ sort $ GridMap.toList brd
-      fieldToDouble Nothing = 0
-      fieldToDouble (Just White) = 1
-      fieldToDouble (Just Black) = 2
-  hPutStr handle (intercalate "," (map (show . fieldToDouble) values))
+      fieldToInt :: Maybe Color -> Int
+      fieldToInt Nothing = 0
+      fieldToInt (Just White) = 1
+      fieldToInt (Just Black) = 2
+  hPutStr handle (intercalate "," (map (show . fieldToInt) values))
   hPutStr handle "\n"
   hFlush handle
 
@@ -282,10 +302,11 @@ appendBoardCSVFile brd handle = do
 appendBoardCSVFileSparse brd handle = do
   let values = map snd $ sort $ GridMap.toList brd
 
-      boolToDouble False = 0
-      boolToDouble True = 1
+      boolToInt :: Bool -> Int
+      boolToInt False = 0
+      boolToInt True = 1
 
-      mkVector val = map boolToDouble $ map (==val) values
+      mkVector val = map boolToInt $ map (==val) values
 
       vecEmpty = mkVector Nothing
       vecWhite = mkVector (Just White)
