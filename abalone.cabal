@@ -17,7 +17,7 @@ Flag use_cairo
 Library
   Hs-source-dirs:         lib
   Exposed-modules:        Board, Agent, CairoRender, Simulation, MonteCarloTS
-  Build-depends:          base, mwc-random, grid == 2.1, process
+  Build-depends:          base, mwc-random, grid == 2.1, process, unordered-containers, containers
   if flag(use_cairo)
      build-depends: cairo
      cc-options: -DCAIRO
