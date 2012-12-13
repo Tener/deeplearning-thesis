@@ -17,19 +17,24 @@ Flag use_cairo
 Library
   Hs-source-dirs:         lib
   Exposed-modules:        Board, Agent, CairoRender, Simulation, MonteCarloTS
-  Build-depends:          base, mwc-random, grid == 2.1, process, unordered-containers, containers
+  Build-depends:          base, mwc-random, grid, process, unordered-containers, containers
   if flag(use_cairo)
      build-depends: cairo
      cc-options: -DCAIRO
-  Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -fprof-auto-calls -Wall
+  Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall
 
 Executable abalone
   Main-is:                src/abalone.hs
   Build-depends:          base, abalone, clocked, async, time, process
-  Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -fprof-auto-calls -Wall -threaded
+  Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -threaded
 
 Executable dense-to-sparse
   Main-is:                src/dense-to-sparse.hs
   Build-depends:          base, filepath
   Ghc-options:            -rtsopts
 
+test-suite doctests
+  type:          exitcode-stdio-1.0
+  ghc-options:   -threaded
+  main-is:       src/doctests.hs
+  build-depends: base, doctest >= 0.8
