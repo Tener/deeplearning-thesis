@@ -80,7 +80,7 @@ game cutoff = do
   ag'black <- mkAgent Black
   ag'white <- mkAgent White
 
-  play cutoff 1 starting'board'default (ag'white :: AgentRandom) (ag'black :: AgentRandom)
+  play cutoff 1 starting'board'default (ag'white :: AgentRandom) (ag'black :: AgentSimple)
 
 negmax :: Int -> Color -> Board -> IO Double
 negmax 0 col brd = do
@@ -93,7 +93,8 @@ negmax n col brd = do
   putStr $ show n
   putStr " "
   vals <- mapM (negmax (n-1) (negColor col)) (getMoves col brd)
-  return (maximum ((-1/0) : map negate vals))
+  let val = (maximum ((-1/0) : map negate vals))
+  return $! val
 
 -- ocenia planszę według heurystyki
 evalBoard :: Color -> Board -> Double
