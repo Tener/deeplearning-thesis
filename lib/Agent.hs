@@ -49,7 +49,7 @@ instance Agent AgentGameTree where
           depth = 4
 --          (princ, score) = GTreeAlgo.principal_variation_search gst depth
           (princ, score) = GTreeAlgo.negascout gst depth
-      print ("gtree",princ,score)
+--      print ("gtree",princ,score)
       return (gtBoard $ head $ tail $ princ)
 
 instance Agent AgentRandom where
@@ -96,14 +96,14 @@ play color cutoff cnt brd a'fst a'snd | (isFinished brd || cnt == cutoff) = do
   putStrLn (printf "Game is finished after %d moves!" cnt)
   putStrLn "Winner:"
   print (getWinner brd)
-  -- saveBoard brd "finished-board.svg"
+  saveBoard brd (printf "finished-board-%06d.svg" cnt)
   return brd
 
                      | otherwise = do
   when (cnt `mod` 1000 == 0) (saveBoard brd (printf "playing-board-%06d.svg" cnt))
   brd'new <- makeMove a'fst brd
   -- sanity check -- disable with honest players
-  unless (brd'new `elem` getMoves color brd) (error ("Invalid move by player: " ++ show color))
+  -- unless (brd'new `elem` getMoves color brd) (error ("Invalid move by player: " ++ show color))
 
   -- print brd'new
   play (negColor color) cutoff (cnt+1) brd'new a'snd a'fst
@@ -114,7 +114,7 @@ game cutoff = do
   ag'black <- mkAgent Black
   ag'white <- mkAgent White
 
-  play White cutoff 1 starting'board'default (ag'white :: AgentRandom) (ag'black :: AgentRandom)
+  play White cutoff 1 starting'board'default (ag'white :: AgentRandom) (ag'black :: AgentGameTree)
 
 negmax :: Int -> Color -> Board -> IO Double
 negmax 0 col brd = do
