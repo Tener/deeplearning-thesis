@@ -12,13 +12,13 @@ import Math.Geometry.Grid
 
 import qualified Math.Geometry.GridMap as GridMap 
 
-import qualified Data.HashMap.Strict as HashMap
+import qualified Data.HashMap as HashMap
 import qualified Data.HashSet as HashSet
 
 type BoardOld = GridMap.GridMap HexHexGrid Position (Maybe Color)
 type Position = (Int,Int)
 type Direction = (Position, Position)
-type BoardHM = HashMap.HashMap Position Color
+type BoardHM = HashMap.Map Position Color
 data Board = Board { hashmap :: !BoardHM
                    , countWhite :: !Int
                    , countBlack :: !Int
@@ -27,16 +27,9 @@ data Board = Board { hashmap :: !BoardHM
 onHashMap :: (BoardHM -> BoardHM) -> Board -> Board
 onHashMap f brd = brd { hashmap = f (hashmap brd) } 
 
--- TODO:
--- countAll :: Board' -> Int
--- countEmpty :: Board' -> Int
-
 marbleCount White brd = countWhite brd
 marbleCount Black brd = countBlack brd
 
-
--- instance Ord Board where
---     compare brd0 brd1 = compare (GridMap.toList brd0) (GridMap.toList brd1)
 
 {-
 
@@ -81,15 +74,15 @@ negColor Black = White
 negColor White = Black
 
 {-# INLINE rules #-}
-rules = [ (ways'straight, here,    move'here) 
-        , (ways'straight, here2,   move'here2) 
-        , (ways'straight, here3,   move'here3) 
-        , (ways'straight, shove2,  move'shove2) 
-        , (ways'straight, shove31, move'shove31) 
-        , (ways'straight, shove32, move'shove32) 
-        , (ways'diag, diag,    move'diag) 
-        , (ways'diag, diag2,   move'diag2) 
-        , (ways'diag, diag3,   move'diag3)]
+rules = [ ("here", ways'straight, here,    move'here) 
+        , ("here2", ways'straight, here2,   move'here2) 
+        , ("here3", ways'straight, here3,   move'here3) 
+        , ("shove2", ways'straight, shove2,  move'shove2) 
+        , ("shove31", ways'straight, shove31, move'shove31) 
+        , ("shove32", ways'straight, shove32, move'shove32) 
+        , ("move'diag", ways'diag, diag,    move'diag) 
+        , ("move'diag2", ways'diag, diag2,   move'diag2) 
+        , ("move'diag3", ways'diag, diag3,   move'diag3)]
 
     where
        -- mini DSL
@@ -155,7 +148,7 @@ getMoves col brd = -- nub
                    [ runMove col brd idx way setter | 
                      (idx,val) <- HashMap.toList (hashmap brd)
                    , val == col
-                   , (ways,rule,setter) <- rules
+                   , (_name,ways,rule,setter) <- rules
                    , way <- ways
                    , tryMatch col brd idx way rule
                    ]
@@ -183,7 +176,8 @@ updateCounts brd a b | a == b = brd
                                        cb = countBlack brd
                                        b2i b = if b then 1 else 0
                                    in
-                                    brd { countWhite = cw-t2+t5, countBlack = cb-t3+t6 }
+                                    brd { countWhite = cw-t2+t5
+                                        , countBlack = cb-t3+t6 }
                                        
 
 
