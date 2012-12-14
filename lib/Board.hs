@@ -231,10 +231,8 @@ boardOldToBoard brd = Board newhashmap cnt'w cnt'b
               cnt'b = length $ filter (==(Just Black)) (GridMap.elems brd)
 
 -- | konwersja stary -> nowy
---
 -- >>> boardOldToBoard (boardToBoardOld starting'board'default) == starting'board'default
 -- True
-
 boardToBoardOld :: Board -> BoardOld
 boardToBoardOld brd = foldl (\ old (k,v) -> GridMap.adjust (const v) k old) empty'board (zip keys vals)
     where
@@ -242,7 +240,18 @@ boardToBoardOld brd = foldl (\ old (k,v) -> GridMap.adjust (const v) k old) empt
       vals = map (\ k -> HashMap.lookup k (hashmap brd)) keys
       empty'vals = map (const Nothing) keys
       empty'board = GridMap.lazyGridMap fresh'grid empty'vals
-      
+
+
+-- | przekształca gęstą reprezentację do tablicy
+-- >>> starting'board'belgianDaisy == (denseReprToBoard $ boardToDense $ starting'board'belgianDaisy)
+-- True
+denseReprToBoard :: [Int] -> Board
+denseReprToBoard xs = boardOldToBoard (GridMap.lazyGridMap fresh'grid balls)
+    where
+      balls = map intToField xs
+      intToField 0 = Nothing
+      intToField 1 = (Just White)
+      intToField 2 = (Just Black)
 
 -- http://en.wikipedia.org/wiki/File:Abalone_standard.svg
 starting'board'default :: Board
@@ -313,34 +322,48 @@ ways'straight = zip n0 (cycle [(0,0)])
       n0 = neighbours (0,0) fresh'grid
 
 
---- mapuje każde pole do pojedynczej wartości -- 0, 1 lub 2
+-- | mapuje każde pole do pojedynczej wartości -- 0, 1 lub 2
+-- >>> boardToDense starting'board'default
+-- [0,0,0,2,2,0,0,0,0,2,2,0,0,0,0,2,2,2,1,0,0,0,0,2,2,2,1,1,1,0,0,0,2,2,2,1,1,1,0,0,0,0,2,1,1,1,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0]
+boardToDense :: Board -> [Int]
+boardToDense brd = map fieldToInt values
+  where
+    values = map snd $ sort $ GridMap.toList (boardToBoardOld brd)
+
+    fieldToInt :: Maybe Color -> Int
+    fieldToInt Nothing = 0
+    fieldToInt (Just White) = 1
+    fieldToInt (Just Black) = 2
+
+-- | mapuje każde pole do 3 liczb, każda może mieć wartość 0 lub 1.
+-- >>> boardToSparse starting'board'default
+-- [1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,1,1,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0,0,1,1,1,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+boardToSparse :: Board -> [Int]
+boardToSparse brd = vecAll
+  where
+    values = map snd $ sort $ GridMap.toList (boardToBoardOld brd)
+
+    boolToInt :: Bool -> Int
+    boolToInt False = 0
+    boolToInt True = 1
+
+    mkVector val = map boolToInt $ map (==val) values
+
+    vecEmpty = mkVector Nothing
+    vecWhite = mkVector (Just White)
+    vecBlack = mkVector (Just Black)
+      
+    vecAll = vecEmpty ++ vecWhite ++ vecBlack
+
+reprToRow repr = intercalate "," (map show repr)
+
 appendBoardCSVFile brd handle = do
-  let values = map snd $ sort $ GridMap.toList (boardToBoardOld brd)
-      fieldToInt :: Maybe Color -> Int
-      fieldToInt Nothing = 0
-      fieldToInt (Just White) = 1
-      fieldToInt (Just Black) = 2
-  hPutStr handle (intercalate "," (map (show . fieldToInt) values))
+  hPutStr handle $ reprToRow $ boardToDense brd
   hPutStr handle "\n"
   hFlush handle
 
---- mapuje każde pole do 3 liczb, każda może mieć wartość 0 lub 1.
 appendBoardCSVFileSparse brd handle = do
-  let values = map snd $ sort $ GridMap.toList (boardToBoardOld brd)
-
-      boolToInt :: Bool -> Int
-      boolToInt False = 0
-      boolToInt True = 1
-
-      mkVector val = map boolToInt $ map (==val) values
-
-      vecEmpty = mkVector Nothing
-      vecWhite = mkVector (Just White)
-      vecBlack = mkVector (Just Black)
-      
-      vecAll = vecEmpty ++ vecWhite ++ vecBlack
-
-  hPutStr handle (intercalate "," (map show vecAll))
+  hPutStr handle $ reprToRow $ boardToSparse brd
   hPutStr handle "\n"
   hFlush handle
 
