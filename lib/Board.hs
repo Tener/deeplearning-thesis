@@ -213,8 +213,8 @@ tryMatch side brd pos dir@(dnext, ddiag) match =
                 case f of
                   Ball -> HashMap.lookup pos hashmap' == (Just side)
                   Opponent -> HashMap.lookup pos hashmap' == (Just (negColor side))
-                  Empty -> HashMap.lookup pos hashmap' == Nothing
-                  Death -> HashSet.member pos gridPositionsHashset
+                  Empty -> (HashSet.member pos gridPositionsHashset) && (HashMap.lookup pos hashmap' == Nothing)
+                  Death -> not (HashSet.member pos gridPositionsHashset)
                 where
                   hashmap' = hashmap brd
 
