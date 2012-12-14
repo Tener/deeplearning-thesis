@@ -33,6 +33,11 @@ Executable dense-to-sparse
   Build-depends:          base, filepath
   Ghc-options:            -rtsopts
 
+Executable get-finished-games
+  Main-is:                src/get-finished-games.hs
+  Build-depends:          base, filepath, abalone
+  Ghc-options:            -rtsopts
+
 test-suite doctests
   type:          exitcode-stdio-1.0
   ghc-options:   -threaded
