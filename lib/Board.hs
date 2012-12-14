@@ -187,15 +187,17 @@ runSetter side brd pos dir@(dnext, ddiag) setter =
           let current = HashMap.lookup pos (hashmap brd) in
           case fld of
                          Ball -> updateCounts (onHashMap (HashMap.insert pos side) brd) current (Just side)
-                         Opponent -> updateCounts (onHashMap (HashMap.insert pos (negColor side)) brd) current (Just (negColor side))
-                         Empty -> updateCounts (onHashMap (HashMap.delete pos) brd) current Nothing
+                         Opponent -> if HashSet.member pos gridPositionsHashset
+                                      then updateCounts (onHashMap (HashMap.insert pos (negColor side)) brd) current (Just (negColor side))
+                                      else brd -- dont do anything
+                         Empty -> updateCounts (onHashMap (HashMap.delete pos) brd) current Nothing 
                          Death -> error "Cant set DEATH anywhere!"
       (SetNext set) -> runSetter side brd (advancePosition pos dnext) dir set
       (SetDiag set) -> runSetter side brd (advancePosition pos ddiag) dir set
 
 -- wypróbuj ruch
 
-gridPositionsHashset :: HashSet.HashSet Position
+gridPositionsHashset :: HashSet.Set Position
 gridPositionsHashset = HashSet.fromList (indices fresh'grid)
 
 {-# INLINE advancePosition #-}
