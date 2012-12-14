@@ -10,7 +10,7 @@ Category:            Game
 Build-type:          Simple
 Cabal-version:       >=1.8
 
-Flag use_cairo
+Flag cairo
   description: Enable Cairo-based svg functionality
   default: True
 
@@ -18,10 +18,10 @@ Library
   Hs-source-dirs:         lib
   Exposed-modules:        Board, Agent, CairoRender, Simulation, MonteCarloTS
   Build-depends:          base, mwc-random, grid, process, containers, hashmap, game-tree
-  if flag(use_cairo)
+  if flag(cairo)
      build-depends: cairo
-     cc-options: -DCAIRO
-  Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall 
+     cpp-options: -DCAIRO
+  Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -rtsopts -threaded
 
 Executable abalone
   Main-is:                src/abalone.hs

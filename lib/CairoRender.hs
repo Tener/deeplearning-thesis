@@ -12,9 +12,10 @@ import Math.Geometry.GridMap as GridMap
 import System.Process (rawSystem)
 
 drawBoard :: Board -> Render ()
-drawBoard brd = do
+drawBoard brdNew = do
 
-  let side = 25
+  let brd = boardToBoardOld brdNew
+      side = 25
       x0 = 300
       y0 = 300
       f'x = sqrt 3

@@ -100,10 +100,10 @@ play color cutoff cnt brd a'fst a'snd | (isFinished brd || cnt == cutoff) = do
   return brd
 
                      | otherwise = do
-  -- when (cnt `mod` 1000 == 0) (saveBoard brd (printf "playing-board-%06d.svg" cnt))
+  when (cnt `mod` 1000 == 0) (saveBoard brd (printf "playing-board-%06d.svg" cnt))
   brd'new <- makeMove a'fst brd
   -- sanity check -- disable with honest players
-  -- unless (brd'new `elem` getMoves color brd) (error ("Invalid move by player: " ++ show color))
+  unless (brd'new `elem` getMoves color brd) (error ("Invalid move by player: " ++ show color))
 
   -- print brd'new
   play (negColor color) cutoff (cnt+1) brd'new a'snd a'fst
