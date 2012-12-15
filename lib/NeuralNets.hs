@@ -51,7 +51,7 @@ parseNetFromFile input = asserts $ neurons -- (length weights, length weights'sp
 
         --- weights, biases, neuronCount, layerCount, sizes
 
-        neurons = zipWith makeOneLayer biases weights'split
+        neurons = zipWith makeOneLayer (map (map negate) biases) weights'split -- must negate biases -- different from matlab
 
         asserts r | garbage /= [] = error (printf "parseNetFromFile: garbage not empty: %d elements" (length garbage))
                   | length weights /= neuronCount = error (printf "parseNetFromFile: too little weights: %d (should be %d)" (length weights) neuronCount)
