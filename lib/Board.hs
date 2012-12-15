@@ -80,7 +80,6 @@ rules = [ ("here", ways'straight, here,    move'here)
         , ("shove2", ways'straight, shove2,  move'shove2) 
         , ("shove31", ways'straight, shove31, move'shove31) 
         , ("shove32", ways'straight, shove32, move'shove32) 
-        , ("move'diag", ways'diag, diag,    move'diag) 
         , ("move'diag2", ways'diag, diag2,   move'diag2) 
         , ("move'diag3", ways'diag, diag3,   move'diag3)]
 
@@ -116,7 +115,7 @@ rules = [ ("here", ways'straight, here,    move'here)
 #endif
         
        -- ruchy na skos
-       diag = And (This Ball) (Diag (This Empty))
+       diag = And (This Ball) (Diag (This Empty)) -- pomocniczy ruch
        diag2 = And diag (Next diag)
        diag3 = And diag2 (Next (Next diag))
 
@@ -153,6 +152,15 @@ getMoves col brd = -- nub
                    , tryMatch col brd idx way rule
                    ]
 
+getMovesN col brd = 
+                   [ (name, way, runMove col brd idx way setter) | 
+                     (idx,val) <- HashMap.toList (hashmap brd)
+                   , val == col
+                   , (name,ways,rule,setter) <- rules
+                   , way <- ways
+                   , tryMatch col brd idx way rule
+                   ]
+
 isFinished :: Board -> Bool
 isFinished brd = getWinner brd /= Nothing
 
@@ -180,14 +188,16 @@ updateCounts brd a b | a == b = brd
                                         , countBlack = cb-t3+t6 }
                                        
 
+putBall :: (Position,Color) -> Board -> Board
+putBall (pos,color) brd = updateCounts (onHashMap (HashMap.insert pos color) brd) (HashMap.lookup pos (hashmap brd)) (Just color)
 
 runSetter side brd pos dir@(dnext, ddiag) setter = 
     case setter of
       (SetHere fld) -> 
           let current = HashMap.lookup pos (hashmap brd) in
           case fld of
-                         Ball -> updateCounts (onHashMap (HashMap.insert pos side) brd) current (Just side)
-                         Opponent -> if HashSet.member pos gridPositionsHashset
+                         Ball -> updateCounts (onHashMap (HashMap.insert pos side) brd) current (Just side) -- hack: we *know* that the position is valid
+                         Opponent -> if HashSet.member pos gridPositionsHashset 
                                       then updateCounts (onHashMap (HashMap.insert pos (negColor side)) brd) current (Just (negColor side))
                                       else brd -- dont do anything
                          Empty -> updateCounts (onHashMap (HashMap.delete pos) brd) current Nothing 
@@ -195,7 +205,6 @@ runSetter side brd pos dir@(dnext, ddiag) setter =
       (SetNext set) -> runSetter side brd (advancePosition pos dnext) dir set
       (SetDiag set) -> runSetter side brd (advancePosition pos ddiag) dir set
 
--- wypróbuj ruch
 
 gridPositionsHashset :: HashSet.Set Position
 gridPositionsHashset = HashSet.fromList (indices fresh'grid)
@@ -204,6 +213,7 @@ gridPositionsHashset = HashSet.fromList (indices fresh'grid)
 advancePosition :: Position -> Position -> Position
 advancePosition pos@(f,s) dir@(df, ds) = (f + df, s + ds)
 
+-- wypróbuj ruch
 tryMatch :: Color -> Board -> Position -> Direction -> Match -> Bool
 tryMatch side brd pos dir@(dnext, ddiag) match = 
     case match of
@@ -243,6 +253,7 @@ boardToBoardOld brd = foldl (\ old (k,v) -> GridMap.adjust (const v) k old) empt
 
 
 -- | przekształca gęstą reprezentację do tablicy
+--
 -- >>> starting'board'belgianDaisy == (denseReprToBoard $ boardToDense $ starting'board'belgianDaisy)
 -- True
 denseReprToBoard :: [Int] -> Board
@@ -323,6 +334,7 @@ ways'straight = zip n0 (cycle [(0,0)])
 
 
 -- | mapuje każde pole do pojedynczej wartości -- 0, 1 lub 2
+--
 -- >>> boardToDense starting'board'default
 -- [0,0,0,2,2,0,0,0,0,2,2,0,0,0,0,2,2,2,1,0,0,0,0,2,2,2,1,1,1,0,0,0,2,2,2,1,1,1,0,0,0,0,2,1,1,1,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0]
 boardToDense :: Board -> [Int]
@@ -336,6 +348,7 @@ boardToDense brd = map fieldToInt values
     fieldToInt (Just Black) = 2
 
 -- | mapuje każde pole do 3 liczb, każda może mieć wartość 0 lub 1.
+--
 -- >>> boardToSparse starting'board'default
 -- [1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,1,1,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0,0,1,1,1,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 boardToSparse :: Board -> [Int]
