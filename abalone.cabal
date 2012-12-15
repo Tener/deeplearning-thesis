@@ -16,8 +16,8 @@ Flag cairo
 
 Library
   Hs-source-dirs:         lib
-  Exposed-modules:        Board, Agent, CairoRender, Simulation, MonteCarloTS
-  Build-depends:          base, mwc-random, grid, process, containers, hashmap, game-tree
+  Exposed-modules:        Board, Agent, CairoRender, Simulation, MonteCarloTS, CommonDatatypes, NeuralNets
+  Build-depends:          base, mwc-random, grid, process, containers, hashmap, game-tree, hnn == 0.1.2.3.4
   if flag(cairo)
      build-depends: cairo
      cpp-options: -DCAIRO

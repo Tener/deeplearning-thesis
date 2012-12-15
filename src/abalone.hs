@@ -14,7 +14,7 @@ import Data.Time.Clock.POSIX
 import System.Process
 
 main = do
-  let cutoff = 3000
+  let cutoff = 700
   threads <- getNumCapabilities
   starttime <- getPOSIXTime
   hostname <- fmap (head . words) (readProcess "hostname" [] "")

@@ -2,8 +2,6 @@
 
 module Board where
 
-import Prelude hiding (lookup)
-
 import Data.List (sortBy, nubBy, groupBy, nub, sort, group, intercalate)
 import Data.Ord
 import System.IO
@@ -14,6 +12,8 @@ import qualified Math.Geometry.GridMap as GridMap
 
 import qualified Data.HashMap as HashMap
 import qualified Data.HashSet as HashSet
+
+data Color = Black | White deriving (Eq, Ord, Read, Show)
 
 type BoardOld = GridMap.GridMap HexHexGrid Position (Maybe Color)
 type Position = (Int,Int)
@@ -54,8 +54,6 @@ marbleCount Black brd = countBlack brd
 
 ---- board regexp
 
-data Color = Black | White deriving (Eq, Ord, Read, Show)
-
 data Field = Empty | Death | Ball | Opponent deriving (Eq, Ord, Read, Show)
 data Match = And {-# UNPACK #-} !Match {-# UNPACK #-} !Match 
            | Or {-# UNPACK #-} !Match {-# UNPACK #-} !Match
@@ -72,6 +70,12 @@ type Move = [Setter]
 -- negacja koloru
 negColor Black = White
 negColor White = Black
+
+-- | swaps everything on board for other color
+-- >>> (negateBoard . negateBoard) starting'board'default == starting'board'default
+-- True
+negateBoard :: Board -> Board
+negateBoard (Board hm cw cb) = Board (HashMap.map negColor hm) cb cw
 
 {-# INLINE rules #-}
 rules = [ ("here", ways'straight, here,    move'here) 
