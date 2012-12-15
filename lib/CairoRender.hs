@@ -105,6 +105,11 @@ draw brd num = do
   let fname = printf "/tmp/abalone-draw.tmp.%04d.svg" (num :: Int)
   saveBoard brd fname
 
+view brd = do
+  let name = "/tmp/board-abalone-view.svg"
+  saveBoard brd name
+  rawSystem "eog" [name]
+
 #else
 
 saveBoard brd name = do
