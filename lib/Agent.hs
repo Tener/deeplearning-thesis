@@ -32,7 +32,7 @@ data GameState = GameState { gtBoard :: Board
 
 instance GTree.Game_tree GameState where
     is_terminal gst = Board.isFinished (gtBoard gst)
-    node_value gst = negIf (gtColorBase gst /= gtColorNow gst) (evalBoardI (gtColorNow gst) (gtBoard gst))
+    node_value gst = (evalBoardI (gtColorNow gst) (gtBoard gst))
         where
           negIf True x = negate x
           negIf False x = x
