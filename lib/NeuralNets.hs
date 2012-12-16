@@ -21,12 +21,14 @@ data AgentNN = AgentNN { net :: [[Neuron]]
                        }
 
 instance Agent AgentNN where
-    mkAgent col = return (AgentNN [] [] col) -- fixme
+    mkAgent col = do
+      neuralNetwork <- parseNetFromFile'
+      return (AgentNN neuralNetwork [] col)
     makeMove agent brd = do
       let gst = GameState brd (\ g -> doubleToEvalInt $ evalBoardNet (gtColorNow g) (gtBoard g) (net agent)) (col agent) (col agent)
-          depth = 4
+          depth = 2
           (princ, score) = GTreeAlgo.negascout gst depth
-      when (score /= 0) (print ("agent-nn",score,col agent))
+      -- when (True) (print ("agent-nn",score,col agent))
       return (gtBoard $ head $ tail $ princ)
 
 doubleToEvalInt :: Double -> Int
@@ -70,7 +72,7 @@ readIntsRow :: String -> [Int]
 readIntsRow row = map read (words row)
 
 evalBoardNet :: Color -> Board -> [[Neuron]] -> Double
-evalBoardNet col brd net = combine (computeNet net (map i2d $ boardToSparse brdEval))
+evalBoardNet col brd net = combine (computeNet'long net (map i2d $ boardToSparse brdEval))
     where
       brdEval = if col == White then brd else negateBoard brd
 
