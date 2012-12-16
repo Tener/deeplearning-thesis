@@ -10,7 +10,7 @@ import Text.Printf
 import System.Random.MWC
 import Data.Ord
 import Data.List (sortBy)
-
+import System.IO
 import qualified Math.Geometry.GridMap as GridMap
 
 import qualified Data.Tree.Game_tree.Negascout as GTreeAlgo
@@ -102,9 +102,9 @@ evalBoardI col brd =
 
 play :: (Agent a, Agent b) => Color -> Int -> Int -> Board -> a -> b -> IO Board
 play color cutoff cnt brd a'fst a'snd | (isFinished brd || cnt == cutoff) = do
-  putStrLn (printf "[%d] Game is finished after %d moves!" cutoff cnt)
-  putStrLn (printf "[%d] Winner:" cutoff)
-  print (getWinner brd)
+  hPutStrLn stderr (printf "[%d] Game is finished after %d moves!" cutoff cnt)
+  hPutStrLn stderr (printf "[%d] Winner:" cutoff)
+  hPutStrLn stderr (show (getWinner brd))
   saveBoard brd (printf "svg/finished-board-%d-%06d.svg" cutoff cnt)
   return brd
 
