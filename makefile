@@ -1,4 +1,7 @@
 
+build:
+	cabal-dev install -j -fcairo
+
 test:
 	cabal-dev install -j -fcairo --enable-tests
 prof:
