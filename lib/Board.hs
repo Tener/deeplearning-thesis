@@ -16,7 +16,7 @@ import qualified Data.HashSet as HashSet
 data Color = Black | White deriving (Eq, Ord, Read, Show)
 
 type BoardOld = GridMap.GridMap HexHexGrid Position (Maybe Color)
-type Position = (Int,Int)
+type Position = (Int,Int) -- fixme: replace with new datatype with hashing function: (\(a,b) -> a*32 + b)
 type Direction = (Position, Position)
 type BoardHM = HashMap.Map Position Color
 data Board = Board { hashmap :: !BoardHM

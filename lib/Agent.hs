@@ -103,8 +103,7 @@ evalBoardI col brd =
 play :: (Agent a, Agent b) => Color -> Int -> Int -> Board -> a -> b -> IO Board
 play color cutoff cnt brd a'fst a'snd | (isFinished brd || cnt == cutoff) = do
   hPutStrLn stderr (printf "[%d] Game is finished after %d moves!" cutoff cnt)
-  hPutStrLn stderr (printf "[%d] Winner:" cutoff)
-  hPutStrLn stderr (show (getWinner brd))
+  hPutStrLn stderr (printf "[%d] Winner: %s" cutoff (show (getWinner brd)))
   saveBoard brd (printf "svg/finished-board-%d-%06d.svg" cutoff cnt)
   return brd
 
@@ -125,6 +124,7 @@ game cutoff = do
   ag'black <- mkAgent Black
   ag'white <- mkAgent White
 
+--  play White cutoff 1 starting'board'default (ag'white :: AgentRandom) (ag'black :: AgentNN)
   play White cutoff 1 starting'board'default (ag'white :: AgentRandom) (ag'black :: AgentNN)
 
 

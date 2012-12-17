@@ -23,10 +23,11 @@ data AgentNN = AgentNN { net :: [[Neuron]]
 instance Agent AgentNN where
     mkAgent col = do
       neuralNetwork <- parseNetFromFile'
+      print ("neural network size", length neuralNetwork, (map length neuralNetwork))
       return (AgentNN neuralNetwork [] col)
     makeMove agent brd = do
       let gst = GameState brd (\ g -> doubleToEvalInt $ evalBoardNet (gtColorNow g) (gtBoard g) (net agent)) (col agent) (col agent)
-          depth = 2
+          depth = 3
           (princ, score) = GTreeAlgo.negascout gst depth
       -- when (True) (print ("agent-nn",score,col agent))
       return (gtBoard $ head $ tail $ princ)
@@ -34,8 +35,9 @@ instance Agent AgentNN where
 doubleToEvalInt :: Double -> Int
 doubleToEvalInt d = round (d * 10000)
 
--- parseNetFromFile :: String -> [[Neuron]]
 parseNetFromFile' = parseNetFromFile `fmap` readFile "/home/tener/nn.txt"
+
+parseNetFromFile :: String -> [[Neuron]]
 parseNetFromFile input = asserts $ neurons -- (length weights, length weights'split, length biases, neuronCount, layerCount, sizes)
   where input'lines@(sizes'row : rest'rows) = lines input
         sizes = readIntsRow sizes'row -- sizes in first line
@@ -61,9 +63,9 @@ parseNetFromFile input = asserts $ neurons -- (length weights, length weights'sp
                   | otherwise = r -- r for result
 
 
-makeOneLayer :: [Double] -> [[Double]] -> [Neuron]
-makeOneLayer biases weights = zipWith createNeuronSigmoid biases weights
-
+        -- helper
+        makeOneLayer :: [Double] -> [[Double]] -> [Neuron]
+        makeOneLayer biases weights = zipWith createNeuronSigmoid biases weights
 
 readDoublesRow :: String -> [Double]
 readDoublesRow row = map read (words row)
@@ -80,7 +82,7 @@ evalBoardNet col brd net = combine (computeNet'long net (map i2d $ boardToSparse
       i2d 0 = 0.0
       i2d _ = error "This function is not defined for values other than 1 and 0."
 
-      combine = sum -- TODO: better function?
+      combine = sum -- TODO: better function!
 
 g0 :: (Num a) => [a]
 g0 = [1,0,1,0,0,0,0,0,1,1,1,1,0,1,1,0,1,1,1,0,1,1,1,0,1,0,0,1,0,1,1,1,1,1,0,1,0,0,1,0,0,1,0,1,1,1,0,0,1,1,0,1,0,0,1,0,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,1,0,0,0,0,0,0,0,1,0,1,1,0,0,0,0,1,1,0,0,1,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,1,0,1,0,0,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0]
