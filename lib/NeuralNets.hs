@@ -36,6 +36,13 @@ data AgentNN = AgentNN {
 instance Agent AgentNN where
     mkAgent col = do
       neuralNetwork <- parseNetFromFile'
+#if TRYRANDOMNETWORK
+#if NEWHNN
+      -- check how random network is doing
+      neuralNetwork <- AI.HNN.FF.Network.createNetwork (3*61) [100]
+#endif
+#endif
+
       return (AgentNN neuralNetwork [] col)
     makeMove agent brd = do
       let gst = GameState brd (\ g -> doubleToEvalInt $ evalBoardNet (gtColorNow g) (gtBoard g) (net agent)) (col agent) (col agent)
