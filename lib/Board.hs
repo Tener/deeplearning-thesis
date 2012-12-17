@@ -12,6 +12,7 @@ import qualified Math.Geometry.GridMap as GridMap
 
 import qualified Data.HashMap as HashMap
 import qualified Data.HashSet as HashSet
+import qualified Data.Hashable as Hashable
 
 data Color = Black | White deriving (Eq, Ord, Read, Show)
 
@@ -30,6 +31,8 @@ onHashMap f brd = brd { hashmap = f (hashmap brd) }
 marbleCount White brd = countWhite brd
 marbleCount Black brd = countBlack brd
 
+instance Hashable.Hashable Position where
+    hashWithSalt _salt (a,b) = a * 32 + b -- hack hack hack
 
 {-
 
