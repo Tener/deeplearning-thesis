@@ -18,11 +18,12 @@ Flag hnn02
   description: Use newer version of hnn library
   default: True
 
-
 Library
   Hs-source-dirs:         lib
-  Exposed-modules:        Board, Agent, CairoRender, Simulation, MonteCarloTS, CommonDatatypes, NeuralNets
-  Build-depends:          base, mwc-random, grid, process, containers, hashmap, game-tree, split, hashable == 1.2.0.2.20121217
+  Exposed-modules:        Board, Agent, CairoRender, Simulation, 
+                          MonteCarloTS, CommonDatatypes, NeuralNets,
+                          Tournament, Utils
+  Build-depends:          base, mwc-random, grid, process, containers, hashmap, game-tree, split, hashable == 1.2.0.2.20121217, data-default
   if flag(cairo)
      build-depends: cairo
      cpp-options: -DCAIRO
@@ -32,11 +33,16 @@ Library
   else
      build-depends: hnn == 0.1.2.3.4
 
-  Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -rtsopts -threaded
+  Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -rtsopts -threaded -O2
 
 Executable abalone
   Main-is:                src/abalone.hs
   Build-depends:          base, abalone, clocked, async, time, process
+  Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -threaded
+
+Executable tournament
+  Main-is:                src/tournament.hs
+  Build-depends:          base, abalone, data-default
   Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -threaded
 
 Executable dense-to-sparse

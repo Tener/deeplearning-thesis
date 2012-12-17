@@ -1,7 +1,9 @@
+{-# LANGUAGE BangPatterns #-}
+
 module Main where
 
-import Agent
 import Board
+import Tournament
 import qualified CairoRender
 
 import Clocked
@@ -14,7 +16,7 @@ import Data.Time.Clock.POSIX
 import System.Process
 
 main = do
-  let cutoff = 700
+  let cutoff = 100
   threads <- getNumCapabilities
   starttime <- getPOSIXTime
   hostname <- fmap (head . words) (readProcess "hostname" [] "")
@@ -25,7 +27,7 @@ main = do
 
   let threadFunc threadNum = forever (do
                  d0 <- getTimeDouble 
-                 brd <- Agent.game (cutoff*threadNum)
+                 !brd <- Tournament.simpleGame (cutoff*threadNum)
                  withMVar handles (\ (h1,h2) -> do
                                      -- CairoRender.saveBoard brd "last-game.svg"
                                      Board.appendBoardCSVFile brd h1

@@ -3,7 +3,6 @@ module Agent where
 import Board
 import CairoRender
 import CommonDatatypes
-import NeuralNets
 
 import Control.Monad (unless, when)
 import Text.Printf
@@ -99,32 +98,3 @@ evalBoardI col brd =
 
 
 --------------------------
-
-play :: (Agent a, Agent b) => Color -> Int -> Int -> Board -> a -> b -> IO Board
-play color cutoff cnt brd a'fst a'snd | (isFinished brd || cnt == cutoff) = do
-  hPutStrLn stderr (printf "[%d] Game is finished after %d moves!" cutoff cnt)
-  hPutStrLn stderr (printf "[%d] Winner: %s" cutoff (show (getWinner brd)))
-  saveBoard brd (printf "svg/finished-board-%d-%06d.svg" cutoff cnt)
-  return brd
-
-                     | otherwise = do
-  when (cnt `mod` 1000 == 0) (saveBoard brd (printf "svg/playing-board-%d-%06d.svg" cutoff cnt))
-  brd'new <- makeMove a'fst brd
-  -- sanity check -- disable with honest players
-  -- unless (brd'new `elem` getMoves color brd) (error ("Invalid move by player: " ++ show color))
-
-  putStrLn (printf "[%d] black: %d white: %d" cutoff (countBlack brd'new) (countWhite brd'new))
-
-  -- print brd'new
-  play (negColor color) cutoff (cnt+1) brd'new a'snd a'fst
-
-
-game :: Int -> IO Board
-game cutoff = do
-  ag'black <- mkAgent Black
-  ag'white <- mkAgent White
-
---  play White cutoff 1 starting'board'default (ag'white :: AgentRandom) (ag'black :: AgentNN)
-  play White cutoff 1 starting'board'default (ag'white :: AgentRandom) (ag'black :: AgentNN)
-
-
