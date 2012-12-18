@@ -207,7 +207,7 @@ evolution initial'population initial'params = do
                     then do
                      pop'new <- evolutionStep par pop
                      prettyReportPopulation pop'new
-                     if (championScore pop) < 200
+                     if (championScore pop'new) < 200
                       then print "RESET" >> evolution initial'population initial'params
                       else go (decSteps par) pop'new
                     else return pop
