@@ -52,13 +52,13 @@ instance Agent AgentNN where
                               (col agent) (col agent)
           depth = 1
           (princ, score) = GTreeAlgo.negascout gst depth
-      when (score /= 0) (print ("agent-nn",score,lastLayer agent,col agent))
+      -- when (score /= 0) (print ("agent-nn",score,lastLayer agent,col agent))
       return (gtBoard $ head $ tail $ princ)
 
 doubleToEvalInt :: Double -> Int
 doubleToEvalInt d = round (d * 1000000)
 
-parseNetFromFile' = parseNetFromFile `fmap` readFile "/home/tener/nn.txt"
+parseNetFromFile' = parseNetFromFile `fmap` readFile "nn.txt"
 
 parseNetFromFile :: String -> (Network Double, [Int])
 parseNetFromFile input = asserts $ (result, sizes) -- (length weights, length weights'split, length biases, neuronCount, layerCount, sizes)

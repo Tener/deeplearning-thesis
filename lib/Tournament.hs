@@ -64,7 +64,7 @@ type Score = Double
 --     def = TournamentRules { versusGames = 10 }
 
 instance Default EvolutionParameters where
-    def = EvolutionParameters { populationSize = 100
+    def = EvolutionParameters { populationSize = 5
                               , championSquad = 3
                               , deathProbability = 0.9
                               , mutationForce = 0.1
@@ -108,11 +108,11 @@ simpleGame cutoff = do
 -- | run a single round of tournament. players play versus each one.
 tournament :: (Eq a, Agent a) => [a] -> IO [(Score,a)]
 tournament agents = do
-  scored <- mapM (\ ag -> do
-          pctWon <- playVersusRandom ag
-          print ("tournament-pctWon",pctWon)
-          return (pctWon, ag)
-                  ) agents
+  scored <- mapM (\ (i,ag) -> do
+          score <- playVersusRandom ag
+          putStrLn (printf "[%d/%d] tournament-pctWon: %f" (i::Int) (length agents) score)
+          return (score, ag)
+                  ) (zip [1..] agents)
 
   return scored
 
@@ -122,7 +122,7 @@ playVersusRandom ag = do
   randomer <- mkAgent Black
   let cutoff = 300
       games :: (Num a) => a
-      games = 3
+      games = 5
   winners <- mapConcurrently (\ _ -> (playVersus White cutoff 1 starting'board'default ag (randomer :: AgentRandom))) [1..games]
   
   let won'w = count (Just White)
@@ -130,8 +130,13 @@ playVersusRandom ag = do
       draw  = count Nothing
       count :: (Maybe Color) -> Int
       count x = length $ filter (==x) (map getWinner winners)
+      pcnt'won = (fromIntegral won'w) / games
+                
+      killed'stones = games * 14 - (sum $ map countBlack winners)
 
-  return ((fromIntegral won'w) / games)
+      score = pcnt'won * 1000 + (fromIntegral killed'stones)
+
+  return score
 
 -- | remove members of population that die. RIP.
 cleanPopulation :: EvolutionParameters -> Population a -> IO (Population a)
@@ -164,7 +169,7 @@ tournamentPopulation :: (Eq a, Agent a, Ord a) => EvolutionParameters -> Populat
 tournamentPopulation params pop = do
   mems <- tournament (map snd $ members pop)
   let members'scored = reverse $ sort $ mems
-      cscore = fst $ head $ drop (championSquad params) members'scored
+      cscore = maximum (map fst members'scored)
   return (pop { members = members'scored,
                 championScore = cscore })
 
@@ -202,7 +207,9 @@ evolution initial'population initial'params = do
                     then do
                      pop'new <- evolutionStep par pop
                      prettyReportPopulation pop'new
-                     go (decSteps par) pop'new
+                     if (championScore pop) < 200
+                      then print "RESET" >> evolution initial'population initial'params
+                      else go (decSteps par) pop'new
                     else return pop
 
       decSteps par = par { stepsToGo = (stepsToGo par)-1 }
@@ -212,5 +219,7 @@ evolution initial'population initial'params = do
 ---- printing, reporting etc.
 
 prettyReportPopulation :: (Show a) => (Population a) -> IO ()
-prettyReportPopulation pop = print ("POPULATION",pop)
+prettyReportPopulation pop = do
+  print ("POPULATION",pop)
+  print ("POPULATION-SCORE",championScore pop)
   
