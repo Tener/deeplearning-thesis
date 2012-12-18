@@ -16,6 +16,9 @@ run:
 tournament:
 	cabal-dev install -j && cabal-dev/bin/tournament +RTS -sstderr -N | tee tournament.log.txt
 
+tournament-ii:
+	cabal-dev install -f-cairo && cabal-dev/bin/tournament +RTS -sstderr -N | tee tournament.log.txt
+
 clean:
 	cabal-dev clean
 
