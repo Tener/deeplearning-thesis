@@ -7,6 +7,7 @@ type MakeMove = Board -> IO Board
 
 class Agent a where
     mkAgent :: Color -> IO a
+    setColor :: Color -> a -> a
     makeMove :: a -> MakeMove
 
 data GameState = GameState { gtBoard :: Board

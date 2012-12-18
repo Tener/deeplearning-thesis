@@ -25,17 +25,19 @@ type Network a = [[Neuron]]
 #endif
 
 
+type LastLayer = (Double,[Double])
+
 data AgentNN = AgentNN { 
                          net :: Network Double
-                       , lastLayer :: [(Double,[Double])]
+                       , lastLayer :: LastLayer
                        , col :: Color
-                       }
+                       } deriving (Eq, Show, Ord)
 
 
 
 instance Agent AgentNN where
     mkAgent col = do
-      neuralNetwork <- parseNetFromFile'
+      (neuralNetwork, sizes) <- parseNetFromFile'
 #if TRYRANDOMNETWORK
 #if NEWHNN
       -- check how random network is doing
@@ -43,21 +45,23 @@ instance Agent AgentNN where
 #endif
 #endif
 
-      return (AgentNN neuralNetwork [] col)
+      let ll = (0, replicate (last sizes) 1)
+      return (AgentNN neuralNetwork ll col)
     makeMove agent brd = do
-      let gst = GameState brd (\ g -> doubleToEvalInt $ evalBoardNet (gtColorNow g) (gtBoard g) (net agent)) (col agent) (col agent)
+      let gst = GameState brd (\ g -> doubleToEvalInt $ evalBoardNet (gtColorNow g) (gtBoard g) (net agent) (lastLayer agent)) 
+                              (col agent) (col agent)
           depth = 1
           (princ, score) = GTreeAlgo.negascout gst depth
-      -- when (True) (print ("agent-nn",score,col agent))
+      when (score /= 0) (print ("agent-nn",score,lastLayer agent,col agent))
       return (gtBoard $ head $ tail $ princ)
 
 doubleToEvalInt :: Double -> Int
-doubleToEvalInt d = round (d * 10000)
+doubleToEvalInt d = round (d * 1000000)
 
 parseNetFromFile' = parseNetFromFile `fmap` readFile "/home/tener/nn.txt"
 
-parseNetFromFile :: String -> Network Double
-parseNetFromFile input = asserts $ result -- (length weights, length weights'split, length biases, neuronCount, layerCount, sizes)
+parseNetFromFile :: String -> (Network Double, [Int])
+parseNetFromFile input = asserts $ (result, sizes) -- (length weights, length weights'split, length biases, neuronCount, layerCount, sizes)
   where input'lines@(sizes'row : rest'rows) = lines input
         sizes = readIntsRow sizes'row -- sizes in first line
 
@@ -98,8 +102,8 @@ readDoublesRow row = map read (words row)
 readIntsRow :: String -> [Int]
 readIntsRow row = map read (words row)
 
-evalBoardNet :: Color -> Board -> Network Double -> Double
-evalBoardNet col brd net = result
+evalBoardNet :: Color -> Board -> Network Double -> LastLayer -> Double
+evalBoardNet col brd net (ll'b, ll'w) = result
     where
       brdEval = if col == White then brd else negateBoard brd
 
@@ -108,15 +112,23 @@ evalBoardNet col brd net = result
       i2d _ = error "This function is not defined for values other than 1 and 0."
 
       values = map i2d $ boardToSparse brdEval
- 
 
-#if NEWHNN
-      combine = U.sum -- TODO: better function!
-      result = combine (computeNetworkWith net sigmoid (U.fromList values))
-#else
-      combine = sum
-      result = combine (computeNet'long net values)
-#endif
+      net'll :: Network Double
+      net'll = loadNetwork [[ll'b]] [[ll'w]]
+      combine = U.sum -- assumed to work on single value here
+      result'p1 = computeNetworkWith net sigmoid (U.fromList values)
+      result'p2 = computeNetworkWith (net'll) id result'p1
+      result = combine result'p1
+ 
+-- #if NEWHNN
+--       combine = U.sum -- TODO: better function!
+--       result = combine (computeNetworkWith net sigmoid (U.fromList values))
+-- #else
+--       combine = sum
+--       result = combine (computeNet'long net values)
+-- #endif
+
+      
 
 g0 :: (Num a) => [a]
 g0 = [1,0,1,0,0,0,0,0,1,1,1,1,0,1,1,0,1,1,1,0,1,1,1,0,1,0,0,1,0,1,1,1,1,1,0,1,0,0,1,0,0,1,0,1,1,1,0,0,1,1,0,1,0,0,1,0,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,1,0,0,0,0,0,0,0,1,0,1,1,0,0,0,0,1,1,0,0,1,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,1,0,1,0,0,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0]

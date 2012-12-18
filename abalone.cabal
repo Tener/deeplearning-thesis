@@ -23,12 +23,12 @@ Library
   Exposed-modules:        Board, Agent, CairoRender, Simulation, 
                           MonteCarloTS, CommonDatatypes, NeuralNets,
                           Tournament, Utils
-  Build-depends:          base, mwc-random, grid, process, containers, hashmap, game-tree, split, hashable == 1.2.0.2.20121217, data-default
+  Build-depends:          base, mwc-random, grid, process, containers, hashmap, game-tree, split, hashable == 1.2.0.2.20121217, data-default, async
   if flag(cairo)
      build-depends: cairo
      cpp-options: -DCAIRO
   if flag(hnn02)
-     build-depends: hnn == 0.2.0.0.20121217, vector
+     build-depends: hnn == 0.2.0.0.20121218, vector
      cpp-options: -DNEWHNN
   else
      build-depends: hnn == 0.1.2.3.4
