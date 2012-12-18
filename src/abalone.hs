@@ -6,7 +6,7 @@ import Board
 import Tournament
 import qualified CairoRender
 
-import Clocked
+-- import Clocked
 import Control.Monad
 import Text.Printf
 import System.IO
@@ -26,15 +26,15 @@ main = do
   handles <- newMVar (dataHandle, dataHandle'sparse)
 
   let threadFunc threadNum = forever (do
-                 d0 <- getTimeDouble 
+--                 d0 <- getTimeDouble 
                  !brd <- Tournament.simpleGame (cutoff*threadNum)
                  withMVar handles (\ (h1,h2) -> do
                                      -- CairoRender.saveBoard brd "last-game.svg"
                                      Board.appendBoardCSVFile brd h1
                                      Board.appendBoardCSVFileSparse brd h2
                                   )
-                 d1 <- getTimeDouble
-                 putStrLn (printf "[%d] Time elapsed: %f seconds" (threadNum :: Int) (d1-d0))
+--                 d1 <- getTimeDouble
+--                 putStrLn (printf "[%d] Time elapsed: %f seconds" (threadNum :: Int) (d1-d0))
                  >> putStrLn "-----------------------------------"
                )
 

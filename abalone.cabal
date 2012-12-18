@@ -37,7 +37,7 @@ Library
 
 Executable abalone
   Main-is:                src/abalone.hs
-  Build-depends:          base, abalone, clocked, async, time, process
+  Build-depends:          base, abalone, async, time, process
   Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -threaded
 
 Executable tournament
