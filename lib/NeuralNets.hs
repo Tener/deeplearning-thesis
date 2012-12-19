@@ -2,14 +2,8 @@
 
 module NeuralNets where
 
-#if NEWHNN
 import AI.HNN.FF.Network -- from hnn-0.2 package
 import qualified Data.Vector.Unboxed as U
-#else
-import AI.HNN.Neuron -- from hnn-0.1 package
-import AI.HNN.Net
-import AI.HNN.Layer
-#endif
 
 
 import Control.Monad(when)
@@ -19,11 +13,6 @@ import Data.List.Split(splitPlaces)
 
 import Board
 import CommonDatatypes
-
-#if !NEWHNN
-type Network a = [[Neuron]]
-#endif
-
 
 type LastLayer = (Double,[Double])
 
@@ -39,10 +28,8 @@ instance Agent AgentNN where
     mkAgent col = do
       (neuralNetwork, sizes) <- parseNetFromFile'
 #if TRYRANDOMNETWORK
-#if NEWHNN
       -- check how random network is doing
       neuralNetwork <- AI.HNN.FF.Network.createNetwork (3*61) [100]
-#endif
 #endif
 
       let ll = (0, replicate (last sizes) 1)
@@ -79,16 +66,8 @@ parseNetFromFile input = asserts $ (result, sizes) -- (length weights, length we
         --- weights, biases, neuronCount, layerCount, sizes
         biases'neg = (map (map negate) biases)  -- must negate biases -- different from matlab
 
-#if NEWHNN
         result = network
         network = loadNetwork biases'neg weights'split
-#else
-        result = neurons
-        neurons = zipWith makeOneLayer biases'neg weights'split
-        -- helper
-        makeOneLayer :: [Double] -> [[Double]] -> [Neuron]
-        makeOneLayer biases weights = zipWith createNeuronSigmoid biases weights
-#endif
 
         asserts r | garbage /= [] = error (printf "parseNetFromFile: garbage not empty: %d elements" (length garbage))
                   | length weights /= neuronCount = error (printf "parseNetFromFile: too little weights: %d (should be %d)" (length weights) neuronCount)
@@ -117,18 +96,9 @@ evalBoardNet col brd net (ll'b, ll'w) = result
       net'll = loadNetwork [[ll'b]] [[ll'w]]
       combine = U.sum -- assumed to work on single value here
       result'p1 = computeNetworkWith net sigmoid (U.fromList values)
-      result'p2 = computeNetworkWith (net'll) id result'p1
-      result = combine result'p1
- 
--- #if NEWHNN
---       combine = U.sum -- TODO: better function!
---       result = combine (computeNetworkWith net sigmoid (U.fromList values))
--- #else
---       combine = sum
---       result = combine (computeNet'long net values)
--- #endif
-
-      
+      result'p2 = computeNetworkWith (net'll) sigmoid result'p1
+      result = combine result'p2
+     
 
 g0 :: (Num a) => [a]
 g0 = [1,0,1,0,0,0,0,0,1,1,1,1,0,1,1,0,1,1,1,0,1,1,1,0,1,0,0,1,0,1,1,1,1,1,0,1,0,0,1,0,0,1,0,1,1,1,0,0,1,1,0,1,0,0,1,0,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,1,0,0,0,0,0,0,0,1,0,1,1,0,0,0,0,1,1,0,0,1,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,1,0,1,0,0,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0]

@@ -14,7 +14,7 @@ run:
 	cabal-dev install -fcairo && cabal-dev/bin/abalone +RTS -sstderr -N
 
 tournament:
-	cabal-dev install -j && cabal-dev/bin/tournament +RTS -sstderr -N | tee tournament.log.txt
+	cabal-dev install && cabal-dev/bin/tournament +RTS -sstderr -N | tee tournament.log.txt
 
 tournament-ii:
 	cabal-dev install -f-cairo && cabal-dev/bin/tournament +RTS -sstderr -N | tee tournament.log.txt

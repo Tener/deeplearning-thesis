@@ -14,25 +14,16 @@ Flag cairo
   description: Enable Cairo-based svg functionality
   default: True
 
-Flag hnn02
-  description: Use newer version of hnn library
-  default: True
-
 Library
   Hs-source-dirs:         lib
   Exposed-modules:        Board, Agent, CairoRender, Simulation, 
                           MonteCarloTS, CommonDatatypes, NeuralNets,
                           Tournament, Utils
-  Build-depends:          base, mwc-random, grid, process, containers, hashmap, game-tree, split, hashable == 1.2.0.2.20121217, data-default, async
+  Build-depends:          base, mwc-random, grid == 2.0, process, containers, hashmap, game-tree, split, hashable == 1.2.0.2.20121217, data-default, async,
+                          hnn == 0.2.0.0.20121218, vector
   if flag(cairo)
      build-depends: cairo
      cpp-options: -DCAIRO
-  if flag(hnn02)
-     build-depends: hnn == 0.2.0.0.20121218, vector
-     cpp-options: -DNEWHNN
-  else
-     build-depends: hnn == 0.1.2.3.4
-
   Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -rtsopts -threaded -O2
 
 Executable abalone
@@ -49,6 +40,42 @@ Executable dense-to-sparse
   Main-is:                src/dense-to-sparse.hs
   Build-depends:          base, filepath
   Ghc-options:            -rtsopts
+
+-- Executable nn-benchmark-01
+--   Main-is:                src/nn-benchmark.hs
+--   Build-depends:          base, filepath, criterion, mwc-random, vector, hnn == 0.1
+--   Ghc-options:            -rtsopts -O2
+--   buildable:              False
+--   cpp-options:            -DBENCH01
+--  
+-- Executable nn-benchmark-02
+--   Main-is:                src/nn-benchmark.hs
+--   Build-depends:          base, filepath, criterion, mwc-random, vector, hnn == 0.2.0.0.20121218
+--   Ghc-options:            -rtsopts -O2
+--   buildable:              False
+--   cpp-options:            -DBENCH02
+
+Executable nn-benchmark-03
+  Main-is:                src/nn-benchmark.hs
+  Build-depends:          base, filepath, criterion, mwc-random, vector, split, hmatrix, HaskellNN
+  Ghc-options:            -rtsopts -O2
+  buildable:              True
+  cpp-options:            -DBENCH03
+
+--   if flag(bench01)
+--      build-depends: hnn == 0.1
+--      cpp-options: -DBENCH01
+--      buildable: True
+--   if flag(bench02)
+--      build-depends: hnn == 0.2.0.0.20121218
+--      cpp-options: -DBENCH02
+--      buildable: True
+--   if flag(bench03)
+--      build-depends: HaskellNN
+--      cpp-options: -DBENCH03
+--      buildable: True
+
+
 
 Executable get-finished-games
   Main-is:                src/get-finished-games.hs
