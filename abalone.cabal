@@ -57,7 +57,7 @@ Executable dense-to-sparse
 
 Executable nn-benchmark-03
   Main-is:                src/nn-benchmark.hs
-  Build-depends:          base, filepath, criterion, mwc-random, vector, split, hmatrix, HaskellNN
+  Build-depends:          base, filepath, criterion == 0.6.2.0, mwc-random, vector, split, hmatrix, HaskellNN == 0.1.3, hnn == 0.2.0.0.20121218
   Ghc-options:            -rtsopts -O2
   buildable:              True
   cpp-options:            -DBENCH03
