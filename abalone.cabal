@@ -20,7 +20,7 @@ Library
                           MonteCarloTS, CommonDatatypes, NeuralNets,
                           Tournament, Utils, MinimalNN
   Build-depends:          base, mwc-random, grid == 2.0, process, containers, hashmap, game-tree, split, hashable == 1.2.0.2.20121217, data-default, async,
-                          hnn == 0.2.0.0.20121218, vector, hmatrix
+                          hnn == 0.2.0.0.20121218, vector, hmatrix, io-memoize
   if flag(cairo)
      build-depends: cairo
      cpp-options: -DCAIRO

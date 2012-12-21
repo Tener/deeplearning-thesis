@@ -1,12 +1,15 @@
-{-# LANGUAGE CPP, ViewPatterns #-}
+{-# LANGUAGE CPP, BangPatterns, ViewPatterns #-}
 
 module NeuralNets where
 
-import Control.Monad(when)
+import Control.Monad(when, join)
 import qualified Data.Tree.Game_tree.Negascout as GTreeAlgo
 import Text.Printf
 import Data.List.Split(splitPlaces)
 import qualified Numeric.Container as NC
+
+import System.IO.Memoize (ioMemo')
+import System.IO.Unsafe
 
 import Board
 import CommonDatatypes
@@ -19,11 +22,10 @@ data AgentNN = AgentNN { net :: TNetwork
                        , col :: Color
                        } deriving (Show, Ord, Eq)
 
-
-
 instance Agent AgentNN where
     mkAgent col = do
-      (neuralNetwork, sizes) <- parseNetFromFile'
+--      (!neuralNetwork, sizes) <- parseNetFromFile'
+      let (!neuralNetwork, sizes) = myUnsafeNet
       let ll = (0, replicate (last sizes) 1)
       return (AgentNN neuralNetwork ll col)
     makeMove agent brd = do
@@ -37,7 +39,11 @@ instance Agent AgentNN where
 doubleToEvalInt :: Double -> Int
 doubleToEvalInt d = round (d * 1000000)
 
-parseNetFromFile' = parseNetFromFile `fmap` readFile "nn.txt"
+parseNetFromFile'' = ioMemo' (parseNetFromFile `fmap` readFile "nn.txt")
+parseNetFromFile' = join parseNetFromFile''
+
+{-# NOINLINE myUnsafeNet #-}
+myUnsafeNet = unsafePerformIO parseNetFromFile'
 
 parseNetFromFile :: String -> (TNetwork, [Int])
 parseNetFromFile input = asserts $ (result, sizes) -- (length weights, length weights'split, length biases, neuronCount, layerCount, sizes)
@@ -82,9 +88,9 @@ evalBoardNet col brd net (ll'b, ll'w) = result
       i2d 0 = 0.0
       i2d _ = error "This function is not defined for values other than 1 and 0."
 
-      values = map i2d $ boardToSparse brdEval
+      values = boardToSparseNN brdEval
 
-      result'p1 = computeTNetworkSigmoid net (NC.fromList values)
+      result'p1 = computeTNetworkSigmoid net values
       combine = NC.sumElements
       result = combine result'p1 -- fixme use 'p2
 

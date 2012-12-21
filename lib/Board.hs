@@ -14,6 +14,8 @@ import qualified Data.HashMap as HashMap
 import qualified Data.HashSet as HashSet
 import qualified Data.Hashable as Hashable
 
+import qualified Data.Packed.Vector as V
+
 data Color = Black | White deriving (Eq, Ord, Read, Show)
 
 type BoardOld = GridMap.GridMap HexHexGrid Position (Maybe Color)
@@ -31,8 +33,11 @@ onHashMap f brd = brd { hashmap = f (hashmap brd) }
 marbleCount White brd = countWhite brd
 marbleCount Black brd = countBlack brd
 
+
+#ifndef DOCTESTING
 instance Hashable.Hashable Position where
     hashWithSalt _salt (a,b) = a * 32 + b -- hack hack hack
+#endif
 
 {-
 
@@ -358,8 +363,24 @@ boardToDense brd = map fieldToInt values
 --
 -- >>> boardToSparse starting'board'default
 -- [1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,1,1,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0,0,1,1,1,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+-- >>> boardToSparse' starting'board'default
+-- [1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,1,1,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0,0,1,1,1,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+
 boardToSparse :: Board -> [Int]
-boardToSparse brd = vecAll
+boardToSparse brd = [ look c p | c <- [Nothing, Just White, Just Black], p <- pos]
+    where
+      look c p = if HashMap.lookup p (hashmap brd) == c then 1 else 0
+      pos = indices fresh'grid
+
+boardToSparseNN :: Board -> V.Vector Double
+boardToSparseNN brd = V.fromList [ look c p | c <- [Nothing, Just White, Just Black], p <- pos]
+    where
+      look c p = if HashMap.lookup p (hashmap brd) == c then 1 else 0
+      pos = indices fresh'grid
+
+
+boardToSparse' :: Board -> [Int]
+boardToSparse' brd = vecAll
   where
     values = map snd $ sort $ GridMap.toList (boardToBoardOld brd)
 
