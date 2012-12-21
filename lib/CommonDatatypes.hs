@@ -9,6 +9,7 @@ class Agent a where
     mkAgent :: Color -> IO a
     setColor :: Color -> a -> a
     makeMove :: a -> MakeMove
+    getAgentName :: a -> String
 
 data GameState = GameState { gtBoard :: Board
                            , gtEvalSelf :: GameState -> Int

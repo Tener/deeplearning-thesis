@@ -92,11 +92,12 @@ evalBoardNet col brd net (ll'b, ll'w) = result
 
       result'p1 = computeTNetworkSigmoid net values
       combine = NC.sumElements
-      result = combine result'p1 -- fixme use 'p2
 
---      net'll :: TNetwork
---      net'll = mkTNetwork [[ll'b]] [[ll'w]]
-      -- result'p2 = computeTNetworkSigmoid net'll result'p1
+      net'll :: TNetwork
+      net'll = mkTNetwork [[ll'w]] [[ll'b]]
+      result'p2 = computeTNetworkSigmoid net'll result'p1
+
+      result = combine result'p2 -- fixme use 'p2
      
 g0 :: (Num a) => [a]
 g0 = [1,0,1,0,0,0,0,0,1,1,1,1,0,1,1,0,1,1,1,0,1,1,1,0,1,0,0,1,0,1,1,1,1,1,0,1,0,0,1,0,0,1,0,1,1,1,0,0,1,1,0,1,0,0,1,0,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,1,0,0,0,0,0,0,0,1,0,1,1,0,0,0,0,1,1,0,0,1,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,1,0,1,0,0,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0]

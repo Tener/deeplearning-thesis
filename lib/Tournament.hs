@@ -53,15 +53,21 @@ data Population a = Population { members :: [(Score,a)] -- members of population
 
 type Score = Double
 
---data TournamentRules = TournamentRules { versusGames :: Int -- number of games played in versus games
---                                       , maximumMoves :: Int -- maximum number of moves allowed in game before calling a draw
---                                       , versusRandomCount :: Int -- number of games played in versusRandom challenge
---                                       }
+getMemberScore :: (Score,a) -> Score
+getMemberScore = fst
+
+data TournamentRules = TournamentRules { versusGames :: Int -- number of games played in versus games
+                                       , maximumMoves :: Int -- maximum number of moves allowed in game before calling a draw
+                                       , versusRandomCount :: Int -- number of games played in versusRandom challenge
+                                       }
 
 -- default instances
 
--- instance Default TournamentRules where
---     def = TournamentRules { versusGames = 10 }
+instance Default TournamentRules where
+    def = TournamentRules { versusGames = 10
+                          , maximumMoves = 300
+                          , versusRandomCount = 50
+                          }
 
 instance Default EvolutionParameters where
     def = EvolutionParameters { populationSize = 5
@@ -120,9 +126,8 @@ tournament agents = do
 playVersusRandom :: (Agent a) => a -> IO (Score)
 playVersusRandom ag = do
   randomer <- mkAgent Black
-  let cutoff = 300
-      games :: (Num a) => a
-      games = 5
+  let cutoff = maximumMoves def
+      games = versusRandomCount def
   winners <- mapConcurrently (\ _ -> (playVersus White cutoff 1 starting'board'default ag (randomer :: AgentRandom))) [1..games]
   
   let won'w = count (Just White)
@@ -130,9 +135,9 @@ playVersusRandom ag = do
       draw  = count Nothing
       count :: (Maybe Color) -> Int
       count x = length $ filter (==x) (map getWinner winners)
-      pcnt'won = (fromIntegral won'w) / games
+      pcnt'won = (fromIntegral won'w) / (fromIntegral games)
                 
-      killed'stones = games * 14 - (sum $ map countBlack winners)
+      killed'stones = (fromIntegral games) * 14 - (sum $ map countBlack winners)
 
       score = pcnt'won * 1000 + (fromIntegral killed'stones)
 
@@ -144,8 +149,8 @@ cleanPopulation params pop = do
   reals <- uniformVector (unhide $ generator $ params) (populationSize params)
   let p = deathProbability params
       c = championScore pop
+      choose (i,el) = if getMemberScore el < c then (U.unsafeIndex reals i) < p else True
       new'mem = map snd $ filter choose (zip [0..] (members pop))
-      choose (i,el) = if fst el < c then (U.unsafeIndex reals i) < p else True
       new'pop = pop { members = new'mem }
   return new'pop
 
@@ -203,23 +208,27 @@ evolution initial'population initial'params = do
                   Just pop -> return pop
                   Nothing -> mkInitialPopulation params
 
-  let go par pop = if stepsToGo par > 0 
-                    then do
-                     pop'new <- evolutionStep par pop
-                     prettyReportPopulation pop'new
-                     if (championScore pop'new) < 200
-                      then print "RESET" >> evolution initial'population initial'params
-                      else go (decSteps par) pop'new
-                    else return pop
+  goEvol initial'population initial'params params population
 
-      decSteps par = par { stepsToGo = (stepsToGo par)-1 }
 
-  go params population
+goEvol initial'population initial'params par pop | stepsToGo par > 0 = do
+  pop'new <- evolutionStep par pop
+  prettyReportPopulation pop'new
+  goEvol initial'population initial'params (decSteps par) pop'new
+                                                 | otherwise = return pop
+
+--  if (championScore pop'new) < 200
+--   then print ("RESET",(championScore pop'new)) >> evolution initial'population initial'params
+--   else 
+
+decSteps par = par { stepsToGo = (stepsToGo par)-1 }
+
 
 ---- printing, reporting etc.
 
 prettyReportPopulation :: (Show a) => (Population a) -> IO ()
 prettyReportPopulation pop = do
-  print ("POPULATION",pop)
+  print ("POPULATION")
+  print ("POPULATION-MEMBER-SCORES", (map getMemberScore (members pop)))
   print ("POPULATION-SCORE",championScore pop)
   
