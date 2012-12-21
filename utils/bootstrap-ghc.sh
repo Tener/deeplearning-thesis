@@ -36,6 +36,7 @@ DEFAULT_PREFIX=/var/tmp/tener/cabal-prefix PREFIX=/var/tmp/tener/cabal-prefix PA
 # abalone
 
 cd ~/
+cabal update
 cabal --prefix=/var/tmp/tener/cabal-prefix install cabal-install
 cabal --prefix=/var/tmp/tener/cabal-prefix install -j cabal-dev
 rm -rfv /var/tmp/tener/abalone
