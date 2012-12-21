@@ -22,28 +22,64 @@ data AgentNN = AgentNN { net :: TNetwork
                        , col :: Color
                        } deriving (Show, Ord, Eq)
 
-instance Agent AgentNN where
-    mkAgent col = do
---      (!neuralNetwork, sizes) <- parseNetFromFile'
+data AgentNNSimple = AgentNNSimple { netS :: TNetwork
+                                   , colS :: Color
+                                   } deriving (Show, Ord, Eq)
+
+data AgentNNSimpleLL = AgentNNSimpleLL { netSLL :: TNetwork
+                                       , colSLL :: Color
+                                       } deriving (Show, Ord, Eq)
+  
+instance Agent AgentNNSimple where
+    mkAgent colo = do
       let (!neuralNetwork, sizes) = myUnsafeNet
-      let ll = (0, replicate (last sizes) 1)
-      return (AgentNN neuralNetwork ll col)
+      return (AgentNNSimple neuralNetwork colo)
+    makeMove (AgentNNSimple neuralNetwork colo) brd = do
+      let gst = GameState brd (\ g -> doubleToEvalInt $ evalBoardNetOnePass (gtColorNow g) (gtBoard g) neuralNetwork)
+                          colo colo
+          depth = 1
+          (princ, score) = GTreeAlgo.negascout gst depth
+      print ("AgentNNSimple", score)
+      return (gtBoard $ head $ tail $ princ)
+
+instance Agent AgentNNSimpleLL where
+    mkAgent colo = do
+      let (!neuralNetwork, sizes) = myUnsafeNetLL
+      return (AgentNNSimpleLL neuralNetwork colo)
+    makeMove (AgentNNSimpleLL neuralNetwork colo) brd = do
+      let gst = GameState brd (\ g -> doubleToEvalInt $ evalBoardNetOnePass (gtColorNow g) (gtBoard g) neuralNetwork)
+                          colo colo
+          depth = 5
+          (princ, score) = GTreeAlgo.negascout gst depth
+      print ("AgentNNSimpleLL", score)
+      return (gtBoard $ head $ tail $ princ)
+
+instance Agent AgentNN where
+    mkAgent colo = do
+      let (!neuralNetwork, sizes) = myUnsafeNet
+          [ll] = lastLayerTN $ fst myUnsafeNetLL
+--      let ll = (0, replicate (last sizes) 1)
+
+      return (AgentNN neuralNetwork ll colo)
     makeMove agent brd = do
       let gst = GameState brd (\ g -> doubleToEvalInt $ evalBoardNet (gtColorNow g) (gtBoard g) (net agent) (lastLayer agent)) 
                               (col agent) (col agent)
-          depth = 1
+          depth = 3
           (princ, score) = GTreeAlgo.negascout gst depth
-      -- when (score /= 0) (print ("agent-nn",score,lastLayer agent,col agent))
       return (gtBoard $ head $ tail $ princ)
 
 doubleToEvalInt :: Double -> Int
-doubleToEvalInt d = round (d * 1000000)
+doubleToEvalInt d = round (d * 10000000)
 
-parseNetFromFile'' = ioMemo' (parseNetFromFile `fmap` readFile "nn.txt")
-parseNetFromFile' = join parseNetFromFile''
+parseNetFromFile'' fp = ioMemo' (parseNetFromFile `fmap` readFile fp)
+parseNetFromFile' = join $ parseNetFromFile'' "nn.txt"
+parseNetFromFile'LL = join $ parseNetFromFile'' "nn_ll.txt"
 
 {-# NOINLINE myUnsafeNet #-}
 myUnsafeNet = unsafePerformIO parseNetFromFile'
+
+{-# NOINLINE myUnsafeNetLL #-}
+myUnsafeNetLL = unsafePerformIO parseNetFromFile'LL
 
 parseNetFromFile :: String -> (TNetwork, [Int])
 parseNetFromFile input = asserts $ (result, sizes) -- (length weights, length weights'split, length biases, neuronCount, layerCount, sizes)
@@ -98,6 +134,13 @@ evalBoardNet col brd net (ll'b, ll'w) = result
       result'p2 = computeTNetworkSigmoid net'll result'p1
 
       result = combine result'p2 -- fixme use 'p2
+
+evalBoardNetOnePass :: Color -> Board -> TNetwork -> Double
+evalBoardNetOnePass col brd net = result
+    where
+      brdEval = if col == White then brd else negateBoard brd
+      values = boardToSparseNN brdEval
+      result = NC.sumElements $ computeTNetworkSigmoid net values
      
 g0 :: (Num a) => [a]
 g0 = [1,0,1,0,0,0,0,0,1,1,1,1,0,1,1,0,1,1,1,0,1,1,1,0,1,0,0,1,0,1,1,1,1,1,0,1,0,0,1,0,0,1,0,1,1,1,0,0,1,1,0,1,0,0,1,0,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,1,0,0,0,0,0,0,0,1,0,1,1,0,0,0,0,1,1,0,0,1,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,1,0,1,0,0,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0]

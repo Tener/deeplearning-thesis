@@ -1,6 +1,9 @@
 
 build:
-	cabal-dev install -j -fcairo
+	cabal-dev install -f-cairo -funsafe
+
+build-par:
+	cabal-dev install -j -f-cairo -funsafe
 
 hmatrix:
 	cabal-dev install -j -funsafe hmatrix --enable-library-profiling
@@ -14,7 +17,7 @@ test:
 prof:
 	cabal-dev install -j -funsafe -f-cairo --enable-executable-profiling --enable-library-profiling && cabal-dev/bin/abalone +RTS -sstderr -P
 run:
-	cabal-dev install -j -funsafe -f-cairo && cabal-dev/bin/abalone +RTS -sstderr -N
+	cabal-dev install -j -funsafe -f-cairo && cabal-dev/bin/abalone +RTS -sstderr -N | tee abalone.log.txt
 
 tournament:
 	cabal-dev install -j -funsafe -f-cairo && cabal-dev/bin/tournament +RTS -sstderr -N | tee tournament.log.txt

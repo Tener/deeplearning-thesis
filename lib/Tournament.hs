@@ -65,12 +65,12 @@ data TournamentRules = TournamentRules { versusGames :: Int -- number of games p
 
 instance Default TournamentRules where
     def = TournamentRules { versusGames = 10
-                          , maximumMoves = 300
-                          , versusRandomCount = 50
+                          , maximumMoves = 1000
+                          , versusRandomCount = 20
                           }
 
 instance Default EvolutionParameters where
-    def = EvolutionParameters { populationSize = 5
+    def = EvolutionParameters { populationSize = 20
                               , championSquad = 3
                               , deathProbability = 0.9
                               , mutationForce = 0.1
@@ -82,24 +82,29 @@ instance Default EvolutionParameters where
 ----- Simplified code
 
 -- | run a single game for maximum given number of turns. takes the color of current player.
-playVersus :: (Agent a, Agent b) => Color -> Int -> Int -> Board -> a -> b -> IO Board
-playVersus color'now cutoff cnt brd a'fst a'snd | (isFinished brd || cnt == cutoff) = do
-  hPutStrLn stderr (printf "[%d] Game is finished after %d moves!" cutoff cnt)
-  hPutStrLn stderr (printf "[%d] Winner: %s" cutoff (show (getWinner brd)))
-  -- save finished board to svg
-  -- saveBoard brd (printf "svg/finished-board-%d-%06d.svg" cutoff cnt)
+playVersus :: (Agent a, Agent b) => String -> Color -> Int -> Int -> Board -> a -> b -> IO Board
+playVersus game'id color'now cutoff cnt brd a'fst a'snd | (isFinished brd || cnt == cutoff) = do
+  hPutStrLn stderr (printf "[playVersus:%s] [%d] Game is finished after %d moves!" game'id cutoff cnt)
+  hPutStrLn stderr (printf "[playVersus:%s] [%d] Winner: %s" game'id cutoff (show (getWinner brd)))
   return brd
 
                      | otherwise = do
   brd'new <- makeMove a'fst brd
-  -- save board every 1000 moves
-  -- when (cnt `mod` 1000 == 0) (saveBoard brd (printf "svg/playing-board-%d-%06d.svg" cutoff cnt))
+  putStrLn (printf "[playVersus:%s:%d] black: %d white: %d" game'id cutoff (countBlack brd'new) (countWhite brd'new))
+  playVersus game'id (negColor color'now) cutoff (cnt+1) brd'new a'snd a'fst
 
-  -- sanity check -- disable for honest players
-  -- unless (brd'new `elem` getMoves color'now brd) (error ("Invalid move by player: " ++ show color))
+-- | run a single game for maximum given number of turns. takes the color of current player. returns whole history of moves.
+playVersusTrace :: (Agent a, Agent b) => String -> Color -> Int -> Int -> Board -> a -> b -> IO (Maybe Color, [Board])
+playVersusTrace game'id color'now cutoff cnt brd a'fst a'snd | (isFinished brd || cnt == cutoff) = do
+  hPutStrLn stderr (printf "[playVersusTrace:%s] [%d] Game is finished after %d moves!" game'id cutoff cnt)
+  hPutStrLn stderr (printf "[playVersusTrace:%s] [%d] Winner: %s" game'id cutoff (show (getWinner brd)))
+  return (getWinner brd, [brd])
+                                                             | otherwise = do
+  brd'new <- makeMove a'fst brd
+  putStrLn (printf "[playVersusTrace:%s:%d] black: %d white: %d" game'id cutoff (countBlack brd'new) (countWhite brd'new))
+  (c, bs) <- playVersusTrace game'id (negColor color'now) cutoff (cnt+1) brd'new a'snd a'fst
+  return (c, (brd:bs))
 
-  putStrLn (printf "[%d] black: %d white: %d" cutoff (countBlack brd'new) (countWhite brd'new))
-  playVersus (negColor color'now) cutoff (cnt+1) brd'new a'snd a'fst
 
 -- run simple single game, AgentRandom vs. AgentNN
 simpleGame :: Int -> IO Board
@@ -107,7 +112,14 @@ simpleGame cutoff = do
   ag'black <- mkAgent Black
   ag'white <- mkAgent White
 
-  playVersus White cutoff 1 starting'board'default (ag'white :: AgentRandom) (ag'black :: AgentNN)
+  playVersus "simpleGame" White cutoff 1 starting'board'belgianDaisy (ag'white :: AgentNNSimple) (ag'black :: AgentRandom)
+
+simpleGameTrace :: Int -> IO (Maybe Color, [Board])
+simpleGameTrace cutoff = do
+  ag'black <- mkAgent Black
+  ag'white <- mkAgent White
+
+  playVersusTrace "simpleGameTrace" White cutoff 1 starting'board'belgianDaisy (ag'white :: AgentNNSimple) (ag'black :: AgentRandom)
 
 ------------------------------
 
@@ -128,7 +140,7 @@ playVersusRandom ag = do
   randomer <- mkAgent Black
   let cutoff = maximumMoves def
       games = versusRandomCount def
-  winners <- mapConcurrently (\ _ -> (playVersus White cutoff 1 starting'board'default ag (randomer :: AgentRandom))) [1..games]
+  winners <- mapConcurrently (\ game'id -> (playVersus (show game'id) White cutoff 1 starting'board'default ag (randomer :: AgentRandom))) [1..games]
   
   let won'w = count (Just White)
       won'b = count (Just Black)

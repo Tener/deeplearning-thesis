@@ -31,6 +31,11 @@ Executable abalone
   Build-depends:          base, abalone, async, time, process
   Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -threaded
 
+Executable trace-games
+  Main-is:                src/trace-games.hs
+  Build-depends:          base, abalone, async, time, process
+  Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -threaded
+
 Executable tournament
   Main-is:                src/tournament.hs
   Build-depends:          base, abalone, data-default
