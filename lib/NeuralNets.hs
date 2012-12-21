@@ -2,36 +2,28 @@
 
 module NeuralNets where
 
-import AI.HNN.FF.Network -- from hnn-0.2 package
-import qualified Data.Vector.Unboxed as U
-
-
 import Control.Monad(when)
 import qualified Data.Tree.Game_tree.Negascout as GTreeAlgo
 import Text.Printf
 import Data.List.Split(splitPlaces)
+import qualified Numeric.Container as NC
 
 import Board
 import CommonDatatypes
+import MinimalNN
 
 type LastLayer = (Double,[Double])
 
-data AgentNN = AgentNN { 
-                         net :: Network Double
+data AgentNN = AgentNN { net :: TNetwork
                        , lastLayer :: LastLayer
                        , col :: Color
-                       } deriving (Eq, Show, Ord)
+                       } deriving (Show, Ord, Eq)
 
 
 
 instance Agent AgentNN where
     mkAgent col = do
       (neuralNetwork, sizes) <- parseNetFromFile'
-#if TRYRANDOMNETWORK
-      -- check how random network is doing
-      neuralNetwork <- AI.HNN.FF.Network.createNetwork (3*61) [100]
-#endif
-
       let ll = (0, replicate (last sizes) 1)
       return (AgentNN neuralNetwork ll col)
     makeMove agent brd = do
@@ -47,7 +39,7 @@ doubleToEvalInt d = round (d * 1000000)
 
 parseNetFromFile' = parseNetFromFile `fmap` readFile "nn.txt"
 
-parseNetFromFile :: String -> (Network Double, [Int])
+parseNetFromFile :: String -> (TNetwork, [Int])
 parseNetFromFile input = asserts $ (result, sizes) -- (length weights, length weights'split, length biases, neuronCount, layerCount, sizes)
   where input'lines@(sizes'row : rest'rows) = lines input
         sizes = readIntsRow sizes'row -- sizes in first line
@@ -64,10 +56,10 @@ parseNetFromFile input = asserts $ (result, sizes) -- (length weights, length we
         weights'split = splitPlaces sizes weights
 
         --- weights, biases, neuronCount, layerCount, sizes
-        biases'neg = (map (map negate) biases)  -- must negate biases -- different from matlab
+        -- biases'neg = (map (map negate) biases)  -- must negate biases -- different from matlab -- not any more
 
         result = network
-        network = loadNetwork biases'neg weights'split
+        network = mkTNetwork weights'split biases
 
         asserts r | garbage /= [] = error (printf "parseNetFromFile: garbage not empty: %d elements" (length garbage))
                   | length weights /= neuronCount = error (printf "parseNetFromFile: too little weights: %d (should be %d)" (length weights) neuronCount)
@@ -81,7 +73,7 @@ readDoublesRow row = map read (words row)
 readIntsRow :: String -> [Int]
 readIntsRow row = map read (words row)
 
-evalBoardNet :: Color -> Board -> Network Double -> LastLayer -> Double
+evalBoardNet :: Color -> Board -> TNetwork -> LastLayer -> Double
 evalBoardNet col brd net (ll'b, ll'w) = result
     where
       brdEval = if col == White then brd else negateBoard brd
@@ -92,14 +84,14 @@ evalBoardNet col brd net (ll'b, ll'w) = result
 
       values = map i2d $ boardToSparse brdEval
 
-      net'll :: Network Double
-      net'll = loadNetwork [[ll'b]] [[ll'w]]
-      combine = U.sum -- assumed to work on single value here
-      result'p1 = computeNetworkWith net sigmoid (U.fromList values)
-      result'p2 = computeNetworkWith (net'll) sigmoid result'p1
-      result = combine result'p2
-     
+      result'p1 = computeTNetworkSigmoid net (NC.fromList values)
+      combine = NC.sumElements
+      result = combine result'p1 -- fixme use 'p2
 
+--      net'll :: TNetwork
+--      net'll = mkTNetwork [[ll'b]] [[ll'w]]
+      -- result'p2 = computeTNetworkSigmoid net'll result'p1
+     
 g0 :: (Num a) => [a]
 g0 = [1,0,1,0,0,0,0,0,1,1,1,1,0,1,1,0,1,1,1,0,1,1,1,0,1,0,0,1,0,1,1,1,1,1,0,1,0,0,1,0,0,1,0,1,1,1,0,0,1,1,0,1,0,0,1,0,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,1,0,0,0,0,0,0,0,1,0,1,1,0,0,0,0,1,1,0,0,1,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,1,0,1,0,0,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0]
 
