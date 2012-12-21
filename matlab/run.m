@@ -8,6 +8,7 @@ addpath(genpath('..'));
 %games = games_sparse;
 
 games = dlmread('/home/tener/dokumenty/ii/magisterka/abalone/data/games-all.sparse.csv');
+%games = dlmread('/home/tener/dokumenty/ii/magisterka/abalone/data/games.raptor.700-inc-sparse.csv');
 games_cnt = floor(size(games,1)/100)*100;
 games = games(1:games_cnt,:);
 

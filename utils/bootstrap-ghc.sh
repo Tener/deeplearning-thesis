@@ -33,6 +33,8 @@ export PREFIX=/var/tmp/tener/cabal-prefix
 export PATH=/var/tmp/tener/opt/bin:/var/tmp/tener/cabal-prefix/bin/:$PATH
 DEFAULT_PREFIX=/var/tmp/tener/cabal-prefix PREFIX=/var/tmp/tener/cabal-prefix PATH=/var/tmp/tener/opt/bin:$PATH sh bootstrap.sh 
 
+# abalone
+
 cd ~/
 cabal --prefix=/var/tmp/tener/cabal-prefix install cabal-install
 cabal --prefix=/var/tmp/tener/cabal-prefix install -j cabal-dev
@@ -41,6 +43,9 @@ git clone ~/abalone /var/tmp/tener/abalone
 cd /var/tmp/tener/abalone
 cabal-dev add-source ~/devel/hnn/0.2.0.0.20121218/hnn-0.2.0.0.20121218.tar.gz ~/devel/hashable/1.2.0.2.20121217/hashable-1.2.0.2.20121217.tar.gz
 cabal-dev install -j -f-cairo
+
+# execute program
+
 mkdir -p ./data
 rm -f nn.txt
 ln -s ~/nn.txt
