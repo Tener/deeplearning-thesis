@@ -18,9 +18,9 @@ Library
   Hs-source-dirs:         lib
   Exposed-modules:        Board, Agent, CairoRender, Simulation, 
                           MonteCarloTS, CommonDatatypes, NeuralNets,
-                          Tournament, Utils
+                          Tournament, Utils, MinimalNN
   Build-depends:          base, mwc-random, grid == 2.0, process, containers, hashmap, game-tree, split, hashable == 1.2.0.2.20121217, data-default, async,
-                          hnn == 0.2.0.0.20121218, vector
+                          hnn == 0.2.0.0.20121218, vector, hmatrix
   if flag(cairo)
      build-depends: cairo
      cpp-options: -DCAIRO
