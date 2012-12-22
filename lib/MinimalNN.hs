@@ -28,7 +28,7 @@ lastLayerTN :: TNetwork -> [(Double,[Double])]
 lastLayerTN tn = zip b w
     where
       b = Vector.toList $ last $ biases $ tn
-      w = Matrix.toLists $ last $ weights $ tn
+      w = Matrix.toLists $ Matrix.trans $ last $ weights $ tn
 
 sigmoid :: Floating a => a -> a
 sigmoid !x = 1 / (1 + exp (-x))
