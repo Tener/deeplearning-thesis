@@ -1,0 +1,28 @@
+<a href="@{BoardRenderR boardRepr}">
+   <img width="600" src="@{BoardRenderR boardRepr}">
+
+<table border="1">
+  <tr>
+   $forall (desc,val) <- eval board White
+    <td> #{desc} : #{val}
+  <tr>
+   $forall (desc,val) <- eval board Black
+    <td> #{desc} : #{val}
+
+<p> Moves for white:
+<table border="1">
+   $forall b <- moves'white
+    <tr>
+      <td> <a href="@{BoardR (boardToLink b)}">
+            <img width="400" src="@{BoardRenderR (boardToLink b)}">
+     $forall (desc,val) <- eval b White
+      <td> #{desc} : #{val}
+
+<p> Moves for black:
+<table border="1">
+   $forall b <- moves'black
+    <tr>
+      <td> <a href="@{BoardR (boardToLink b)}">
+            <img width="400" src="@{BoardRenderR (boardToLink b)}">
+     $forall (desc,val) <- eval b Black
+      <td> #{desc} : #{val}

@@ -1,0 +1,8 @@
+/static StaticR Static getStatic
+
+/favicon.ico FaviconR GET
+/robots.txt RobotsR GET
+
+/ HomeR GET POST
+/board/#Text BoardR GET
+/boardRender/#Text BoardRenderR GET

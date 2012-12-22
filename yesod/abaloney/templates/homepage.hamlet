@@ -1,0 +1,13 @@
+<h1>_{MsgHello}
+
+<p> 
+ <a href="@{BoardR (boardRepr starting'board'default)}">
+   starting'board'default
+
+<p>
+ <a href="@{BoardR (boardRepr starting'board'death)}">
+   starting'board'death
+
+<p>
+ <a href="@{BoardR (boardRepr starting'board'belgianDaisy)}">
+   starting'board'belgianDaisy
