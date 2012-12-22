@@ -7,6 +7,8 @@ import qualified Data.Tree.Game_tree.Negascout as GTreeAlgo
 import Text.Printf
 import Data.List.Split(splitPlaces)
 import qualified Numeric.Container as NC
+import qualified Data.Packed.Vector as Vector
+
 
 import System.IO.Memoize (ioMemo')
 import System.IO.Unsafe
@@ -41,6 +43,17 @@ instance Agent AgentNNSimple where
           (princ, score) = GTreeAlgo.negascout gst depth
       print ("AgentNNSimple", score)
       return (gtBoard $ head $ tail $ princ)
+    evaluateBoard (AgentNNSimple neuralNetwork colo) brd = 
+        [("int" <> valInt)
+        ,("bare" <> valDbl)
+        ,("network",valNet)]
+     where
+       valInt = doubleToEvalInt $ valDbl
+       valDbl = evalBoardNetOnePass colo brd neuralNetwork
+       brdNeg = if colo == White then brd else negateBoard brd
+       valNet = unwords $ map (printf "%0.2f") $ Vector.toList $ computeTNetworkSigmoid neuralNetwork (boardToSparseNN brdNeg)
+       s <> v = (s, (show v))
+                
 
 instance Agent AgentNNSimpleLL where
     mkAgent colo = do
@@ -57,9 +70,12 @@ instance Agent AgentNNSimpleLL where
 instance Agent AgentNN where
     mkAgent colo = do
       let (!neuralNetwork, sizes) = myUnsafeNet
-          [ll] = lastLayerTN $ fst myUnsafeNetLL
---      let ll = (0, replicate (last sizes) 1)
+--          [ll] = lastLayerTN $ fst myUnsafeNetLL
+      let ll = (0, replicate (last sizes) 1)
 
+--      print ("LL",ll)
+--      print ("LLNET",myUnsafeNetLL)
+--      print ("MYNET",myUnsafeNet)
       return (AgentNN neuralNetwork ll colo)
     makeMove agent brd = do
       let gst = GameState brd (\ g -> doubleToEvalInt $ evalBoardNet (gtColorNow g) (gtBoard g) (net agent) (lastLayer agent)) 
@@ -119,21 +135,16 @@ evalBoardNet :: Color -> Board -> TNetwork -> LastLayer -> Double
 evalBoardNet col brd net (ll'b, ll'w) = result
     where
       brdEval = if col == White then brd else negateBoard brd
-
-      i2d 1 = 1.0
-      i2d 0 = 0.0
-      i2d _ = error "This function is not defined for values other than 1 and 0."
-
       values = boardToSparseNN brdEval
-
-      result'p1 = computeTNetworkSigmoid net values
-      combine = NC.sumElements
 
       net'll :: TNetwork
       net'll = mkTNetwork [[ll'w]] [[ll'b]]
+
+      result'p1 = computeTNetworkSigmoid net values
       result'p2 = computeTNetworkSigmoid net'll result'p1
 
-      result = combine result'p2 -- fixme use 'p2
+      combine = NC.sumElements
+      result = combine result'p2
 
 evalBoardNetOnePass :: Color -> Board -> TNetwork -> Double
 evalBoardNetOnePass col brd net = result

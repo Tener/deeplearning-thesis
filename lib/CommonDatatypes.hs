@@ -10,6 +10,7 @@ class Agent a where
     setColor :: Color -> a -> a
     makeMove :: a -> MakeMove
     getAgentName :: a -> String
+    evaluateBoard :: a -> Board -> [(String,String)]
 
 data GameState = GameState { gtBoard :: Board
                            , gtEvalSelf :: GameState -> Int

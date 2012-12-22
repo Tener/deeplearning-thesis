@@ -112,14 +112,14 @@ simpleGame cutoff = do
   ag'black <- mkAgent Black
   ag'white <- mkAgent White
 
-  playVersus "simpleGame" White cutoff 1 starting'board'belgianDaisy (ag'white :: AgentNNSimple) (ag'black :: AgentRandom)
+  playVersus "simpleGame" White cutoff 1 starting'board'belgianDaisy (ag'white :: AgentRandom) (ag'black :: AgentRandom)
 
 simpleGameTrace :: Int -> IO (Maybe Color, [Board])
 simpleGameTrace cutoff = do
   ag'black <- mkAgent Black
   ag'white <- mkAgent White
 
-  playVersusTrace "simpleGameTrace" White cutoff 1 starting'board'belgianDaisy (ag'white :: AgentNNSimple) (ag'black :: AgentRandom)
+  playVersusTrace "simpleGameTrace" White cutoff 1 starting'board'belgianDaisy (ag'white :: AgentRandom) (ag'black :: AgentRandom)
 
 ------------------------------
 
