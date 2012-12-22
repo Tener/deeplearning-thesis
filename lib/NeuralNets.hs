@@ -62,7 +62,7 @@ instance Agent AgentNNSimpleLL where
     makeMove (AgentNNSimpleLL neuralNetwork colo) brd = do
       let gst = GameState brd (\ g -> doubleToEvalInt $ evalBoardNetOnePass (gtColorNow g) (gtBoard g) neuralNetwork)
                           colo colo
-          depth = 5
+          depth = 3
           (princ, score) = GTreeAlgo.negascout gst depth
       print ("AgentNNSimpleLL", score)
       return (gtBoard $ head $ tail $ princ)
@@ -70,12 +70,9 @@ instance Agent AgentNNSimpleLL where
 instance Agent AgentNN where
     mkAgent colo = do
       let (!neuralNetwork, sizes) = myUnsafeNet
---          [ll] = lastLayerTN $ fst myUnsafeNetLL
-      let ll = (0, replicate (last sizes) 1)
+          [ll] = lastLayerTN $ fst myUnsafeNetLL
+--          ll' = (0, replicate (last sizes) 1)
 
---      print ("LL",ll)
---      print ("LLNET",myUnsafeNetLL)
---      print ("MYNET",myUnsafeNet)
       return (AgentNN neuralNetwork ll colo)
     makeMove agent brd = do
       let gst = GameState brd (\ g -> doubleToEvalInt $ evalBoardNet (gtColorNow g) (gtBoard g) (net agent) (lastLayer agent)) 

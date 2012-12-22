@@ -378,6 +378,17 @@ boardToSparseNN brd = V.fromList [ look c p | c <- [Nothing, Just White, Just Bl
       look c p = if HashMap.lookup p (hashmap brd) == c then 1 else 0
       pos = indices fresh'grid
 
+boardToDenseNN :: Board -> V.Vector Double
+boardToDenseNN brd = V.fromList [ look p | p <- pos]
+    where
+      look p = fieldToD (HashMap.lookup p (hashmap brd))
+      pos = indices fresh'grid
+
+      fieldToD :: Maybe Color -> Double
+      fieldToD Nothing = 0
+      fieldToD (Just White) = 1
+      fieldToD (Just Black) = 2
+
 
 boardToSparse' :: Board -> [Int]
 boardToSparse' brd = vecAll
