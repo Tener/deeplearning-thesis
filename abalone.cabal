@@ -18,7 +18,7 @@ Library
   Hs-source-dirs:         lib
   Exposed-modules:        Board, Agent, CairoRender, Simulation, 
                           MonteCarloTS, CommonDatatypes, NeuralNets,
-                          Tournament, Utils, MinimalNN
+                          Tournament, Utils, MinimalNN, Constraints
   Build-depends:          base, mwc-random, grid == 2.0, process, containers, hashmap, game-tree, split, hashable == 1.2.0.2.20121217, data-default, async,
                           hnn == 0.2.0.0.20121218, vector, hmatrix, io-memoize, cairo
 --  if flag(cairo)
@@ -40,6 +40,12 @@ Executable tournament
   Main-is:                src/tournament.hs
   Build-depends:          base, abalone, data-default
   Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -threaded
+
+Executable constraints-single-random-neuron
+  Main-is:                src/constraints-single-random-neuron.hs
+  Build-depends:          base, abalone
+  Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -threaded
+
 
 Executable dense-to-sparse
   Main-is:                src/dense-to-sparse.hs
