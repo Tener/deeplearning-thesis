@@ -12,7 +12,7 @@ function nnsave_to_file_full(net, filename)
     % write biases in 'layer count' rows
     biases = net.b;
     for i = 1 : net.n-1;
-        dlmwrite(filename, biases{i}', 'delimiter', ' ', '-append');
+        dlmwrite(filename, biases{i}', 'delimiter', ' ', '-append'); % '
     end
     
     % write weights in 'neuron count' rows

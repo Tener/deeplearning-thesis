@@ -35,13 +35,14 @@ data AgentNNSimpleLL = AgentNNSimpleLL { netSLL :: TNetwork
 instance Agent AgentNNSimple where
     mkAgent colo = do
       let (!neuralNetwork, sizes) = myUnsafeNet
+      print ("Agent created","AgentNNSimple")
       return (AgentNNSimple neuralNetwork colo)
-    makeMove (AgentNNSimple neuralNetwork colo) brd = do
-      let gst = GameState brd (\ g -> doubleToEvalInt $ evalBoardNetOnePass (gtColorNow g) (gtBoard g) neuralNetwork)
+    makeMove ag@(AgentNNSimple neuralNetwork colo) brd = do
+      let gst = GameState brd (\ g -> doubleToEvalInt $ evalBoardNetOnePassN 1 (gtColorNow g) (gtBoard g) neuralNetwork)
                           colo colo
           depth = 1
           (princ, score) = GTreeAlgo.negascout gst depth
-      print ("AgentNNSimple", score)
+      print ("AgentNNSimple", score, (take 3 $ evaluateBoard ag brd))
       return (gtBoard $ head $ tail $ princ)
     evaluateBoard (AgentNNSimple neuralNetwork colo) brd = 
         [("int" <> valInt)
@@ -49,9 +50,9 @@ instance Agent AgentNNSimple where
         ,("network",valNet)]
      where
        valInt = doubleToEvalInt $ valDbl
-       valDbl = evalBoardNetOnePass colo brd neuralNetwork
+       valDbl = evalBoardNetOnePassN 1 colo brd neuralNetwork
        brdNeg = if colo == White then brd else negateBoard brd
-       valNet = unwords $ map (printf "%0.2f") $ Vector.toList $ computeTNetworkSigmoid neuralNetwork (boardToSparseNN brdNeg)
+       valNet = unwords $ map (printf "%0.2f") $ Vector.toList $ computeTNetworkSigmoidSteps 1 neuralNetwork (boardToSparseNN brdNeg)
        s <> v = (s, (show v))
                 
 
@@ -77,7 +78,7 @@ instance Agent AgentNN where
     makeMove agent brd = do
       let gst = GameState brd (\ g -> doubleToEvalInt $ evalBoardNet (gtColorNow g) (gtBoard g) (net agent) (lastLayer agent)) 
                               (col agent) (col agent)
-          depth = 3
+          depth = 1
           (princ, score) = GTreeAlgo.negascout gst depth
       return (gtBoard $ head $ tail $ princ)
 
@@ -85,7 +86,7 @@ doubleToEvalInt :: Double -> Int
 doubleToEvalInt d = round (d * 10000000)
 
 parseNetFromFile'' fp = ioMemo' (parseNetFromFile `fmap` readFile fp)
-parseNetFromFile' = join $ parseNetFromFile'' "nn.txt"
+parseNetFromFile' = join $ parseNetFromFile'' "/home/tener/abalone-nn/nn_183.txt-1000-1000-1000-1000"
 parseNetFromFile'LL = join $ parseNetFromFile'' "nn_ll.txt"
 
 {-# NOINLINE myUnsafeNet #-}
@@ -149,6 +150,13 @@ evalBoardNetOnePass col brd net = result
       brdEval = if col == White then brd else negateBoard brd
       values = boardToSparseNN brdEval
       result = NC.sumElements $ computeTNetworkSigmoid net values
+
+evalBoardNetOnePassN :: Int -> Color -> Board -> TNetwork -> Double
+evalBoardNetOnePassN steps col brd net = result
+    where
+      brdEval = if col == White then brd else negateBoard brd
+      values = boardToSparseNN brdEval
+      result = NC.sumElements $ computeTNetworkSigmoidSteps steps net values
      
 g0 :: (Num a) => [a]
 g0 = [1,0,1,0,0,0,0,0,1,1,1,1,0,1,1,0,1,1,1,0,1,1,1,0,1,0,0,1,0,1,1,1,1,1,0,1,0,0,1,0,0,1,0,1,1,1,0,0,1,1,0,1,0,0,1,0,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,1,0,0,0,0,0,0,0,1,0,1,1,0,0,0,0,1,1,0,0,1,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,1,0,1,0,0,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0]

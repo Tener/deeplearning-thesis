@@ -10,17 +10,19 @@ addpath(genpath('/home/tener/dokumenty/ii/magisterka/DeepLearnToolbox'));
 %games = dlmread('/home/tener/dokumenty/ii/magisterka/abalone/data/trace.spars.2M.csv');
 %games = dlmread('/home/tener/dokumenty/ii/magisterka/abalone/data-good/games-sparse-random-simple-lvl1.csv');
 
-games = dlmread('/home/tener/dokumenty/ii/magisterka/abalone/data/trace.dense.2M.csv');
+games = dlmread('/home/tener/dokumenty/ii/magisterka/abalone/data/trace.dense.1M.csv');
 games_cnt = floor(size(games,1)/100)*100;
 games = games(1:games_cnt,:);
-train_x = games;
-run_trainer(train_x);
+%train_x = games;
+run_trainer(games);
+%clear all; close all; clc;
 
-games = dlmread('/home/tener/dokumenty/ii/magisterka/abalone/data/trace.spars.2M.csv');
+games = dlmread('/home/tener/dokumenty/ii/magisterka/abalone/data/trace.spars.1M.csv');
 games_cnt = floor(size(games,1)/100)*100;
 games = games(1:games_cnt,:);
 train_x = games;
 run_trainer(train_x);
+%clear all; close all; clc;
 
 
 %games_y = games_y(1:games_cnt,:);

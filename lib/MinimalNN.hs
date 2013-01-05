@@ -19,6 +19,10 @@ instance Ord (Matrix Double) where
 computeTNetworkSigmoid :: TNetwork -> Vector Double -> Vector Double
 computeTNetworkSigmoid (TNetwork ws bs) inp0 = foldl (\ inp (w,b) -> cmap sigmoid ((inp `vXm` w) `add` b) ) inp0 (zip ws bs)
 
+computeTNetworkSigmoidSteps :: Int -> TNetwork -> Vector Double -> Vector Double
+computeTNetworkSigmoidSteps steps (TNetwork ws bs) inp0 = foldl (\ inp (w,b) -> cmap sigmoid ((inp `vXm` w) `add` b) ) inp0 (take steps $ zip ws bs)
+
+
 mkTNetwork :: [[[Double]]] -> [[Double]] -> TNetwork
 mkTNetwork w b | length w == length b = TNetwork (map (Matrix.trans . Matrix.fromLists) w) (map Vector.fromList b)
                | otherwise = error "Inequal number of layers for biases and weights"
