@@ -7,7 +7,7 @@ Default: &defaults
 
 Development:
   <<: *defaults
-  approot: "http://10.20.30.4:3000"
+#  approot: "http://10.20.30.4:3000"
 
 Testing:
   <<: *defaults
