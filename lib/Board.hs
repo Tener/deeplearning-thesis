@@ -3,6 +3,8 @@
 module Board where
 
 import Data.List (sortBy, nubBy, groupBy, nub, sort, group, intercalate)
+import qualified Data.List.Split as Split
+import Data.Maybe (catMaybes)
 import Data.Ord
 import System.IO
 
@@ -154,6 +156,16 @@ rules = [ ("here", ways'straight, here,    move'here)
                        dball, next 1 dball]
        move'diag3   = [empty, next 1 empty, next 2 empty, 
                        dball, next 1 dball, next 2 dball]
+
+getMovesDir col brd way pos ruleset = [ (name,runMove col brd pos way setter)
+                                      | (name,ways,rule,setter) <- ruleset
+                                      , HashMap.lookup pos (hashmap brd) == Just col
+         
+                                      , way'd <- ways
+                                      , way'd == way
+                                      
+                                      , tryMatch col brd pos way rule
+                                      ]
 
 getMoves col brd = -- nub
                    [ runMove col brd idx way setter | 
@@ -312,6 +324,57 @@ starting'board'belgianDaisy = boardOldToBoard $ GridMap.lazyGridMap fresh'grid b
       w = Just White
       e = Nothing
 
+boardFromBalls balls = boardOldToBoard $ GridMap.lazyGridMap fresh'grid balls
+
+--- functions for working with textual game notation used by Aba-Pro and others
+
+-- boardFromCoords c'black c'white = undefined
+-- b0 = boardFromCoords "i9 h9 g9 h8 g8 f8 h7 g7 f7 g6" "f3 f4 f5 f6 e2 e4 e5 e6 d2 d4 d5 c3 c4"
+-- textcoords = concat ["i5 i6 i7 i8 i9             "
+--                     ,"h4 h5 h6 h7 h8 h9          "
+--                     ,"g3 g4 g5 g6 g7 g8 g9       "
+--                     ,"f2 f3 f4 f5 f6 f7 f8 f9    "
+--                     ,"e1 e2 e3 e4 e5 e6 e7 e8 e9 "
+--                     ,"d2 d3 d4 d5 d6 d7 d8 d9    "
+--                     ,"c3 c4 c5 c6 c7 c8 c9       "
+--                     ,"b4 b5 b6 b7 b8 b9          "
+--                     ,"a5 a6 a7 a8 a9             "
+--                     ]
+
+
+textcoords = concat $ 
+             [g n 'a' l | (n,l) <- zip [1..5] ['e'..]] ++ 
+             [g n l 'i' | (n,l) <- zip [6..9] ['b'..]]
+
+    where g n ll lh = reverse $  map (\l -> l:show n) [ll..lh]
+
+lookupTxtCoords txt = lookup txt (zip textcoords (indices fresh'grid))
+
+runTxtMove :: Color -> Board -> String -> Board
+runTxtMove col brd move = case getMovesDir col brd way pos ruleset of
+                            [] -> error "runTxtMove: no moves"
+                            [(move'name,brd'moved)] -> brd'moved
+                            xs -> error $ "runTxtMove: ambiguous move: " ++ move
+    where
+      (pos,way,ruleset) = case catMaybes $ map lookupTxtCoords $ Split.chunksOf 2 move of
+                        [p1,p2] -> (p1,(getVector p1 p2, way'diag'none),rs1)
+                        [p1,p2,p3] | distanceDiag p1 p2 == 1 -> (p1,(getVector p1 p2, getVector p1 p3), rs2)
+                                   | distanceDiag p1 p2 == 2 -> (p1,(getVector p1 p2, (div2Pair $ getVector p1 p3)), rs3)
+                                   | otherwise -> error "runTxtMove??"
+                        _ -> error "runTxtMove?"
+
+      distanceDiag p1 p2 = maximum $ map abs $ (pair2Lst $ getVector p1 p2)
+      pair2Lst (a,b) = [a,b]
+      div2Pair (x,y) = (x`div`2, y`div`2)
+
+      getVector (x0,y0) (x1,y1) = (x1-x0, y1-y0)
+
+      rs1 = take 4 rules
+      rs2 = drop 4 $ take 1 rules
+      rs3 = drop 5 $ rules
+
+--- default boards
+
 starting'board'death :: Board
 starting'board'death = boardOldToBoard $ GridMap.lazyGridMap fresh'grid balls
     where
@@ -340,7 +403,10 @@ ways'diag = aux n0 ++ aux n0'r
 
       aux xs = zip xs (drop 1 (cycle xs))
 
-ways'straight = zip n0 (cycle [(0,0)]) 
+-- brak ruchu po skosie - specjalna wartość
+way'diag'none = (0,0)
+
+ways'straight = zip n0 (cycle [way'diag'none]) 
     where
       n0 = neighbours (0,0) fresh'grid
 
