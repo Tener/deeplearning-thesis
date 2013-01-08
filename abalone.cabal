@@ -43,7 +43,7 @@ Executable tournament
 
 Executable constraints-single-random-neuron
   Main-is:                src/constraints-single-random-neuron.hs
-  Build-depends:          base, abalone
+  Build-depends:          base, abalone, async
   Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -threaded
 
 
