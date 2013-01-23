@@ -41,7 +41,7 @@ generateConstraintsSimple brd'base brd'good = [CBetter brd'good brd | brd <- get
 -- | good moves
 
 good'moves :: [(Board,Board)]
-good'moves = [(b0,b1),(b2,b3)]
+good'moves = [(b0,b1),(b2,b3)] ++ concatMap movesFromGame games'all
     where
       b0 = boardFromBalls [ b,b,b,e,e,
                             e,b,b,b,e,e,
@@ -179,8 +179,19 @@ singleNeuronRandomSearch target thrnum = do
 readGame :: Board -> String -> [Board]
 readGame brd'start str = scanl (\ brd (col,mv)  -> runTxtMove col brd mv ) brd'start (zip (cycle [Black, White]) (words str))
 
-game1 = readGame starting'board'default "a1b2 i5h5 a5b5 i6h6 b5c5 i7h7 b6b5 i8h8 b1c2 h9g8 a3b3 h7g7 b4c4 h4h5 a4b5a3 e6e7 a3a2 h6g6 b3c3 i9i8 a2b3 i8h8 b4b3 f8e7 d3d4 h7g6 b1b2 e4f5 b4c4 d7d8 d6c5 d8e8 b4b3 f8g9 b1b2 g9f8 b4b3 f5g6 c2d3 f8f7 b2c2 i8i7 b1a1b2 i7i8 a2b2a1 i8h8 b1b2 f5g6 b2c2 i8h7 d2c2 g5h6 f4e3 h6g5 d2c2 e6f6 a2b2 h6g6 d2c2 f8e7 a2b2 d6e7 d2c2 f5g6 a2b2 f8f7 d3d4 h7g6 d6c5 i8h7 b4c4 e6f6 e3e4 f4g4 d2e3 g4f4 e4e5 h6g6 e7d6 e9e8 b4c4 e6f6 d6c5 f4g4 b3c4 h6g6 b2b3 h7h6 d6c5 f7f6 c2d3 f4g5 d3e4 i7h7 d5e5 f7f6 a3b3 h7g7 b3c4 i5h4 g6g5 g3h4 f4g4 h6h5 g5f4 h4h5 c5d5 i8h8 g4f3 g5h6g6 b4c5 h5i5h6 d3e4 g8g7 g5f4 i6i7"
-game2 = readGame starting'board'belgianDaisy "a1b2 a5b5 i9h8 a4b4 i8h7 b5c5 h7g6 g5f4 c3d4d3 h4g4 h9g8 c5d5 h8g8 i6h5 f6f8e6 c4d59.g6f6 h6g6 a2b3 b6c6 e8f8 b4c5 b3b4 c6c5 b2c2 c4d5 c3c4 d5e6 h9h8 c5d5 d4d3 f7e6 h8g7 f4f5 g7f7 g4f3f4 f8e7 g8g7 b3c3 e3f4 b4b3 f6e6 d7e7 g5g6 f7f6 f4f5 f7g8f8 i5h5 g9f8 g6f6 c6b6b5 b4c5 f8g9e8 e6e7"
-game3 = readGame starting'board'belgianDaisy "i9h8 i5h5 i8h7 h5g5 a1b2 a5b5 a2b3 h4g4 h7g6 b4c5 g6f5 i6h6 g7g8f7 b6c6 b3c3 a4b5 c4d4 d7d6 f4e4 b5c6 f7f6 c6c5 c1d1 g4g5 f8f7 c4d5 f4f5 g5g6 b1c1 g6h7 b2c2 h4h5 h9g9 h5h6 h9g9 h7g7 c1d2 d6e6 g6g5 h6g6 d1e2 g6f6 d4e4 g7g8 f9e8 c3d4 e4f4 h8g8 d8c7 h4h5 c2d3 g9g8 c7c6 h5h6 c6b5 h6h7 b5b4 d7c6 g4f4 h7g7 b4b3 g7f6 g5g4 g8g7 b3b2 c5b4 b2c3b1 g7f7 c7b6 d7c6 b6a5 f8e7 e9f9 c6c5 c2d2 c5d5 d3e4 b5c5 d2d3 c5d5 b1c2 c4c3 c1d2 c2c3 g5g4 c3c4 f9g9 d4e5 d2c2 b4c4 g3g4 d6d5 f3e3 c4c3 f2e2 g6f6 c2d3 c3b2c4 c1d1 b3b4 g9h9 e8f8 d1e2 d6d5 d2e2 b4b5 h9h8 e5f6 h5g5 d4d5 a5a4 h8g7 g4h5 g7f6 a4a3 f6e5 d1e2 d6c5 a3a2 e5d4 a1b1 f8e7 b1c1 e6f7e5 e2e3 g6f6g7 c1d2 b2c3 d2e2 g7f7 a2b2 e5d4 a1b1 b2c3 b1c1 c3d4 c1d2 b4c4b3 f2g3 c3b3c4 g7g6 d3c3 g6f5 d6d5 g3f3 c3c4 i9i8 b4c5"
-game4 = readGame starting'board'belgianDaisy "a1b2 i5h5 a2b3 a5b6 i9h8 i6h6 h8g7 h6g6 b3c4 c5c7d6 b1c2 b4b6c5 g8g7f8 g4g5f3 c2d3 h4h5 c3d4 h6g5 b2c2 a4b5 i8h8 c5d6 c4c5 c7c6 h9h8 c5d6 h7h6 g7h7 g9g8 h4i5 h8g8 e7d6 h5h6 h8g7 h7h8 g7h7 h8g8 i5h5 e8e7 b5b4 c2c3 b4b5 e4d3 h5g4 c2c3 c7b6 c5d5 h7g6 f8e7 d8e8 c4d4 h4h5 f6e6 b6b5 g8f8 b4c5b3 f8e7 h6g5 f7e6 a2b2 c4d4 h4h5 c6d6 e8f8 h7g7 f3g4 g7f7 f8g8 f4e4 g4f4 e7f8 f5g6 f8f7 f4g4 d5e5 i5h4 d3e4 i8h8 e6f6 i6h5 c5d6d5 h4g3 h6g5 h5h4 d4e4 g3f2 f6f5 h8g7 f4f3"
-game5 = readGame starting'board'belgianDaisy "i9h8 i6h6 i8h7 h5g5 h7g6 a5b5 h8g7 a4b4 a1b1 g5f4 g8g7 f4h4e3 b1c2 e3e4 a2b2 b6c6 g6f6 b6b5 b1c1 g3f3 f5g5f4 b3c4 c2d3 c6c5 d6e7 c5c4 d1d2 c4c3 g7g8 b4b5c4 d2d3 d6e6 e7f8 h6g5 f4e4 d7d6 g4f4 c5d6 d5d4 d6e6 h6h7 e5d5 e4e5 e7e6 h7g7 i5h4 b2b3 h4h5 h9g9 e5f6 g9f8 h5g5 h8g8 f3g4 f8e7 f5f6 g8f8 c1c2 d6c6 c2c3 d2d3 b4c5 d3d4 c3c4 c7b6 e3d3 f4e4 c6c5 b3c3 g7f6 c3d3 g6f6 c6b6b5 c5d6 a5b5 d6d7 g9g8 f8f7 e8f8 b4c4 f4e3 d8d7 b2c2 e6f7 h9h8 d6e7 g9h9 f7g8"
+a <> b = (a,b)
+
+movesFromGame :: (Color, [Board]) -> [(Board,Board)]
+movesFromGame game@(good, moves) = map snd $ filter ((==good) . fst) $ zip (cycle [Black, White]) (zip moves (tail moves))
+
+-- (dobry gracz, sekwencja ruchów)
+-- 1, 9, 13, 10, 12
+
+games'all = [game1, game2, game3, game4, game5]
+
+game1, game2, game3, game4, game5 :: (Color, [Board])
+game1 = Black <> (take 1 $ readGame (negateBoard starting'board'default) "a1b2 i5h5 a5b5 i6h6 b5c5 i7h7 b6b5 i8h8 b1c2 h9g8 a3b3 h7g7 b4c4 h4h5 a4b5a3 e6e7 a3a2 h6g6 b3c3 i9i8 a2b3 i8h8 b4b3 f8e7 d3d4 h7g6 b1b2 e4f5 b4c4 d7d8 d6c5 d8e8 b4b3 f8g9 b1b2 g9f8 b4b3 f5g6 c2d3 f8f7 b2c2 i8i7 b1a1b2 i7i8 a2b2a1 i8h8 b1b2 f5g6 b2c2 i8h7 d2c2 g5h6 f4e3 h6g5 d2c2 e6f6 a2b2 h6g6 d2c2 f8e7 a2b2 d6e7 d2c2 f5g6 a2b2 f8f7 d3d4 h7g6 d6c5 i8h7 b4c4 e6f6 e3e4 f4g4 d2e3 g4f4 e4e5 h6g6 e7d6 e9e8 b4c4 e6f6 d6c5 f4g4 b3c4 h6g6 b2b3 h7h6 d6c5 f7f6 c2d3 f4g5 d3e4 i7h7 d5e5 f7f6 a3b3 h7g7 b3c4 i5h4 g6g5 g3h4 f4g4 h6h5 g5f4 h4h5 c5d5 i8h8 g4f3 g5h6g6 b4c5 h5i5h6 d3e4 g8g7 g5f4 i6i7")
+game2 = White <> (take 9 $ readGame (negateBoard starting'board'belgianDaisy) "a1b2 a5b5 i9h8 a4b4 i8h7 b5c5 h7g6 g5f4 c3d4d3 h4g4 h9g8 c5d5 h8g8 i6h5 f6f8e6 c4d59.g6f6 h6g6 a2b3 b6c6 e8f8 b4c5 b3b4 c6c5 b2c2 c4d5 c3c4 d5e6 h9h8 c5d5 d4d3 f7e6 h8g7 f4f5 g7f7 g4f3f4 f8e7 g8g7 b3c3 e3f4 b4b3 f6e6 d7e7 g5g6 f7f6 f4f5 f7g8f8 i5h5 g9f8 g6f6 c6b6b5 b4c5 f8g9e8 e6e7")
+game3 = White <> (take 13 $ readGame (negateBoard starting'board'belgianDaisy) "i9h8 i5h5 i8h7 h5g5 a1b2 a5b5 a2b3 h4g4 h7g6 b4c5 g6f5 i6h6 g7g8f7 b6c6 b3c3 a4b5 c4d4 d7d6 f4e4 b5c6 f7f6 c6c5 c1d1 g4g5 f8f7 c4d5 f4f5 g5g6 b1c1 g6h7 b2c2 h4h5 h9g9 h5h6 h9g9 h7g7 c1d2 d6e6 g6g5 h6g6 d1e2 g6f6 d4e4 g7g8 f9e8 c3d4 e4f4 h8g8 d8c7 h4h5 c2d3 g9g8 c7c6 h5h6 c6b5 h6h7 b5b4 d7c6 g4f4 h7g7 b4b3 g7f6 g5g4 g8g7 b3b2 c5b4 b2c3b1 g7f7 c7b6 d7c6 b6a5 f8e7 e9f9 c6c5 c2d2 c5d5 d3e4 b5c5 d2d3 c5d5 b1c2 c4c3 c1d2 c2c3 g5g4 c3c4 f9g9 d4e5 d2c2 b4c4 g3g4 d6d5 f3e3 c4c3 f2e2 g6f6 c2d3 c3b2c4 c1d1 b3b4 g9h9 e8f8 d1e2 d6d5 d2e2 b4b5 h9h8 e5f6 h5g5 d4d5 a5a4 h8g7 g4h5 g7f6 a4a3 f6e5 d1e2 d6c5 a3a2 e5d4 a1b1 f8e7 b1c1 e6f7e5 e2e3 g6f6g7 c1d2 b2c3 d2e2 g7f7 a2b2 e5d4 a1b1 b2c3 b1c1 c3d4 c1d2 b4c4b3 f2g3 c3b3c4 g7g6 d3c3 g6f5 d6d5 g3f3 c3c4 i9i8 b4c5")
+game4 = Black <> (take 10 $ readGame (negateBoard starting'board'belgianDaisy) "a1b2 i5h5 a2b3 a5b6 i9h8 i6h6 h8g7 h6g6 b3c4 c5c7d6 b1c2 b4b6c5 g8g7f8 g4g5f3 c2d3 h4h5 c3d4 h6g5 b2c2 a4b5 i8h8 c5d6 c4c5 c7c6 h9h8 c5d6 h7h6 g7h7 g9g8 h4i5 h8g8 e7d6 h5h6 h8g7 h7h8 g7h7 h8g8 i5h5 e8e7 b5b4 c2c3 b4b5 e4d3 h5g4 c2c3 c7b6 c5d5 h7g6 f8e7 d8e8 c4d4 h4h5 f6e6 b6b5 g8f8 b4c5b3 f8e7 h6g5 f7e6 a2b2 c4d4 h4h5 c6d6 e8f8 h7g7 f3g4 g7f7 f8g8 f4e4 g4f4 e7f8 f5g6 f8f7 f4g4 d5e5 i5h4 d3e4 i8h8 e6f6 i6h5 c5d6d5 h4g3 h6g5 h5h4 d4e4 g3f2 f6f5 h8g7 f4f3")
+game5 = White <> (take 12 $ readGame (negateBoard starting'board'belgianDaisy) "i9h8 i6h6 i8h7 h5g5 h7g6 a5b5 h8g7 a4b4 a1b1 g5f4 g8g7 f4h4e3 b1c2 e3e4 a2b2 b6c6 g6f6 b6b5 b1c1 g3f3 f5g5f4 b3c4 c2d3 c6c5 d6e7 c5c4 d1d2 c4c3 g7g8 b4b5c4 d2d3 d6e6 e7f8 h6g5 f4e4 d7d6 g4f4 c5d6 d5d4 d6e6 h6h7 e5d5 e4e5 e7e6 h7g7 i5h4 b2b3 h4h5 h9g9 e5f6 g9f8 h5g5 h8g8 f3g4 f8e7 f5f6 g8f8 c1c2 d6c6 c2c3 d2d3 b4c5 d3d4 c3c4 c7b6 e3d3 f4e4 c6c5 b3c3 g7f6 c3d3 g6f6 c6b6b5 c5d6 a5b5 d6d7 g9g8 f8f7 e8f8 b4c4 f4e3 d8d7 b2c2 e6f7 h9h8 d6e7 g9h9 f7g8")

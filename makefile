@@ -1,6 +1,6 @@
 
 build:
-	cabal-dev install -f-cairo -funsafe
+	cabal-dev install --force-reinstalls -f-cairo -funsafe
 
 build-par:
 	cabal-dev install -j -f-cairo -funsafe

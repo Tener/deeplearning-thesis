@@ -112,8 +112,6 @@ view brd = do
 
 #else
 
-#error WRRRR
-
 saveBoard brd name = do
   writeFile name (show brd)
 

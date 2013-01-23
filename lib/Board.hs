@@ -352,14 +352,21 @@ lookupTxtCoords txt = lookup txt (zip textcoords (indices fresh'grid))
 
 runTxtMove :: Color -> Board -> String -> Board
 runTxtMove col brd move = case getMovesDir col brd way pos ruleset of
-                            [] -> error "runTxtMove: no moves"
+                            [] -> error $ show ("ERROR: runTxtMove: no moves", move, col, way, pos) 
+                                  ++ " " ++ pr brd 
+                                  ++ " way=" ++ show way 
+                                  ++ " ruleset=" ++ show (map (\(n,_,_,_) -> n) ruleset)
+                                  ++ " debug=" ++ debug
+
                             [(move'name,brd'moved)] -> brd'moved
                             xs -> error $ "runTxtMove: ambiguous move: " ++ move
     where
-      (pos,way,ruleset) = case catMaybes $ map lookupTxtCoords $ Split.chunksOf 2 move of
-                        [p1,p2] -> (p1,(getVector p1 p2, way'diag'none),rs1)
-                        [p1,p2,p3] | distanceDiag p1 p2 == 1 -> (p1,(getVector p1 p2, getVector p1 p3), rs2)
-                                   | distanceDiag p1 p2 == 2 -> (p1,(getVector p1 p2, (div2Pair $ getVector p1 p3)), rs3)
+      pr b = "http://localhost:3000/board/" ++ (reprToRow $ boardToDense $ b)
+
+      (pos,way,ruleset,debug) = case catMaybes $ map lookupTxtCoords $ Split.chunksOf 2 move of
+                        [p1,p2] -> (p1,(getVector p1 p2, way'diag'none),rs1,"")
+                        [p1,p2,p3] | distanceDiag p1 p2 == 1 -> (p1,(getVector p1 p3, getVector p1 p2), rs2, "")
+                                   | distanceDiag p1 p2 == 2 -> (p1,(getVector p1 p3, (div2Pair $ getVector p1 p2)), rs3, "")
                                    | otherwise -> error "runTxtMove??"
                         _ -> error "runTxtMove?"
 
@@ -369,9 +376,9 @@ runTxtMove col brd move = case getMovesDir col brd way pos ruleset of
 
       getVector (x0,y0) (x1,y1) = (x1-x0, y1-y0)
 
-      rs1 = take 4 rules
-      rs2 = drop 4 $ take 1 rules
-      rs3 = drop 5 $ rules
+      rs1 = take 6 rules
+      rs2 = take 1 $ drop 6 rules
+      rs3 = take 1 $ drop 7 rules
 
 --- default boards
 
