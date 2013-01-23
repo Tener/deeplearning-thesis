@@ -1,5 +1,5 @@
-<a href="@{BoardRenderR boardRepr}">
-   <img width="600" src="@{BoardRenderR boardRepr}">
+<a href="@{BoardRenderR "svg" boardRepr}">
+   <img width="600" src="@{BoardRenderR "jpg" boardRepr}">
 
 <table border="1">
   <tr>
@@ -14,7 +14,7 @@
    $forall b <- moves'white
     <tr>
       <td> <a href="@{BoardR (boardToLink b)}">
-            <img width="400" src="@{BoardRenderR (boardToLink b)}">
+            <img width="400" src="@{BoardRenderR "jpg" (boardToLink b)}">
      $forall (desc,val) <- eval b White
       <td> #{desc} : #{val}
 
@@ -23,6 +23,6 @@
    $forall b <- moves'black
     <tr>
       <td> <a href="@{BoardR (boardToLink b)}">
-            <img width="400" src="@{BoardRenderR (boardToLink b)}">
+            <img width="400" src="@{BoardRenderR "jpg" (boardToLink b)}">
      $forall (desc,val) <- eval b Black
       <td> #{desc} : #{val}

@@ -21,6 +21,7 @@ library
                      Handler.Home
                      Handler.Board
                      Handler.BoardRender
+                     Handler.Foo
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT
@@ -66,7 +67,7 @@ library
                  , data-default
                  , aeson
 
-                 , abalone, split
+                 , abalone, split, process
 
 
 executable         abaloney
