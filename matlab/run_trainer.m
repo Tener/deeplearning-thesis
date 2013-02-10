@@ -1,6 +1,6 @@
 function dbn = run_trainer(train_x)
 
-    dbn.sizes = [1000];
+    dbn.sizes = [150];
     opts.numepochs =   5;
     opts.batchsize = 100;
     opts.momentum  =   0;

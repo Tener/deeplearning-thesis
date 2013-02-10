@@ -88,7 +88,7 @@ instance Agent AgentNN where
 
           pr = "http://localhost:3000/board/" ++ (reprToRow $ boardToDense $ gtBoard $ last $ princ)
       print ("AgentNN-score",score)
-      hPutStrLn stderr ("AgentNN-score " ++ show score ++ " " ++ pr)
+      -- hPutStrLn stderr ("AgentNN-score " ++ show score ++ " " ++ pr)
       return (gtBoard $ head $ tail $ princ)
 
 printE :: (Show a) => a -> IO ()

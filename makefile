@@ -17,7 +17,7 @@ test:
 prof:
 	cabal-dev install -j -funsafe -f-cairo --enable-executable-profiling --enable-library-profiling && cabal-dev/bin/abalone +RTS -sstderr -P
 run:
-	cabal-dev install -j -funsafe -f-cairo && cabal-dev/bin/abalone +RTS -sstderr -N4 | tee abalone.log.txt
+	cabal-dev install -j -funsafe -f-cairo && cabal-dev/bin/abalone +RTS -sstderr -N | tee abalone.log.txt
 
 tournament:
 	cabal-dev install -j -funsafe -f-cairo && cabal-dev/bin/tournament +RTS -sstderr -N | tee tournament.log.txt

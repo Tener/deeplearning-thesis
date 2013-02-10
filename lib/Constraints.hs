@@ -109,11 +109,11 @@ good'moves = [(b0,b1),(b2,b3)] ++ concatMap movesFromGame games'all
 -- | benchmark random single-neuron networks
 
 -- singleNeuronRandomSearch :: Double -> Int -> IO ()
-singleNeuronRandomSearch target thrnum = do
+singleNeuronRandomSearch newBest target thrnum = do
   gen <- withSystemRandom $ asGenIO $ return
 
   let sparse = True
-  (dbn,sizes) <- parseNetFromFile `fmap` readFile (if sparse then "/home/tener/abalone-nn/nn_183.txt-100" else "/home/tener/abalone-nn/nn_61.txt-100")
+  (dbn,sizes) <- parseNetFromFile `fmap` readFile (if sparse then "/home/tener/abalone-nn/nn_183.txt-150" else "/home/tener/abalone-nn/nn_61.txt-100")
   print (dbn,sizes)
   let lastLayerSize :: Int
       lastLayerSize = last sizes
@@ -149,8 +149,10 @@ singleNeuronRandomSearch target thrnum = do
          let score = scoreNeuron neuron
          if score > best'score 
           then do
-            putStrLn (printf "[%d] NEURON %s" thrnum (show neuron))
-            putStrLn (printf "[%d] SCORE %f (cnum=%d)" thrnum score (length constraints))
+            let action = do
+                             putStrLn (printf "[%d] NEURON %s" thrnum (show neuron))
+                             putStrLn (printf "[%d] SCORE %f (cnum=%d)" thrnum score (length constraints))
+            newBest (neuron,score,action)
             go (neuron,score) 
           else go (best'neuron,best'score)
          
@@ -197,7 +199,7 @@ movesFromGame (good, moves) = map (neg . snd) $ filter ((==good) . fst) $ zip (c
 
 --games'all = [game1, game2, game3, game4, game5]
 --games'all = []
-games'all = [game2, game3, game4, game5]
+games'all = [game 1, game2, game3, game4, game5]
 
 game1, game2, game3, game4, game5 :: (Color, [Board])
 game1 = Black <> (take 1 $ readGame (negateBoard starting'board'default) "a1b2 i5h5 a5b5 i6h6 b5c5 i7h7 b6b5 i8h8 b1c2 h9g8 a3b3 h7g7 b4c4 h4h5 a4b5a3 e6e7 a3a2 h6g6 b3c3 i9i8 a2b3 i8h8 b4b3 f8e7 d3d4 h7g6 b1b2 e4f5 b4c4 d7d8 d6c5 d8e8 b4b3 f8g9 b1b2 g9f8 b4b3 f5g6 c2d3 f8f7 b2c2 i8i7 b1a1b2 i7i8 a2b2a1 i8h8 b1b2 f5g6 b2c2 i8h7 d2c2 g5h6 f4e3 h6g5 d2c2 e6f6 a2b2 h6g6 d2c2 f8e7 a2b2 d6e7 d2c2 f5g6 a2b2 f8f7 d3d4 h7g6 d6c5 i8h7 b4c4 e6f6 e3e4 f4g4 d2e3 g4f4 e4e5 h6g6 e7d6 e9e8 b4c4 e6f6 d6c5 f4g4 b3c4 h6g6 b2b3 h7h6 d6c5 f7f6 c2d3 f4g5 d3e4 i7h7 d5e5 f7f6 a3b3 h7g7 b3c4 i5h4 g6g5 g3h4 f4g4 h6h5 g5f4 h4h5 c5d5 i8h8 g4f3 g5h6g6 b4c5 h5i5h6 d3e4 g8g7 g5f4 i6i7")
