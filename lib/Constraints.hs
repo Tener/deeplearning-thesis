@@ -9,6 +9,7 @@ import Data.Maybe
 import Control.Monad
 import Text.Printf
 import System.Random.MWC
+import Data.IORef
 
 -- import qualified Data.Vector.Unboxed as U
 import qualified Data.Packed.Vector as Vector
@@ -111,9 +112,7 @@ good'moves = [(b0,b1),(b2,b3)] ++ concatMap movesFromGame games'all
 -- singleNeuronRandomSearch :: Double -> Int -> IO ()
 singleNeuronRandomSearch newBest target thrnum = do
   gen <- withSystemRandom $ asGenIO $ return
-
-  let sparse = True
-  (dbn,sizes) <- parseNetFromFile `fmap` readFile (if sparse then "/home/tener/abalone-nn/nn_183.txt-150" else "/home/tener/abalone-nn/nn_61.txt-100")
+  (dbn,sizes) <- parseNetFromFile `fmap` readFile nn'filename
   print (dbn,sizes)
   let lastLayerSize :: Int
       lastLayerSize = last sizes
@@ -158,6 +157,65 @@ singleNeuronRandomSearch newBest target thrnum = do
          
   go (undefined,negate inf)
 
+singleNeuronLocalSearch :: ((([[[Double]]], [[Double]]), Double, IO ()) -> IO ())
+                               -> IORef (([[[Double]]], [[Double]]),Double)
+                               -> Double
+                               -> Double
+                               -> Int
+                               -> IO (([[[Double]]], [[Double]]), Double)
+
+singleNeuronLocalSearch newBest bestNeuronRef localSearchRange target thrnum = do
+  gen <- withSystemRandom $ asGenIO $ return
+  (dbn,sizes) <- parseNetFromFile `fmap` readFile nn'filename
+  print (dbn,sizes)
+  let lastLayerSize :: Int
+      lastLayerSize = last sizes
+      
+      randomNeuron :: IO ([[[Double]]], [[Double]])
+      randomNeuron = do
+        (([[weights'best]],_bias),score) <- readIORef bestNeuronRef
+        
+        let actualRange = (fromIntegral thrnum) * localSearchRange * 3
+
+        (weights) <- (replicateM lastLayerSize (uniformR (1-actualRange,1+actualRange) gen))
+        let bias = 0
+--            weights'really'best = if score > 0 then weights'best else weights -- hack
+        return ([[zipWith (*) weights'best weights]],[[bias]])
+
+  let inf = 1/0
+
+      constraints = concat $ map (uncurry generateConstraintsSimple) good'moves
+
+      evalNeuronBoard neuron brd = 
+          let final = Vector.toList $ computeTNetworkSigmoid neuronTNet 
+                                    $ computeTNetworkSigmoid dbn 
+                                    $ (if sparse then boardToSparseNN else boardToDenseNN) brd 
+              neuronTNet :: TNetwork
+              neuronTNet = uncurry mkTNetwork neuron
+             in
+          case final of
+            [x] -> x
+            [] -> error "No values returned. What?!"
+            _ -> error "Too many values returned. Last layer too big."
+              
+                                   
+      scoreNeuron n = scoreConstraints (evalNeuronBoard n) constraints
+    
+      go (best'neuron,best'score) | best'score >= target = return (best'neuron,best'score)
+                                  | otherwise = do
+         neuron <- randomNeuron
+         let score = scoreNeuron neuron
+         if score > best'score 
+          then do
+            let action = do
+                             putStrLn (printf "[%d] LOCAL NEURON %s" thrnum (show neuron))
+                             let ccount = length constraints
+                             putStrLn (printf "[%d] LOCAL SCORE %f (cnum=%d, bad=%d)" thrnum score ccount (ceiling $ fromIntegral ccount * (1-score) :: Int) )
+            newBest (neuron,score,action)
+            go (neuron,score) 
+          else go (best'neuron,best'score)
+         
+  go (undefined,negate inf)
 
 
 
@@ -197,9 +255,9 @@ movesFromGame (good, moves) = map (neg . snd) $ filter ((==good) . fst) $ zip (c
 -- (dobry gracz, sekwencja ruchów)
 -- 1, 9, 13, 10, 12
 
---games'all = [game1, game2, game3, game4, game5]
---games'all = []
-games'all = [game 1, game2, game3, game4, game5]
+games'all = [game1, game2, game3, game4, game5]
+-- games'all = [game4, game3]
+-- games'all = [game2]
 
 game1, game2, game3, game4, game5 :: (Color, [Board])
 game1 = Black <> (take 1 $ readGame (negateBoard starting'board'default) "a1b2 i5h5 a5b5 i6h6 b5c5 i7h7 b6b5 i8h8 b1c2 h9g8 a3b3 h7g7 b4c4 h4h5 a4b5a3 e6e7 a3a2 h6g6 b3c3 i9i8 a2b3 i8h8 b4b3 f8e7 d3d4 h7g6 b1b2 e4f5 b4c4 d7d8 d6c5 d8e8 b4b3 f8g9 b1b2 g9f8 b4b3 f5g6 c2d3 f8f7 b2c2 i8i7 b1a1b2 i7i8 a2b2a1 i8h8 b1b2 f5g6 b2c2 i8h7 d2c2 g5h6 f4e3 h6g5 d2c2 e6f6 a2b2 h6g6 d2c2 f8e7 a2b2 d6e7 d2c2 f5g6 a2b2 f8f7 d3d4 h7g6 d6c5 i8h7 b4c4 e6f6 e3e4 f4g4 d2e3 g4f4 e4e5 h6g6 e7d6 e9e8 b4c4 e6f6 d6c5 f4g4 b3c4 h6g6 b2b3 h7h6 d6c5 f7f6 c2d3 f4g5 d3e4 i7h7 d5e5 f7f6 a3b3 h7g7 b3c4 i5h4 g6g5 g3h4 f4g4 h6h5 g5f4 h4h5 c5d5 i8h8 g4f3 g5h6g6 b4c5 h5i5h6 d3e4 g8g7 g5f4 i6i7")
