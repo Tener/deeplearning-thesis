@@ -13,7 +13,7 @@ import System.Process
 
 
 main = do
-  let cutoff = 1000
+  let cutoff = 300
   threads <- getNumCapabilities
   starttime <- getPOSIXTime
   hostname <- fmap (head . words) (readProcess "hostname" [] "")
@@ -37,14 +37,13 @@ main = do
       nameColor White = "white"
       nameColor Black = "black"
       
-      colorToInt Black = "0"
-      colorToInt White = "1"
+      colorToInt (Just Black) = "0"
+      colorToInt (Just White) = "1"
+      colorToInt Nothing = "2"
 
   let threadFunc threadNum = forever (do
                  (winner, history) <- Tournament.simpleGameTrace cutoff
-                 case winner of
-                   Nothing -> return ()
-                   Just c -> recordHistory c history
+                 recordHistory winner history
                )
 
   asyncs <- mapM (\ threadNum -> async (threadFunc threadNum)) [1..threads]
