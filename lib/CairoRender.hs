@@ -18,8 +18,6 @@ drawBoard brdNew = do
       side = 25
       x0 = 300
       y0 = 300
-      f'x = sqrt 3
-      f'y = 3
       board'indices = indices brd
 
       fillWhite = setSourceRGB 0.98 0.98 0.98
@@ -57,6 +55,7 @@ drawBoard brdNew = do
 --            --          board'indices
 --            ]
 
+drawHex :: Double -> Double -> Double -> Render a -> Render ()
 drawHex x y s filler = do
   save
 
@@ -87,7 +86,7 @@ drawHex x y s filler = do
   setSourceRGB 0.9 0.2 0.3
 
   -- wypełnienie hexów
-  filler
+  _ <- filler
 
   fillPreserve
 
@@ -95,20 +94,24 @@ drawHex x y s filler = do
   restore
   stroke
   
-
+drawTest :: IO ()
 drawTest = draw starting'board'default 0
 
+saveBoard :: Board -> FilePath -> IO ()
 saveBoard brd name = do
   withSVGSurface name 800 600 (\ surf -> renderWith surf (drawBoard brd))
 
+draw :: Board -> Int -> IO ()
 draw brd num = do
   let fname = printf "/tmp/abalone-draw.tmp.%04d.svg" (num :: Int)
   saveBoard brd fname
 
+view :: Board -> IO ()
 view brd = do
   let name = "/tmp/board-abalone-view.svg"
   saveBoard brd name
   rawSystem "eog" [name]
+  return ()
 
 #else
 

@@ -4,7 +4,7 @@ module Main where
 
 import Board
 import Tournament
-import qualified CairoRender
+-- import qualified CairoRender
 
 -- import Clocked
 import Control.Monad
@@ -15,6 +15,7 @@ import Control.Concurrent.Async
 import Data.Time.Clock.POSIX
 import System.Process
 
+main :: IO ()
 main = do
   let cutoff = 700
   threads <- getNumCapabilities

@@ -2,10 +2,10 @@
 
 module Board where
 
-import Data.List (sortBy, nubBy, groupBy, nub, sort, group, intercalate)
+import Data.List (sort, intercalate) -- sortBy, nubBy, groupBy, nub, sort, group)
 import qualified Data.List.Split as Split
 import Data.Maybe (catMaybes)
-import Data.Ord
+-- import Data.Ord
 import System.IO
 
 import Math.Geometry.Grid
@@ -32,6 +32,7 @@ data Board = Board { hashmap :: !BoardHM
 onHashMap :: (BoardHM -> BoardHM) -> Board -> Board
 onHashMap f brd = brd { hashmap = f (hashmap brd) } 
 
+marbleCount :: Color -> Board -> Int
 marbleCount White brd = countWhite brd
 marbleCount Black brd = countBlack brd
 
@@ -65,11 +66,11 @@ instance Hashable.Hashable Position where
 ---- board regexp
 
 data Field = Empty | Death | Ball | Opponent deriving (Eq, Ord, Read, Show)
-data Match = And {-# UNPACK #-} !Match {-# UNPACK #-} !Match 
-           | Or {-# UNPACK #-} !Match {-# UNPACK #-} !Match
-           | This {-# UNPACK #-} !Field
-           | Next {-# UNPACK #-} !Match
-           | Diag {-# UNPACK #-} !Match
+data Match = And !Match !Match 
+           | Or !Match !Match
+           | This !Field
+           | Next !Match
+           | Diag !Match
              deriving (Eq, Ord, Read, Show)
 
 data Setter = SetHere Field | SetNext Setter | SetDiag Setter
@@ -78,6 +79,7 @@ data Setter = SetHere Field | SetNext Setter | SetDiag Setter
 type Move = [Setter]
 
 -- negacja koloru
+negColor :: Color -> Color
 negColor Black = White
 negColor White = Black
 
@@ -166,7 +168,7 @@ getMovesDir col brd way pos ruleset = [ (name,runMove col brd pos way setter)
                                       
                                       , tryMatch col brd pos way rule
                                       ]
-
+getMoves :: Color -> Board -> [Board]
 getMoves col brd = -- nub
                    [ runMove col brd idx way setter | 
                      (idx,val) <- HashMap.toList (hashmap brd)
@@ -215,6 +217,7 @@ updateCounts brd a b | a == b = brd
 putBall :: (Position,Color) -> Board -> Board
 putBall (pos,color) brd = updateCounts (onHashMap (HashMap.insert pos color) brd) (HashMap.lookup pos (hashmap brd)) (Just color)
 
+runSetter :: Color -> Board -> Position -> (Position, Position) -> Setter -> Board
 runSetter side brd pos dir@(dnext, ddiag) setter = 
     case setter of
       (SetHere fld) -> 
@@ -324,6 +327,7 @@ starting'board'belgianDaisy = boardOldToBoard $ GridMap.lazyGridMap fresh'grid b
       w = Just White
       e = Nothing
 
+boardFromBalls :: [Maybe Color] -> Board
 boardFromBalls balls = boardOldToBoard $ GridMap.lazyGridMap fresh'grid balls
 
 --- functions for working with textual game notation used by Aba-Pro and others
@@ -342,12 +346,14 @@ boardFromBalls balls = boardOldToBoard $ GridMap.lazyGridMap fresh'grid balls
 --                     ]
 
 
+textcoords :: [String]
 textcoords = concat $ 
              [g n 'a' l | (n,l) <- zip [1..5] ['e'..]] ++ 
              [g n l 'i' | (n,l) <- zip [6..9] ['b'..]]
 
     where g n ll lh = reverse $  map (\l -> l:show n) [ll..lh]
 
+lookupTxtCoords :: String -> Maybe (Int, Int)
 lookupTxtCoords txt = lookup txt (zip textcoords (indices fresh'grid))
 
 runTxtMove :: Color -> Board -> String -> Board
@@ -399,7 +405,7 @@ starting'board'death = boardOldToBoard $ GridMap.lazyGridMap fresh'grid balls
       w = Just White
       e = Nothing
 
-
+fresh'grid :: HexHexGrid
 fresh'grid = hexHexGrid 5
 
 -- wszystkie możliwe interpretacje kierunków "Next" oraz "Diag".
@@ -480,13 +486,16 @@ boardToSparse' brd = vecAll
       
     vecAll = vecEmpty ++ vecWhite ++ vecBlack
 
+reprToRow :: (Show a) => [a] -> String
 reprToRow repr = intercalate "," (map show repr)
 
+appendBoardCSVFile :: Board -> Handle -> IO ()
 appendBoardCSVFile brd handle = do
   hPutStr handle $ reprToRow $ boardToDense brd
   hPutStr handle "\n"
   hFlush handle
 
+appendBoardCSVFileSparse :: Board -> Handle -> IO ()
 appendBoardCSVFileSparse brd handle = do
   hPutStr handle $ reprToRow $ boardToSparse brd
   hPutStr handle "\n"

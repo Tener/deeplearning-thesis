@@ -11,7 +11,7 @@ import Control.Concurrent.Async
 import Data.Time.Clock.POSIX
 import System.Process
 
-
+main :: IO ()
 main = do
   let cutoff = 300
   threads <- getNumCapabilities

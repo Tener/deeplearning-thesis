@@ -6,10 +6,11 @@
 hashable-*/
 HNN-*/
 hnn//tournament.log.txt
-/data-good/games-sparse-random-random-lvl0.csv
-/data-good/games-sparse-random-simple-lvl1.csv
+/data-good/
 /hnn
 /nn_ll.txt
 /nn.txt
 /abalone.log.txt
-tournament.log.txt
+/report.html
+/hlint.html
+/tournament.log.txt
