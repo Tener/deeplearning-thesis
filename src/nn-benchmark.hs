@@ -1,6 +1,8 @@
 {-# LANGUAGE CPP #-} 
 module Main where
 
+import Config
+
 import Criterion
 import Criterion.Main
 
@@ -24,7 +26,7 @@ readIntsRow :: String -> [Int]
 readIntsRow row = map read (words row)
 
 parseNetFromFile = do
-  input <- readFile "nn.txt"
+  input <- readFile =<< fetchConfig configNeuralNetworkSparse -- "nn.txt"
   let input'lines@(sizes'row : rest'rows) = lines input
       sizes = readIntsRow sizes'row -- sizes in first line
 

@@ -112,8 +112,9 @@ good'moves = [(b0,b1),(b2,b3)] ++ concatMap movesFromGame games'all
 -- singleNeuronRandomSearch :: Double -> Int -> IO ()
 singleNeuronRandomSearch newBest target thrnum = do
   gen <- withSystemRandom $ asGenIO $ return
-  (dbn,sizes) <- parseNetFromFile `fmap` readFile nn'filename
+  (dbn,sizes) <- parseNetFromFile `fmap` (readFile =<< nn'filename)
   print (dbn,sizes)
+  isSparse <- sparse
   let lastLayerSize :: Int
       lastLayerSize = last sizes
       
@@ -130,7 +131,7 @@ singleNeuronRandomSearch newBest target thrnum = do
       evalNeuronBoard neuron brd = 
           let final = Vector.toList $ computeTNetworkSigmoid neuronTNet 
                                     $ computeTNetworkSigmoid dbn 
-                                    $ (if sparse then boardToSparseNN else boardToDenseNN) brd 
+                                    $ (if isSparse then boardToSparseNN else boardToDenseNN) brd 
               neuronTNet :: TNetwork
               neuronTNet = uncurry mkTNetwork neuron
              in
@@ -166,7 +167,8 @@ singleNeuronLocalSearch :: ((([[[Double]]], [[Double]]), Double, IO ()) -> IO ()
 
 singleNeuronLocalSearch newBest bestNeuronRef localSearchRange target thrnum = do
   gen <- withSystemRandom $ asGenIO $ return
-  (dbn,sizes) <- parseNetFromFile `fmap` readFile nn'filename
+  (dbn,sizes) <- parseNetFromFile `fmap` (readFile =<< nn'filename)
+  isSparse <- sparse
   print (dbn,sizes)
   let lastLayerSize :: Int
       lastLayerSize = last sizes
@@ -189,7 +191,7 @@ singleNeuronLocalSearch newBest bestNeuronRef localSearchRange target thrnum = d
       evalNeuronBoard neuron brd = 
           let final = Vector.toList $ computeTNetworkSigmoid neuronTNet 
                                     $ computeTNetworkSigmoid dbn 
-                                    $ (if sparse then boardToSparseNN else boardToDenseNN) brd 
+                                    $ (if isSparse then boardToSparseNN else boardToDenseNN) brd 
               neuronTNet :: TNetwork
               neuronTNet = uncurry mkTNetwork neuron
              in

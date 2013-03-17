@@ -14,6 +14,7 @@ import System.IO.Memoize (ioMemo')
 import System.IO.Unsafe
 import System.IO
 
+import Config
 import Board
 import CommonDatatypes
 import MinimalNN
@@ -101,11 +102,22 @@ printE p = do
 doubleToEvalInt :: Double -> Int
 doubleToEvalInt d = round (d * (fromIntegral ((maxBound :: Int) `div`10)))
 
-sparse = True
-nn'filename = (if sparse then "/home/tener/abalone-nn/nn_183.txt-500" else "/home/tener/abalone-nn/nn_61.txt-100")
+sparse = fetchConfig configUseSparseRepr
+nn'filename = do
+  sparse' <- sparse
+  if' sparse' (fetchConfig configNeuralNetworkSparse) (fetchConfig configNeuralNetworkDense)
 
+parseNetFromFile'' :: FilePath -> IO (IO (TNetwork, [Int]))
 parseNetFromFile'' fp = ioMemo' (parseNetFromFile `fmap` readFile fp)
-parseNetFromFile' = join $ parseNetFromFile'' (nn'filename) -- "/home/tener/abalone-nn/nn_183.txt-500"
+
+if' b t f = if b then t else f
+
+parseNetFromFile' :: IO (TNetwork, [Int])
+parseNetFromFile' = do
+  nnfname <- nn'filename 
+  join $ parseNetFromFile'' nnfname
+
+parseNetFromFile'LL :: IO (TNetwork, [Int])
 parseNetFromFile'LL = join $ parseNetFromFile'' "nn_ll.txt"
 
 {-# NOINLINE myUnsafeNet #-}
