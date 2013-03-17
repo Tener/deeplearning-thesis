@@ -4,6 +4,8 @@ module CairoRender where
 
 import Board
 import Text.Printf
+import System.Directory
+import System.FilePath
 
 #ifdef CAIRO
 
@@ -103,12 +105,14 @@ saveBoard brd name = do
 
 draw :: Board -> Int -> IO ()
 draw brd num = do
-  let fname = printf "/tmp/abalone-draw.tmp.%04d.svg" (num :: Int)
+  tmp <- getTemporaryDirectory
+  let fname = tmp </> printf "abalone-draw.tmp.%04d.svg" (num :: Int)
   saveBoard brd fname
 
 view :: Board -> IO ()
 view brd = do
-  let name = "/tmp/board-abalone-view.svg"
+  tmp <- getTemporaryDirectory
+  let name = tmp </> "board-abalone-view.svg"
   saveBoard brd name
   rawSystem "eog" [name]
   return ()
@@ -119,7 +123,8 @@ saveBoard brd name = do
   writeFile name (show brd)
 
 draw brd num = do
-  let fname = printf "/tmp/abalone-draw.tmp.%04d.txt" (num :: Int)
+  tmp <- getTemporaryDirectory
+  let fname = tmp </> printf "abalone-draw.tmp.%04d.txt" (num :: Int)
   saveBoard brd fname
 
 
