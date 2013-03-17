@@ -4,7 +4,7 @@ import Board
 import CairoRender
 import CommonDatatypes
 
-import Control.Monad (unless, when)
+import Control.Monad (when)
 import Text.Printf
 import System.Random.MWC
 import Data.Ord
@@ -26,40 +26,40 @@ instance Agent AgentGameTree where
       g <- withSystemRandom $ asGenIO $ return
       return (AgentGameTree g col)
     makeMove agent@(AgentGameTree gen col) brd = do
-      let gst = GameState brd (\ g -> evalBoardI (gtColorNow g) (gtBoard g)) col col
+      let gst = GameState brd (\ g -> evalBoardB (gtColorNow g) (gtBoard g)) col col
           depth = 4
           (princ, score) = GTreeAlgo.negascout gst depth
       when (score /= 0) (print ("gtree",score,col))
-      return (gtBoard $ head $ tail $ princ)
+      return (morph $ gtBoard $ head $ tail $ princ)
       
 instance Agent AgentRandom where
     mkAgent col = do
       g <- withSystemRandom $ asGenIO $ return
       return (AgentRandom g col)
     makeMove agent brd = do
-      let moves = getMoves (color agent) brd
+      let moves = getMovesFixColor (color agent) brd
       case moves of
         [] -> do
           print "Stuck, cant do anything."
-          saveBoard brd "board-stuck.svg"
-          return brd
+          saveBoard (unwrap brd) "board-stuck.svg"
+          return (morph brd :: WBoard)
         _ -> do
           pick <- uniformR (0, length moves - 1) (gen agent)
           let chosen = (moves !! pick)
           -- print ("random",chosen)
-          return chosen
+          return (WBoard chosen)
 
 instance Agent AgentSimple where
     mkAgent col = do
       g <- withSystemRandom $ asGenIO $ return
       return (AgentSimple g col)
     makeMove agent brd = do
-      let moves = getMoves (color's agent) brd
+      let moves = getMovesFixColor (color's agent) brd
       case moves of
         [] -> do
           print "Stuck, cant do anything."
-          saveBoard brd "board-stuck.svg"
-          return brd
+          saveBoard (unwrap brd) "board-stuck.svg"
+          return (morph brd)
         _ -> do
           let maxdepth = 2
           print (length moves)
@@ -69,7 +69,7 @@ instance Agent AgentSimple where
               best = map snd $ filter ((==bestScore).fst) weighted
           putStrLn (printf "Color: %s, score: %f" (show (color's agent)) bestScore)
           pick <- uniformR (0, length best - 1) (gen's agent)
-          return (best !! pick)
+          return (WBoard (best !! pick))
 
 negmax :: Int -> Color -> Board -> IO Double
 negmax 0 col brd = do
@@ -88,13 +88,17 @@ evalBoard :: Color -> Board -> Double
 evalBoard col brd = 
     case getWinner brd of 
       Just col'win -> if col'win == col then 1000 else -1000
-      Nothing -> fromIntegral $ marbleCount col brd - marbleCount (negColor col) brd
+      Nothing -> fromIntegral $ marbleCount col brd - marbleCount (negColor col) brd    
 
 evalBoardI :: Color -> Board -> Int
 evalBoardI col brd = 
     case getWinner brd of 
       Just col'win -> if col'win == col then 1000 else -1000
       Nothing -> fromIntegral $ marbleCount col brd - marbleCount (negColor col) brd
+
+evalBoardB :: Color -> BBoard -> Int
+evalBoardB Black (BBoard brd) = evalBoardI Black brd
+evalBoardB White (BBoard brd) = evalBoardI White (negateBoard brd)
 
 
 --------------------------

@@ -89,9 +89,9 @@ playVersus game'id color'now cutoff cnt brd a'fst a'snd | (isFinished brd || cnt
   return brd
 
                      | otherwise = do
-  brd'new <- makeMove a'fst brd
-  putStrLn (printf "[playVersus:%s:%d] black: %d white: %d" game'id cutoff (countBlack brd'new) (countWhite brd'new))
-  playVersus game'id (negColor color'now) cutoff (cnt+1) brd'new a'snd a'fst
+  brd'new <- makeMove a'fst (BBoard brd)
+  putStrLn (printf "[playVersus:%s:%d] black: %d white: %d" game'id cutoff (countBlack $ unwrap brd'new) (countWhite $ unwrap brd'new))
+  playVersus game'id (negColor color'now) cutoff (cnt+1) (unwrap brd'new) a'snd a'fst
 
 -- | run a single game for maximum given number of turns. takes the color of current player. returns whole history of moves.
 playVersusTrace :: (Agent a, Agent b) => String -> Color -> Int -> Int -> Board -> a -> b -> IO (Maybe Color, [Board])
@@ -100,9 +100,9 @@ playVersusTrace game'id color'now cutoff cnt brd a'fst a'snd | (isFinished brd |
   hPutStrLn stderr (printf "[playVersusTrace:%s] [%d] Winner: %s" game'id cutoff (show (getWinner brd)))
   return (getWinner brd, [brd])
                                                              | otherwise = do
-  brd'new <- makeMove a'fst brd
-  putStrLn (printf "[playVersusTrace:%s:%d] black: %d white: %d" game'id cutoff (countBlack brd'new) (countWhite brd'new))
-  (c, bs) <- playVersusTrace game'id (negColor color'now) cutoff (cnt+1) brd'new a'snd a'fst
+  brd'new <- makeMove a'fst (BBoard brd)
+  putStrLn (printf "[playVersusTrace:%s:%d] black: %d white: %d" game'id cutoff (countBlack $ unwrap brd'new) (countWhite $ unwrap brd'new))
+  (c, bs) <- playVersusTrace game'id (negColor color'now) cutoff (cnt+1) (unwrap brd'new) a'snd a'fst
   return (c, (brd:bs))
 
 

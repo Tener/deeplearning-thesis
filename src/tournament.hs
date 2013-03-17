@@ -6,6 +6,7 @@ import Tournament
 import NeuralNets
 import Data.Default
 
+main :: IO ()
 main = do
   pop <- (evolution Nothing def :: IO (Population AgentNN))
   prettyReportPopulation pop

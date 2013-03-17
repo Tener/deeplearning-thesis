@@ -40,21 +40,20 @@ instance Agent AgentNNSimple where
       print ("Agent created","AgentNNSimple")
       return (AgentNNSimple neuralNetwork colo)
     makeMove ag@(AgentNNSimple neuralNetwork colo) brd = do
-      let gst = GameState brd (\ g -> doubleToEvalInt $ evalBoardNetOnePassN 1 (gtColorNow g) (gtBoard g) neuralNetwork)
+      let gst = GameState brd (\ g -> doubleToEvalInt $ evalBoardNetOnePassN 1 (gtColorNow g) (unwrap $ gtBoard g) neuralNetwork)
                           colo colo
           depth = 3
           (princ, score) = GTreeAlgo.negascout gst depth
       print ("AgentNNSimple", score, (take 3 $ evaluateBoard ag brd))
-      return (gtBoard $ head $ tail $ princ)
+      return (morph $ gtBoard $ head $ tail $ princ)
     evaluateBoard (AgentNNSimple neuralNetwork colo) brd = 
         [("int" <> valInt)
         ,("bare" <> valDbl)
         ,("network",valNet)]
      where
        valInt = doubleToEvalInt $ valDbl
-       valDbl = evalBoardNetOnePassN 1 colo brd neuralNetwork
-       brdNeg = if colo == White then brd else negateBoard brd
-       valNet = unwords $ map (printf "%0.2f") $ Vector.toList $ computeTNetworkSigmoidSteps 1 neuralNetwork (boardToSparseNN brdNeg)
+       valDbl = evalBoardNetOnePassN 1 colo (unwrap brd) neuralNetwork
+       valNet = unwords $ map (printf "%0.2f") $ Vector.toList $ computeTNetworkSigmoidSteps 1 neuralNetwork (boardToSparseNN (unwrap (brd :: BBoard)))
        s <> v = (s, (show v))
                 
 
@@ -63,12 +62,12 @@ instance Agent AgentNNSimpleLL where
       let (!neuralNetwork, sizes) = myUnsafeNetLL
       return (AgentNNSimpleLL neuralNetwork colo)
     makeMove (AgentNNSimpleLL neuralNetwork colo) brd = do
-      let gst = GameState brd (\ g -> doubleToEvalInt $ evalBoardNetOnePass (gtColorNow g) (gtBoard g) neuralNetwork)
+      let gst = GameState brd (\ g -> doubleToEvalInt $ evalBoardNetOnePass (gtColorNow g) (unwrap $ gtBoard g) neuralNetwork)
                           colo colo
           depth = 3
           (princ, score) = GTreeAlgo.negascout gst depth
       print ("AgentNNSimpleLL", score)
-      return (gtBoard $ head $ tail $ princ)
+      return (morph $ gtBoard $ head $ tail $ princ)
 
 instance Agent AgentNN where
     mkAgent colo = do
@@ -84,15 +83,15 @@ instance Agent AgentNN where
 
       return (AgentNN neuralNetwork ll colo)
     makeMove agent brd = do
-      let gst = GameState brd (\ g -> doubleToEvalInt $ evalBoardNet (gtColorNow g) (gtBoard g) (net agent) (lastLayer agent)) 
+      let gst = GameState brd (\ g -> doubleToEvalInt $ evalBoardNet (gtColorNow g) (unwrap $ gtBoard g) (net agent) (lastLayer agent)) 
                               (col agent) (col agent)
           depth = 1
           (princ, score) = GTreeAlgo.negascout gst depth
 
-          pr = "http://localhost:3000/board/" ++ (reprToRow $ boardToDense $ gtBoard $ last $ princ)
+          pr = "http://localhost:3000/board/" ++ (reprToRow $ boardToDense $ unwrap $ gtBoard $ last $ princ)
       print ("AgentNN-score",score)
       -- hPutStrLn stderr ("AgentNN-score " ++ show score ++ " " ++ pr)
-      return (gtBoard $ head $ tail $ princ)
+      return (morph $ gtBoard $ head $ tail $ princ)
 
 printE :: (Show a) => a -> IO ()
 printE p = do
