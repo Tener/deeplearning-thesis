@@ -1,4 +1,4 @@
-{-# LANGUAGE BangPatterns, FlexibleInstances #-} 
+{-# LANGUAGE BangPatterns, FlexibleInstances, DeriveDataTypeable #-} 
 
 -- | minimal NN implementation based on hmatrix
 
@@ -9,9 +9,11 @@ import Data.Packed.Matrix as Matrix
 import Numeric.Container
 import Numeric.LinearAlgebra () -- instances
 
+import Data.Typeable
+
 data TNetwork = TNetwork { weights :: [Matrix Double] 
                          , biases :: [Vector Double]
-                         } deriving (Show, Ord, Eq)
+                         } deriving (Show, Ord, Eq, Typeable)
 
 instance Ord (Matrix Double) where
     compare a b = compare (toLists a) (toLists b)
