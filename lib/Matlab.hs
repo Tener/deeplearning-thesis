@@ -6,6 +6,24 @@ import Data.String.Interpolation
 import Data.String
 import Data.Monoid
 import System.FilePath
+import System.Directory
+import System.Process
+
+data MatlabOpts = MatlabOpts { dbnSizes :: [Int], numEpochs :: Int } deriving (Eq, Ord, Read, Show)
+
+prepAndRun matlabOpts outputDirectory inputDataFile = do
+  let ?dbnSizes = dbnSizes matlabOpts
+      ?numEpochs = numEpochs matlabOpts
+
+  writeFile (outputDirectory </> "nnsave_to_file_full.m") nnsave_to_file_full
+  writeFile (outputDirectory </> "nnsave_to_file.m") nnsave_to_file
+  writeFile (outputDirectory </> "run_main.m") (run_main inputDataFile)
+  writeFile (outputDirectory </> "run_trainer.m") (run_trainer (outputDirectory </> "dbn.txt"))
+  writeFile (outputDirectory </> "run_trainer_ll.m") (run_trainer_ll (outputDirectory </> "dbn-ll.txt"))
+
+  procHandle <- runProcess "matlab" ["run_main.m"] (Just outputDirectory) Nothing Nothing Nothing Nothing 
+  exitCode <- waitForProcess procHandle
+  return exitCode
 
 -- zapisuje wszystkie warstwy, łącznie z ostatnią
 nnsave_to_file_full :: (IsString a, Monoid a) => a
@@ -66,8 +84,8 @@ end
 |]
 
 -- główny skrypt uruchamiąjący wszystkie pozostałe
-run :: (IsString a, Monoid a) => String -> a
-run inputdata = [str|
+run_main :: (IsString a, Monoid a) => String -> a
+run_main inputdata = [str|
 
 clear all; close all; clc;
 
@@ -85,13 +103,13 @@ run_trainer(games);
 
 |]
 
-run_trainer_ll :: (IsString a, Monoid a, ?dbnSize :: Int, ?numEpochs :: Int) => String -> a
-run_trainer_ll filepath = 
-    let dbnsize = ?dbnSize :: Int
+run_trainer_ll :: (IsString a, Monoid a, ?dbnSizes :: [Int], ?numEpochs :: Int) => String -> a
+run_trainer_ll outputFilepath = 
+    let dbnsizes = ?dbnSizes
         numepochs = ?numEpochs :: Int
     in [str| 
 function run_trainer_ll(train_x, train_y)
-    dbn.sizes = [$:dbnsize$];
+    dbn.sizes = $:dbnsizes$;
     opts.numepochs = [$:numepochs$];
     opts.batchsize = 100;
     opts.momentum  =   0;
@@ -102,14 +120,14 @@ function run_trainer_ll(train_x, train_y)
     opts.numepochs =   1;
     opts.batchsize = 100;
     nn_ll = nntrain(nn_ll, train_x, train_y, opts);
-    nnsave_to_file_full(nn_ll,'$fromString filepath$');
+    nnsave_to_file_full(nn_ll,'$fromString outputFilepath$');
     
 end; |]
 
-run_trainer :: (IsString a, Monoid a, ?dbnSize :: Int) => String -> a
-run_trainer filepath = let dbnSize = ?dbnSize :: Int in [str|
+run_trainer :: (IsString a, Monoid a, ?dbnSizes :: [Int]) => String -> a
+run_trainer outputFilepath = let dbnSizes = ?dbnSizes in [str|
 function dbn = run_trainer(train_x)
-    dbn.sizes = [$:dbnSize$];
+    dbn.sizes = $:dbnSizes$;
     opts.numepochs =   5;
     opts.batchsize = 100;
     opts.momentum  =   0;
@@ -117,7 +135,7 @@ function dbn = run_trainer(train_x)
     dbn = dbnsetup(dbn, train_x, opts);
     dbn = dbntrain(dbn, train_x, opts);
     nn = dbnunfoldtonn(dbn, 10);
-    nnsave_to_file(nn, '$fromString filepath$');
+    nnsave_to_file(nn, '$fromString outputFilepath$');
 
 end
 |]
