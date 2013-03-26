@@ -5,15 +5,22 @@ module Matlab where
 import Data.String.Interpolation
 import Data.String
 import Data.Monoid
+import Data.Default
 import System.FilePath
 import System.Directory
 import System.Process
 
-data MatlabOpts = MatlabOpts { dbnSizes :: [Int], numEpochs :: Int } deriving (Eq, Ord, Read, Show)
+data MatlabImp = Matlab | Octave deriving (Eq, Ord, Read, Show)
+data MatlabOpts = MatlabOpts { dbnSizes :: [Int], numEpochs :: Int, implementation :: MatlabImp } deriving (Eq, Ord, Read, Show)
+
+instance Default MatlabOpts where
+    def = MatlabOpts { dbnSizes = [100], numEpochs = 5, implementation = Octave }
 
 prepAndRun matlabOpts outputDirectory inputDataFile = do
   let ?dbnSizes = dbnSizes matlabOpts
       ?numEpochs = numEpochs matlabOpts
+
+  createDirectoryIfMissing True outputDirectory
 
   writeFile (outputDirectory </> "nnsave_to_file_full.m") nnsave_to_file_full
   writeFile (outputDirectory </> "nnsave_to_file.m") nnsave_to_file
@@ -21,7 +28,9 @@ prepAndRun matlabOpts outputDirectory inputDataFile = do
   writeFile (outputDirectory </> "run_trainer.m") (run_trainer (outputDirectory </> "dbn.txt"))
   writeFile (outputDirectory </> "run_trainer_ll.m") (run_trainer_ll (outputDirectory </> "dbn-ll.txt"))
 
-  procHandle <- runProcess "matlab" ["run_main.m"] (Just outputDirectory) Nothing Nothing Nothing Nothing 
+  procHandle <- case implementation matlabOpts of
+                  Octave -> runProcess "octave" (words "run_main.m") (Just outputDirectory) Nothing Nothing Nothing Nothing 
+                  Matlab -> runProcess "matlab" (words "-nosplash -nodisplay -r run_main") (Just outputDirectory) Nothing Nothing Nothing Nothing 
   exitCode <- waitForProcess procHandle
   return exitCode
 
@@ -87,9 +96,9 @@ end
 run_main :: (IsString a, Monoid a) => String -> a
 run_main inputdata = [str|
 
-clear all; close all; clc;
+% clear all; close all; clc;
 
-addpath(genpath('/home/tener/dokumenty/ii/magisterka/DeepLearnToolbox'));
+addpath(genpath('/home/tener/dokumenty/ii/magisterka/magisterka-deeplearning/DeepLearnToolbox'));
 
 games = dlmread('$fromString inputdata$');
 games_cnt = floor(size(games,1)/100)*100;
@@ -100,6 +109,8 @@ run_trainer(games);
 %games_y = games_y(1:games_cnt,:);
 %train_y = games_y;
 %run_trainer_ll(train_x, train_y);
+
+exit;
 
 |]
 
