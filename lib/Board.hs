@@ -37,10 +37,11 @@ marbleCount White brd = countWhite brd
 marbleCount Black brd = countBlack brd
 
 
-#ifndef DOCTESTING
-instance Hashable.Hashable Position where
-    hashWithSalt _salt (a,b) = a * 32 + b -- hack hack hack
-#endif
+-- fixme deal with that
+-- #ifndef DOCTESTING
+-- instance Hashable.Hashable Position where
+--     hashWithSalt _salt (a,b) = a * 32 + b -- hack hack hack
+-- #endif
 
 {-
 
