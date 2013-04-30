@@ -69,8 +69,8 @@ instance Game2 Breakthrough where
              | otherwise = fail "no winners"
 
     movesDesc g p = let dirs = case p of
-                                  P1 -> [(1,1),(1,0),(1,-1)] -- move upward
-                                  P2 -> [(-1,1),(-1,0),(-1,-1)] -- move downward
+                                  P1 -> [(1,1),(0,1),(-1,1)] -- move upward
+                                  P2 -> [(1,-1),(0,-1),(-1,-1)] -- move downward
                         brd = board g
                         applyDir (x,y) (dx,dy) = (x+dx, y+dy)
                         movesPos = [ (pos1, applyDir pos1 dir) | pos1 <- getAll p brd, dir <- dirs]
@@ -104,7 +104,7 @@ instance Game2 Breakthrough where
                          -- move removing P2 piece
                          brdOK'P1P2 = brdOK { countP2 = (countP2 g) - 1 }
 
-                         isDiagonalMove = (snd p1 - snd p2) /= 0
+                         isDiagonalMove = (fst p1 - fst p2) /= 0
 
                      in
                        case (valPos1, valPos2) of
