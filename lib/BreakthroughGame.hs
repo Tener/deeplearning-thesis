@@ -14,8 +14,9 @@ import Data.Maybe
 import qualified Data.ByteString as ByteString
 import qualified Data.ByteString.Char8 as BSC8
 
+import qualified Data.Packed.Vector as V
+
 type Position = (Int,Int) -- ^ (x,y), x=column goes from 0 to width-1, y=row goes from 0 to height-1
-type Direction = (Position,Position)
 type BoardMap = Map Position Player2
 
 data Breakthrough = Breakthrough { board :: BoardMap -- ^ map from position to P1 or P2 piece.
@@ -24,7 +25,7 @@ data Breakthrough = Breakthrough { board :: BoardMap -- ^ map from position to P
                                  , winningP2 :: Set Position -- ^ fixed set of winning positions for P2
                                  , countP1 :: !Int -- ^ how many pieces P1 have
                                  , countP2 :: !Int -- ^ how many pieces P2 have
-                                 }
+                                 } deriving (Show)
 
 instance Game2 Breakthrough where
     type MoveDesc Breakthrough = (Position,Position) -- first position, second position
@@ -138,7 +139,13 @@ instance OneZero Double where
 
 instance Repr [Int] where
     serializeRepr repr = ByteString.intercalate "," (map (BSC8.pack . show) repr)
-    deserializeRepr = error "deserializeRepr :: [Int] -> ByteString : undefined" -- fixme
+    deserializeRepr = error "deserializeRepr :: [Int] -> ByteString : not implemented" -- fixme
+    reprToNN repr = V.fromList (map fromIntegral repr)
+
+instance Repr [Double] where
+    serializeRepr repr = ByteString.intercalate "," (map (BSC8.pack . show) repr)
+    deserializeRepr = error "deserializeRepr :: [Double] -> ByteString : not implemented" -- fixme
+    reprToNN repr = V.fromList repr
 
 illegalPos :: Position -> Breakthrough -> Bool
 illegalPos _pos@(x,y) g 

@@ -20,13 +20,13 @@ Library
                           MonteCarloTS, CommonDatatypes, NeuralNets,
                           Tournament, Utils, MinimalNN, Constraints,
                           Config, Matlab,
-                          GenericGame, BreakthroughGame
+                          GenericGame, AgentGeneric, BreakthroughGame 
   Build-depends:          base, mwc-random, grid == 2.0, process, containers, hashmap, game-tree, split, 
 --                        hashable == 1.2.0.2.20121217, -- with removed hashable instance for pair...
                           hashable, 
 --                        hnn == 0.2.0.0.20121218, 
                           vector, hmatrix, io-memoize, cairo, data-default, async,
-                          global-config, data-default, filepath, directory, transformers, global-variables, Interpolation,
+                          global-config, filepath, directory, transformers, global-variables, Interpolation,
                           bytestring
 --  if flag(cairo)
 --     build-depends: cairo
@@ -53,11 +53,16 @@ Executable constraints-single-random-neuron
   Build-depends:          base, abalone, async
   Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -threaded
 
-
 Executable dense-to-sparse
   Main-is:                src/dense-to-sparse.hs
   Build-depends:          base, filepath
   Ghc-options:            -rtsopts
+
+Executable breakthrough-driver
+  Main-is:                src/breakthrough-driver.hs
+  Build-depends:          base, abalone, async, data-default
+  Ghc-options:            -rtsopts
+
 
 -- Executable nn-benchmark-01
 --   Main-is:                src/nn-benchmark.hs
