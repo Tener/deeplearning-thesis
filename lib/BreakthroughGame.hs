@@ -139,7 +139,10 @@ instance Game2 Breakthrough where
                                         | val == one = HashMap.alter (const c) po b
                                         | otherwise = error "fromRepr: bad val"
 
-        g1 = g0 { board = b1 }
+        g1 = g0 { board = b1
+                , countP1 = count P1 b1
+                , countP2 = count P2 b1
+                }
      in g1
 
 class OneZero a where
@@ -177,6 +180,7 @@ legalPos pos brd = not (illegalPos pos brd)
 -- | get all positions within a specified row. 
 row rowNum rowLength = [(column',rowNum) | column' <- [0..rowLength-1]]
 {-# INLINE row #-}
+
 -- | get all positions within a specified column. 
 column colNum colLength = [(colNum,row') | row' <- [0..colLength-1]]
 {-# INLINE column #-}
