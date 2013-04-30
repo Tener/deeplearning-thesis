@@ -18,7 +18,7 @@ params = (6,6) -- board size
 
 main = do
   tCount <- getNumCapabilities
-  let gCount = 100000
+  let gCount = 1000
       gtCount = gCount `div` tCount
       gtCountExtra = gCount - (gtCount * tCount)
 
@@ -27,7 +27,7 @@ main = do
       ttGCount _ = gtCount
 
       threadJob tNum = do
-         a1 <- mkAgent () :: IO AgentRandom
+         a1 <- mkAgent 10 :: IO AgentMCTS
          a2 <- mkAgent () :: IO AgentRandom
          winners <- sequence $ replicate (ttGCount tNum) (oneGame a1 a2)
          return winners

@@ -5,7 +5,7 @@ module AgentGeneric where
 
 import System.Random.MWC
 import Control.Applicative
-import Control.Monad (when)
+import Control.Monad (when, replicateM)
 import Numeric.Container (sumElements)
 import Data.Default
 import Data.List (sort, group, groupBy, sortBy)
@@ -30,7 +30,9 @@ data AgentRandom = AgentRandom GenIO
 data AgentSimple = AgentSimple TNetwork GenIO
 
 -- | agent based on monte carlo tree search: evaluate moves counting how many times following that move and playing randomly till the end yields victory.
-data AgentMCTS = AgentMCTS GenIO
+data AgentMCTS = AgentMCTS Int   -- how many games to evaluate for each possible move
+                           AgentRandom -- cached AgentRandom for random game walks
+                           GenIO 
 
 -- import qualified Data.Tree.Game_tree.Negascout as GTreeAlgo
 -- import Data.Tree.Game_tree.Game_tree as GTree
@@ -65,6 +67,7 @@ data AgentMCTS = AgentMCTS GenIO
 class HasGen a where gen :: a -> GenIO
 instance HasGen AgentRandom where gen (AgentRandom g) = g
 instance HasGen AgentSimple where gen (AgentSimple _ g) = g
+instance HasGen AgentMCTS where gen (AgentMCTS _ _ g) = g
 
 class HasTNet a where tnet :: a -> TNetwork
 instance HasTNet AgentSimple where tnet (AgentSimple t _) = t
@@ -90,6 +93,23 @@ instance Agent2 AgentSimple where
       when (null best'moves) (fail "AgentSimple: Stuck, no moves left.")
       pickList (gen agent) best'moves
 
+instance Agent2 AgentMCTS where
+    type AgentParams AgentMCTS = Int
+    mkAgent games = AgentMCTS games <$> mkAgent () <*> (withSystemRandom $ asGenIO $ return)
+
+    applyAgent agent@(AgentMCTS games agRnd _) g p = do
+      let mv = moves g p
+          myeval move = do
+            winners <- replicateM games (winner `fmap` randomGame move)
+            let count = length $ filter (==(Just p)) winners
+            return (count, move)
+          randomGame game = driverG2 game agRnd agRnd (GameDriverCallback (\_ -> return ()) (\_ _ -> return True))
+      
+      mv'evaled <- mapM myeval mv
+      let best'moves = reverse $ map snd $ sortBy (comparing fst) $ mv'evaled
+      when (null best'moves) (fail "AgentMCTS: Stuck, no moves left.")
+      return (head best'moves)
+
 pickList :: GenIO -> [a] -> IO a
 pickList rgen xs = do
           pick <- uniformR (0, (length xs) - 1) rgen
@@ -111,16 +131,17 @@ instance (Game2 g, Show g) => Default (GameDriverCallback g) where
                              (\g p -> return True)
 
 -- | a 'driver' for Game2 games. passed appropriate callback structure drives the game from given state to the end.
-driverG2 :: (Game2 g, Repr (GameRepr g), Agent2 a1, Agent2 a2) => g -> a1 -> a2 -> (GameDriverCallback g) -> IO ()
+driverG2 :: (Game2 g, Repr (GameRepr g), Agent2 a1, Agent2 a2) => g -> a1 -> a2 -> (GameDriverCallback g) -> IO g
 driverG2 g0 a1 a2 cb = do 
   let allSteps = cycle [((applyAgent a1),P1),((applyAgent a2),P2)]
+      end g = gameFinished cb g >> return g
       loop g (_step@(ag,pl):steps) = do
         case winner g of
           Nothing -> do
             cont <- gameTurn cb g pl
-            when cont (do
-                        g' <- ag g pl
-                        loop g' steps)
-          Just _p  -> gameFinished cb g
-
+            if cont then (do
+                           g' <- ag g pl
+                           loop g' steps)
+                    else end g
+          Just _p  -> end g
   loop g0 allSteps
