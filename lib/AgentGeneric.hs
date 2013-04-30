@@ -73,13 +73,8 @@ instance Agent2 AgentRandom where
 
     applyAgent agent g p = do
       let mv = moves g p
-      case mv of
-        [] -> do
-          fail "AgentRandom: Stuck, cant do anything."
-        _ -> do
-          pick <- uniformR (0, length mv - 1) (gen agent)
-          let chosen = (mv !! pick)
-          return chosen
+      when (null mv) (fail "AgentRandom: Stuck, cant do anything.")
+      pickList (gen agent) mv
 
 instance Agent2 AgentSimple where
     type AgentParams AgentSimple = TNetwork
@@ -87,14 +82,15 @@ instance Agent2 AgentSimple where
 
     applyAgent agent g p = do
       let mv = moves g p
-          mv'evaled = zip mv (map (evalGameTNetwork (tnet agent)) mv)
-      case mv'evaled of
-        [] -> do
-          fail "AgentSimple: Stuck, cant do anything."
-        _ -> do
-          pick <- uniformR (0, length mv - 1) (gen agent)
-          let chosen = (mv !! pick)
-          return chosen
+          mv'evaled = zip (map (evalGameTNetwork (tnet agent)) mv) mv
+          best'moves = groupBy (\a b -> fst a == fst b) $ sort $ mv'evaled
+
+      when (null best'moves) (fail "AgentSimple: Stuck, no moves left.")
+      pickList (gen agent) best'moves
+
+pickList rgen xs = do
+          pick <- uniformR (0, xs - 1) rgen
+          return (xs !! pickxs)
 
 evalGameTNetwork :: (Game2 g, Repr (GameRepr g)) => TNetwork -> g -> Double
 evalGameTNetwork tn g = sumElements $ computeTNetworkSigmoid tn (reprToNN (toRepr g))
