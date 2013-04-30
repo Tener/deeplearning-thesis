@@ -61,7 +61,7 @@ Executable dense-to-sparse
 Executable breakthrough-driver
   Main-is:                src/breakthrough-driver.hs
   Build-depends:          base, abalone, async, data-default
-  Ghc-options:            -rtsopts
+  Ghc-options:            -rtsopts -threaded
 
 
 -- Executable nn-benchmark-01
