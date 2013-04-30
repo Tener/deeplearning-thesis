@@ -12,7 +12,18 @@ params = (6,6) -- board size
 main :: IO ()
 main = do
   let g0 = freshGame params :: Breakthrough
-      cb = def
+      cb :: GameDriverCallback Breakthrough
+      cb = GameDriverCallback { gameTurn = (\ g p -> do
+                               putStrLn (prettyPrintGame (g :: Breakthrough))
+                               return True)
+               , gameFinished = (\ g -> do
+                               putStrLn $ "Game finished! Winner: " ++ show (winner g)
+                               putStrLn (prettyPrintGame (g :: Breakthrough))
+
+                                )
+               }
+
+  
 
   a1 <- mkAgent () :: IO AgentRandom
   a2 <- mkAgent () :: IO AgentRandom
