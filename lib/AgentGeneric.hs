@@ -8,6 +8,8 @@ import Control.Applicative
 import Control.Monad (when)
 import Numeric.Container (sumElements)
 import Data.Default
+import Data.List (sort, group, groupBy, sortBy)
+import Data.Ord
 
 import GenericGame
 import MinimalNN
@@ -83,14 +85,15 @@ instance Agent2 AgentSimple where
     applyAgent agent g p = do
       let mv = moves g p
           mv'evaled = zip (map (evalGameTNetwork (tnet agent)) mv) mv
-          best'moves = groupBy (\a b -> fst a == fst b) $ sort $ mv'evaled
+          best'moves = map snd $ head $ groupBy (\a b -> fst a == fst b) $ sortBy (comparing fst) $ mv'evaled
 
       when (null best'moves) (fail "AgentSimple: Stuck, no moves left.")
       pickList (gen agent) best'moves
 
+pickList :: GenIO -> [a] -> IO a
 pickList rgen xs = do
-          pick <- uniformR (0, xs - 1) rgen
-          return (xs !! pickxs)
+          pick <- uniformR (0, (length xs) - 1) rgen
+          return (xs !! pick)
 
 evalGameTNetwork :: (Game2 g, Repr (GameRepr g)) => TNetwork -> g -> Double
 evalGameTNetwork tn g = sumElements $ computeTNetworkSigmoid tn (reprToNN (toRepr g))
