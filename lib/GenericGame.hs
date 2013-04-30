@@ -13,6 +13,9 @@ data Player2 = P1 -- ^ player 1
              | P2 -- ^ player 2
                deriving (Eq,Enum,Show,Ord,Read,Bounded)
 
+class GameTxtRender g where
+    prettyPrintGame :: g -> String
+
 -- | class for 2 player games
 class Game2 a where
     -- | type for move descriptions

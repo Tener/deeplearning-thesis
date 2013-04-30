@@ -27,10 +27,26 @@ data Breakthrough = Breakthrough { board :: BoardMap -- ^ map from position to P
                                  , countP2 :: !Int -- ^ how many pieces P2 have
                                  } deriving (Show)
 
+instance GameTxtRender Breakthrough where
+    prettyPrintGame g = let ll = "---------------------------" 
+                            rl = fst (boardSize g)
+                            charPos pos = case HashMap.lookup pos (board g) of
+                                            Nothing -> '.'
+                                            Just P1 -> '1'
+                                            Just P2 -> '2'
+                            pprow n = "> " ++ map charPos (row n rl) ++ " <"
+                        in
+                        unlines ( 
+                        [ll
+                        ,show g
+                        ,ll] ++
+                        map pprow [0..(snd (boardSize g))-1]
+                        ++ [ll])
+
 instance Game2 Breakthrough where
     type MoveDesc Breakthrough = (Position,Position) -- first position, second position
-    type GameRepr Breakthrough = [Int]
-    type GameParams Breakthrough = (Int,Int)
+    type GameRepr Breakthrough = [Int] -- sparse field repr.
+    type GameParams Breakthrough = (Int,Int) -- board size
 
     freshGame bsize@(sw,sh) = Breakthrough { board = HashMap.fromList [ (pos,P1) | pos <- row 0 sw ] `mappend`
                                                      HashMap.fromList [ (pos,P1) | pos <- row 1 sw ] `mappend`
@@ -169,12 +185,21 @@ column colNum colLength = [(colNum,row') | row' <- [0..colLength-1]]
 allPos (rowLength,colLength) = [(column',row') | row' <- [0..colLength-1], column' <- [0..rowLength-1]]
 {-# INLINE allPos #-}
 
+-- | get all positions of pieces of specified player on board (as a set)
 getAllSet :: Player2 -> BoardMap -> Set Position
 getAllSet el hm = HashSet.fromList $ HashMap.keys $ HashMap.filter (==el) hm
 
+-- | get all positions of pieces of specified player on board (as a list)
 getAll :: Player2 -> BoardMap -> [Position]
 getAll el hm = HashMap.keys $ HashMap.filter (==el) hm
 
+-- | count number of pieces of specified player on board
 count :: Player2 -> BoardMap -> Int
 count p hm = length $ filter (==p) $ map snd $ HashMap.toList hm
+
+-- debugging utils 
+pp g = putStrLn . prettyPrintGame $ g
+
+g0 :: Breakthrough
+g0 = freshGame (6,6)
 
