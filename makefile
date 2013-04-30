@@ -28,3 +28,6 @@ tournament-ii:
 clean:
 	cabal-dev clean
 
+
+doc:
+	firefox cabal-dev/share/doc/abalone-0.1/html/index.html &

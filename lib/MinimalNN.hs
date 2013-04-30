@@ -29,7 +29,7 @@ mkTNetwork :: [[[Double]]] -> [[Double]] -> TNetwork
 mkTNetwork w b | length w == length b = TNetwork (map (Matrix.trans . Matrix.fromLists) w) (map Vector.fromList b)
                | otherwise = error "Inequal number of layers for biases and weights"
 
--- assuming last layer is one neuron big
+-- | return last layer in nn, assuming it is one neuron big
 lastLayerTN :: TNetwork -> [(Double,[Double])]
 lastLayerTN tn = zip b w
     where
