@@ -2,7 +2,9 @@ module Main where
 
 import GenericGame
 import AgentGeneric
+
 import BreakthroughGame
+import Board
 
 import Data.Default
 import Data.IORef
@@ -13,8 +15,6 @@ import Control.Arrow
 import Control.Concurrent
 import Control.Concurrent.Async
 
-params :: GameParams Breakthrough
-params = (6,6) -- board size
 
 main = do
   tCount <- getNumCapabilities
@@ -27,7 +27,8 @@ main = do
       ttGCount _ = gtCount
 
       threadJob tNum = do
-         a1 <- mkAgent 10 :: IO AgentMCTS
+         a1 <- mkAgent 15 :: IO AgentMCTS
+--         a1 <- mkAgent () :: IO AgentRandom
          a2 <- mkAgent () :: IO AgentRandom
          winners <- sequence $ replicate (ttGCount tNum) (oneGame a1 a2)
          return winners
@@ -44,9 +45,9 @@ oneGame :: (Agent2 a1, Agent2 a2) => a1 -> a2 -> IO (Maybe Player2)
 oneGame a1 a2 = do
   ref <- newIORef Nothing
 
-  let g0 = freshGame params :: Breakthrough
-      cb :: GameDriverCallback Breakthrough
+  let g0 = freshGameDefaultParams :: Breakthrough
       cb = GameDriverCallback { gameTurn = (\ g p -> do
+                               -- print p
                                -- putStrLn (prettyPrintGame (g :: Breakthrough))
                                return True)
                , gameFinished = (\ g -> do
