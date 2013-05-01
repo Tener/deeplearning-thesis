@@ -27,6 +27,9 @@ class Game2 a where
     -- | type for game parameters (board size etc.)
     type GameParams a :: *
 
+    -- | return game name
+    gameName :: a -> String
+
     -- | initiate new game
     freshGame :: GameParams a -> a
 

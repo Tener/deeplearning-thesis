@@ -41,6 +41,7 @@ instance Game2 Board where
     freshGame () = starting'board'default
     freshGameDefaultParams = freshGame ()
 
+    gameName _ = "Abalone"
     movesDesc = error "movesDesc: Not implemented for Board"
     applyMove = error "applyMove: Not implemented for Board"
 

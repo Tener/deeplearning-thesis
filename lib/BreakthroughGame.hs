@@ -48,6 +48,8 @@ instance Game2 Breakthrough where
 
     freshGameDefaultParams = freshGame (6,6)
 
+    gameName g = "Breakthrough size=" ++ show (boardSize g)
+
     freshGame bsize@(sw,sh) = Breakthrough { board = HashMap.fromList [ (pos,P1) | pos <- row 0 sw ] `mappend`
                                                      HashMap.fromList [ (pos,P1) | pos <- row 1 sw ] `mappend`
                                                      HashMap.fromList [ (pos,P2) | pos <- row (sh-2) sw ] `mappend`

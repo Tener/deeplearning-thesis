@@ -7,27 +7,39 @@ import AgentGeneric
 
 import Graphics.Histogram
 import Data.IORef
+import System.Process
+
+import qualified Graphics.Gnuplot.Frame.OptionSet as Opts
+
 
 -- | produce histogram with game depths from random playouts
 histogramRandomGameDepth :: (Repr (GameRepr g), Game2 g) 
-                            => g -- ^ unused type argument for fixing game type
+                            => g -- ^ type argument for fixing game type. might be used (i.e. dont pass undefined)
                             -> FilePath -- ^ where to store the plot or empty for in-memory display
                             -> Int -- ^ how many games to play
                             -> IO ()
-histogramRandomGameDepth g'unused plotPath countGames = do
+histogramRandomGameDepth g plotPath countGames = do
   let ofType :: a -> a -> b -> b
       ofType _ _ b = b
 
   countR <- newIORef 0
   gamesR <- newIORef []
   let appendR c = modifyIORef gamesR ((fromIntegral c):)
-      incR = modifyIORef countR (1+)
+      incR = do
+        modifyIORef countR (1+)
+        print =<< readIORef countR
+
 
   sampleRandomGameDepth ((<countGames) `fmap` readIORef countR)
-                        (\ g depth -> appendR (ofType g g'unused depth) >> incR)
+                        (\ gr depth -> appendR (ofType gr g depth) >> incR)
 
   depths <- readIORef gamesR
   let hist = histogram binSturges depths
-  plot plotPath hist
+      opts = Opts.title ("Random game depth: " ++ (gameName g)) $ 
+             defOpts hist
+  plotAdv plotPath opts hist
+  system "sed 's/png;/png size 1000,1000;/' curve.gp > curve-fix.gp"
+  system "gnuplot curve-fix.gp"
+  system "rm -f curve0.csv curve.gp curve-fix.gp"
 
   return ()

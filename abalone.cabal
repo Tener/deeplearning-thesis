@@ -27,7 +27,7 @@ Library
 --                        hnn == 0.2.0.0.20121218, 
                           vector, hmatrix, io-memoize, cairo, data-default, async,
                           global-config, filepath, directory, transformers, global-variables, Interpolation,
-                          bytestring, Histogram
+                          bytestring, Histogram, gnuplot
 --  if flag(cairo)
 --     build-depends: cairo
   cpp-options: -DCAIRO
