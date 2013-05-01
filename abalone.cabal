@@ -20,14 +20,14 @@ Library
                           MonteCarloTS, CommonDatatypes, NeuralNets,
                           Tournament, Utils, MinimalNN, Constraints,
                           Config, Matlab,
-                          GenericGame, AgentGeneric, BreakthroughGame 
+                          GenericGame, AgentGeneric, BreakthroughGame, HistogramGeneric
   Build-depends:          base, mwc-random, grid == 2.0, process, containers, hashmap, game-tree, split, 
 --                        hashable == 1.2.0.2.20121217, -- with removed hashable instance for pair...
                           hashable, 
 --                        hnn == 0.2.0.0.20121218, 
                           vector, hmatrix, io-memoize, cairo, data-default, async,
                           global-config, filepath, directory, transformers, global-variables, Interpolation,
-                          bytestring
+                          bytestring, Histogram
 --  if flag(cairo)
 --     build-depends: cairo
   cpp-options: -DCAIRO
@@ -62,6 +62,12 @@ Executable breakthrough-driver
   Main-is:                src/breakthrough-driver.hs
   Build-depends:          base, abalone, async, data-default
   Ghc-options:            -rtsopts -threaded
+
+Executable histograms-printer
+  Main-is:                src/histograms-printer.hs
+  Build-depends:          base, abalone, async, data-default
+  Ghc-options:            -rtsopts
+
 
 
 -- Executable nn-benchmark-01
