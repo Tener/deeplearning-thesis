@@ -1,10 +1,12 @@
-{-# LANGUAGE TypeFamilies, DefaultSignatures, FlexibleContexts #-} 
+{-# LANGUAGE TypeFamilies, DefaultSignatures, FlexibleContexts, OverloadedStrings, FlexibleInstances #-} 
 
 -- | generic interface for games
 module GenericGame where
 
 import Data.ByteString (ByteString)
 import qualified Data.Packed.Vector as V
+import qualified Data.ByteString as ByteString
+import qualified Data.ByteString.Char8 as BSC8
 import Control.Monad
 
 import MinimalNN
@@ -75,6 +77,26 @@ class Repr gameRepr where
 -- game2learner :: [gameState] -> neural network evaluator??
 -- game2vis :: gameState -> svg diagram
 
+class OneZero a where
+    zero, one :: a
+    default zero :: (Enum a) => a
+    zero = toEnum 0
+    default one :: (Enum a) => a
+    one = toEnum 1
+
+instance OneZero Int where
+instance OneZero Bool where
+instance OneZero Double where
+
+instance Repr [Int] where
+    serializeRepr repr = ByteString.intercalate "," (map (BSC8.pack . show) repr)
+    deserializeRepr = error "deserializeRepr :: [Int] -> ByteString : not implemented" -- fixme
+    reprToNN repr = V.fromList (map fromIntegral repr)
+
+instance Repr [Double] where
+    serializeRepr repr = ByteString.intercalate "," (map (BSC8.pack . show) repr)
+    deserializeRepr = error "deserializeRepr :: [Double] -> ByteString : not implemented" -- fixme
+    reprToNN repr = V.fromList repr
 
 
   

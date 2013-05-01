@@ -1,4 +1,4 @@
-{-# LANGUAGE ViewPatterns, TypeFamilies, DefaultSignatures, FlexibleContexts, FlexibleInstances, OverloadedStrings #-} 
+{-# LANGUAGE ViewPatterns, TypeFamilies, DefaultSignatures, FlexibleContexts, FlexibleInstances #-} 
 
 module BreakthroughGame where
 
@@ -11,8 +11,6 @@ import Data.HashSet (Set)
 import Data.Monoid (mempty, mappend)
 import Data.Maybe
 
-import qualified Data.ByteString as ByteString
-import qualified Data.ByteString.Char8 as BSC8
 
 import qualified Data.Packed.Vector as V
 
@@ -146,27 +144,6 @@ instance Game2 Breakthrough where
                 , countP2 = count P2 b1
                 }
      in g1
-
-class OneZero a where
-    zero, one :: a
-    default zero :: (Enum a) => a
-    zero = toEnum 0
-    default one :: (Enum a) => a
-    one = toEnum 1
-
-instance OneZero Int where
-instance OneZero Bool where
-instance OneZero Double where
-
-instance Repr [Int] where
-    serializeRepr repr = ByteString.intercalate "," (map (BSC8.pack . show) repr)
-    deserializeRepr = error "deserializeRepr :: [Int] -> ByteString : not implemented" -- fixme
-    reprToNN repr = V.fromList (map fromIntegral repr)
-
-instance Repr [Double] where
-    serializeRepr repr = ByteString.intercalate "," (map (BSC8.pack . show) repr)
-    deserializeRepr = error "deserializeRepr :: [Double] -> ByteString : not implemented" -- fixme
-    reprToNN repr = V.fromList repr
 
 illegalPos :: Position -> Breakthrough -> Bool
 illegalPos _pos@(x,y) g 
