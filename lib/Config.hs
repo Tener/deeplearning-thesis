@@ -15,7 +15,8 @@ data Config = Config { configNeuralNetsDirectory :: FilePath
                      }
    deriving (Show, Typeable)
 
-fetchConfig field = fmap field getConfig
+fetchConfig :: (Config -> a) -> IO a
+fetchConfig field = fmap field (getConfig :: IO Config)
 
 instance Default Config where
    def = fix (\self -> let d = configNeuralNetsDirectory self in 

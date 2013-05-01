@@ -8,13 +8,13 @@ import Data.Maybe (catMaybes)
 -- import Data.Ord
 import System.IO
 
-import Math.Geometry.Grid
+import Math.Geometry.Grid hiding (empty)
 
 import qualified Math.Geometry.GridMap as GridMap 
 
 import qualified Data.HashMap as HashMap
 import qualified Data.HashSet as HashSet
-import qualified Data.Hashable as Hashable
+-- import qualified Data.Hashable as Hashable
 
 import qualified Data.Packed.Vector as V
 
@@ -52,8 +52,11 @@ instance Game2 Board where
     fromRepr () = denseReprToBoard
     
 
+player2ToColor :: Player2 -> Color
 player2ToColor P1 = White
 player2ToColor P2 = Black
+
+colorToPlayer2 :: Color -> Player2
 colorToPlayer2 White = P1
 colorToPlayer2 Black = P2
 
@@ -119,6 +122,7 @@ negateBoard :: Board -> Board
 negateBoard (Board hm cw cb) = Board (HashMap.map negColor hm) cb cw
 
 {-# INLINE rules #-}
+rules :: [(String, [((Int, Int), (Int, Int))], Match, [Setter])]
 rules = [ ("here", ways'straight, here,    move'here) 
         , ("here2", ways'straight, here2,   move'here2) 
         , ("here3", ways'straight, here3,   move'here3) 
@@ -135,10 +139,10 @@ rules = [ ("here", ways'straight, here,    move'here)
        mnext n what = Next (mnext (n-1) what)
 
        mball = This Ball
-       mdball = Diag mball
+       -- mdball = Diag mball
        mopponent = This Opponent
-       mempty = This Empty
-       mdeath = This Death
+       -- mempty = This Empty
+       -- mdeath = This Death
 
        -- ruchy proste
        here = And (This Ball) (Next (This Empty))
@@ -181,13 +185,19 @@ rules = [ ("here", ways'straight, here,    move'here)
        move'shove2  = [empty, next 2 ball, next 3 opponent]
        move'shove31 = [empty, next 3 ball, next 4 opponent]
        move'shove32 = [empty, next 3 ball, next 5 opponent]
-       move'diag    = [empty, 
-                       dball]
+       -- move'diag    = [empty, 
+       --                 dball]
        move'diag2   = [empty, next 1 empty, 
                        dball, next 1 dball]
        move'diag3   = [empty, next 1 empty, next 2 empty, 
                        dball, next 1 dball, next 2 dball]
 
+getMovesDir :: Color
+               -> Board
+               -> Direction
+               -> Position
+               -> [(t, [Direction], Match, Move)]
+               -> [(t, Board)]
 getMovesDir col brd way pos ruleset = [ (name,runMove col brd pos way setter)
                                       | (name,ways,rule,setter) <- ruleset
                                       , HashMap.lookup pos (hashmap brd) == Just col
@@ -207,6 +217,8 @@ getMoves col brd = -- nub
                    , tryMatch col brd idx way rule
                    ]
 
+getMovesN :: Color
+          -> Board -> [(String, ((Int, Int), (Int, Int)), Board)]
 getMovesN col brd = 
                    [ (name, way, runMove col brd idx way setter) | 
                      (idx,val) <- HashMap.toList (hashmap brd)
@@ -237,7 +249,7 @@ updateCounts brd a b | a == b = brd
                                        t6 = b2i $ b == Just Black 
                                        cw = countWhite brd
                                        cb = countBlack brd
-                                       b2i b = if b then 1 else 0
+                                       b2i b' = if b' then 1 else 0
                                    in
                                     brd { countWhite = cw-t2+t5
                                         , countBlack = cb-t3+t6 }
@@ -267,7 +279,7 @@ gridPositionsHashset = HashSet.fromList (indices fresh'grid)
 
 {-# INLINE advancePosition #-}
 advancePosition :: Position -> Position -> Position
-advancePosition pos@(f,s) dir@(df, ds) = (f + df, s + ds)
+advancePosition _pos@(f,s) _dir@(df, ds) = (f + df, s + ds)
 
 -- wypróbuj ruch
 tryMatch :: Color -> Board -> Position -> Direction -> Match -> Bool
@@ -319,6 +331,7 @@ denseReprToBoard xs = boardOldToBoard (GridMap.lazyGridMap fresh'grid balls)
       intToField 0 = Nothing
       intToField 1 = (Just White)
       intToField 2 = (Just Black)
+      intToField _ = error "intToField: other than [0,1,2]"
 
 -- http://en.wikipedia.org/wiki/File:Abalone_standard.svg
 starting'board'default :: Board
@@ -377,8 +390,8 @@ boardFromBalls balls = boardOldToBoard $ GridMap.lazyGridMap fresh'grid balls
 
 textcoords :: [String]
 textcoords = concat $ 
-             [g n 'a' l | (n,l) <- zip [1..5] ['e'..]] ++ 
-             [g n l 'i' | (n,l) <- zip [6..9] ['b'..]]
+             [g n 'a' l | (n,l) <- zip [(1::Int)..5] ['e'..]] ++ 
+             [g n l 'i' | (n,l) <- zip [(6::Int)..9] ['b'..]]
 
     where g n ll lh = reverse $  map (\l -> l:show n) [ll..lh]
 
@@ -393,8 +406,8 @@ runTxtMove col brd move = case getMovesDir col brd way pos ruleset of
                                   ++ " ruleset=" ++ show (map (\(n,_,_,_) -> n) ruleset)
                                   ++ " debug=" ++ debug
 
-                            [(move'name,brd'moved)] -> brd'moved
-                            xs -> error $ "runTxtMove: ambiguous move: " ++ move
+                            [(_move'name,brd'moved)] -> brd'moved
+                            _ -> error $ "runTxtMove: ambiguous move: " ++ move
     where
       pr b = "http://localhost:3000/board/" ++ (reprToRow $ boardToDense $ b)
 
@@ -438,6 +451,7 @@ fresh'grid :: HexHexGrid
 fresh'grid = hexHexGrid 5
 
 -- wszystkie możliwe interpretacje kierunków "Next" oraz "Diag".
+ways'diag :: [((Int, Int), (Int, Int))]
 ways'diag = aux n0 ++ aux n0'r
     where
       n0 = neighbours (0,0) fresh'grid
@@ -446,8 +460,10 @@ ways'diag = aux n0 ++ aux n0'r
       aux xs = zip xs (drop 1 (cycle xs))
 
 -- brak ruchu po skosie - specjalna wartość
+way'diag'none :: (Int, Int)
 way'diag'none = (0,0)
 
+ways'straight :: [((Int, Int), (Int, Int))]
 ways'straight = zip n0 (cycle [way'diag'none]) 
     where
       n0 = neighbours (0,0) fresh'grid

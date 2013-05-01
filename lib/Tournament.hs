@@ -14,7 +14,6 @@ import Control.Monad
 import Data.List(sort)
 import qualified Data.Vector.Unboxed as U
 
-import Control.Concurrent
 import Control.Concurrent.Async
 
 class AgentMutable a where
@@ -143,8 +142,8 @@ playVersusRandom ag = do
   winners <- mapConcurrently (\ game'id -> (playVersus (show game'id) White cutoff 1 starting'board'default ag (randomer :: AgentRandom))) [1..games]
   
   let won'w = count (Just White)
-      won'b = count (Just Black)
-      draw  = count Nothing
+      _won'b = count (Just Black)
+      _draw  = count Nothing
       count :: (Maybe Color) -> Int
       count x = length $ filter (==x) (map getWinner winners)
       pcnt'won = (fromIntegral won'w) / (fromIntegral games)
@@ -182,8 +181,8 @@ mutatePopulation params pop = do
 
 
 -- | apply tournament evalution for population
-tournamentPopulation :: (Eq a, Agent a, Ord a) => EvolutionParameters -> Population a -> IO (Population a)
-tournamentPopulation params pop = do
+tournamentPopulation :: (Eq a, Agent a, Ord a) => Population a -> IO (Population a)
+tournamentPopulation pop = do
   mems <- tournament (map snd $ members pop)
   let members'scored = reverse $ sort $ mems
       cscore = maximum (map fst members'scored)
@@ -194,8 +193,8 @@ tournamentPopulation params pop = do
 evolutionStep :: (Ord a, Agent a, AgentMutable a) => EvolutionParameters -> Population a -> IO (Population a)
 evolutionStep params population = do
   clean <- cleanPopulation params population
-  muts <- mutatePopulation params population
-  toured <- tournamentPopulation params muts
+  muts <- mutatePopulation params clean
+  toured <- tournamentPopulation muts
 
   return toured
 
@@ -219,20 +218,22 @@ evolution initial'population initial'params = do
   population <- case initial'population of
                   Just pop -> return pop
                   Nothing -> mkInitialPopulation params
-
-  goEvol initial'population initial'params params population
-
-
-goEvol initial'population initial'params par pop | stepsToGo par > 0 = do
-  pop'new <- evolutionStep par pop
-  prettyReportPopulation pop'new
-  goEvol initial'population initial'params (decSteps par) pop'new
+  let goEvol par pop | stepsToGo par > 0 = do
+         pop'new <- evolutionStep par pop
+         prettyReportPopulation pop'new
+         goEvol (decSteps par) pop'new
                                                  | otherwise = return pop
+
+
+  goEvol params population
+
+
 
 --  if (championScore pop'new) < 200
 --   then print ("RESET",(championScore pop'new)) >> evolution initial'population initial'params
 --   else 
 
+decSteps :: EvolutionParameters -> EvolutionParameters
 decSteps par = par { stepsToGo = (stepsToGo par)-1 }
 
 

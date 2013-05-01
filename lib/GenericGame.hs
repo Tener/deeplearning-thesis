@@ -7,9 +7,6 @@ import Data.ByteString (ByteString)
 import qualified Data.Packed.Vector as V
 import qualified Data.ByteString as ByteString
 import qualified Data.ByteString.Char8 as BSC8
-import Control.Monad
-
-import MinimalNN
 
 data Player2 = P1 -- ^ player 1
              | P2 -- ^ player 2

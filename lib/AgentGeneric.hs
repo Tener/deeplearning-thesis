@@ -5,10 +5,10 @@ module AgentGeneric where
 
 import System.Random.MWC
 import Control.Applicative
-import Control.Monad (when, replicateM, forever)
+import Control.Monad (when, replicateM)
 import Numeric.Container (sumElements)
 import Data.Default
-import Data.List (sort, group, groupBy, sortBy)
+import Data.List (groupBy, sortBy)
 import Data.IORef
 import Data.Ord
 
@@ -98,7 +98,7 @@ instance Agent2 AgentMCTS where
     type AgentParams AgentMCTS = Int
     mkAgent games = AgentMCTS games <$> mkAgent () <*> (withSystemRandom $ asGenIO $ return)
 
-    applyAgent agent@(AgentMCTS games agRnd _) g p = do
+    applyAgent (AgentMCTS games agRnd _) g p = do
       let mv = moves g p
           myeval move = do
             winners <- replicateM games (winner `fmap` randomGame move)
@@ -131,13 +131,15 @@ data GameDriverCallback g = GameDriverCallback
 
 instance (Game2 g, Show g) => Default (GameDriverCallback g) where
     def = GameDriverCallback (\g -> putStrLn $ "Game finished! Winner: " ++ show (winner g))
-                             (\g p -> return True)
+                             (\_ _ -> return True)
 
 -- | a 'driver' for Game2 games. passed appropriate callback structure drives the game from given state to the end.
 driverG2 :: (Game2 g, Repr (GameRepr g), Agent2 a1, Agent2 a2) => g -> a1 -> a2 -> (GameDriverCallback g) -> IO g
 driverG2 g0 a1 a2 cb = do 
   let allSteps = cycle [((applyAgent a1),P1),((applyAgent a2),P2)]
       end g = gameFinished cb g >> return g
+
+      loop _ [] = error "empty cycle?! for real: fix -Wall -Werror"
       loop g (_step@(ag,pl):steps) = do
         case winner g of
           Nothing -> do
@@ -158,13 +160,13 @@ sampleRandomGames :: (Repr (GameRepr g), Game2 g)
                   -> (g -> IO ()) -- ^ callback
                   -> IO ()
 sampleRandomGames canContinue prob cbChosen = do
-  gen <- withSystemRandom $ asGenIO $ return  
+  mygen <- withSystemRandom $ asGenIO $ return  
   agRnd <- mkAgent () :: IO AgentRandom
 
   let cb = GameDriverCallback (callbackOut)
-                              (\g p -> callbackOut g >> return True)
+                              (\g _ -> callbackOut g >> return True)
       callbackOut g = do
-        chance <- uniform gen
+        chance <- uniform mygen
         when (chance < prob) (cbChosen g)
 
   while canContinue (driverG2 freshGameDefaultParams agRnd agRnd cb >> return ())
@@ -175,10 +177,12 @@ sampleRandomGameDepth :: (Repr (GameRepr g), Game2 g)
                          -> (g -> Int -> IO ()) -- ^ callback
                          -> IO ()
 sampleRandomGameDepth canContinue cbFinished = do
-  gen <- withSystemRandom $ asGenIO $ return  
   agRnd <- mkAgent () :: IO AgentRandom
+
   ref <- newIORef 0
-  let cb = GameDriverCallback (\_ -> return ()) (\_ _ -> modifyIORef ref (+1) >> return True)
+  let cb = GameDriverCallback (\_ -> return ()) (\_ _ -> do
+                                                   modifyIORef ref (+1) 
+                                                   return True)
 
   while canContinue (do
             writeIORef ref 0

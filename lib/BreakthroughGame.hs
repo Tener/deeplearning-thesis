@@ -11,9 +11,6 @@ import Data.HashSet (Set)
 import Data.Monoid (mempty, mappend)
 import Data.Maybe
 
-
-import qualified Data.Packed.Vector as V
-
 type Position = (Int,Int) -- ^ (x,y), x=column goes from 0 to width-1, y=row goes from 0 to height-1
 type BoardMap = Map Position Player2
 
@@ -159,14 +156,17 @@ legalPos :: Position -> Breakthrough -> Bool
 legalPos pos brd = not (illegalPos pos brd)
 
 -- | get all positions within a specified row. 
+row :: Int -> Int -> [Position]
 row rowNum rowLength = [(column',rowNum) | column' <- [0..rowLength-1]]
 {-# INLINE row #-}
 
 -- | get all positions within a specified column. 
+column :: Int -> Int -> [Position]
 column colNum colLength = [(colNum,row') | row' <- [0..colLength-1]]
 {-# INLINE column #-}
 
 -- | get all possible positions
+allPos :: (Int,Int) -> [Position]
 allPos (rowLength,colLength) = [(column',row') | row' <- [0..colLength-1], column' <- [0..rowLength-1]]
 {-# INLINE allPos #-}
 
@@ -182,9 +182,9 @@ getAll el hm = HashMap.keys $ HashMap.filter (==el) hm
 count :: Player2 -> BoardMap -> Int
 count p hm = length $ filter (==p) $ map snd $ HashMap.toList hm
 
--- debugging utils 
-pp g = putStrLn . prettyPrintGame $ g
-
-g0 :: Breakthrough
-g0 = freshGame (6,6)
+-- -- debugging utils 
+-- pp g = putStrLn . prettyPrintGame $ g
+--  
+-- g0 :: Breakthrough
+-- g0 = freshGame (6,6)
 

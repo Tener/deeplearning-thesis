@@ -31,7 +31,7 @@ Library
 --  if flag(cairo)
 --     build-depends: cairo
   cpp-options: -DCAIRO
-  Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -rtsopts -threaded -O2
+  Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -rtsopts -threaded -O2 -Werror
 
 Executable abalone
   Main-is:                src/abalone.hs

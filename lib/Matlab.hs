@@ -9,6 +9,7 @@ import Data.Default
 import System.FilePath
 import System.Directory
 import System.Process
+import System.Exit
 
 data MatlabImp = Matlab | Octave deriving (Eq, Ord, Read, Show)
 data MatlabOpts = MatlabOpts { dbnSizes :: [Int], numEpochs :: Int, implementation :: MatlabImp } deriving (Eq, Ord, Read, Show)
@@ -16,6 +17,7 @@ data MatlabOpts = MatlabOpts { dbnSizes :: [Int], numEpochs :: Int, implementati
 instance Default MatlabOpts where
     def = MatlabOpts { dbnSizes = [100], numEpochs = 5, implementation = Octave }
 
+prepAndRun :: MatlabOpts -> FilePath -> FilePath -> IO ExitCode
 prepAndRun matlabOpts outputDirectory inputDataFile = do
   let ?dbnSizes = dbnSizes matlabOpts
       ?numEpochs = numEpochs matlabOpts
@@ -136,9 +138,9 @@ function run_trainer_ll(train_x, train_y)
 end; |]
 
 run_trainer :: (IsString a, Monoid a, ?dbnSizes :: [Int]) => String -> a
-run_trainer outputFilepath = let dbnSizes = ?dbnSizes in [str|
+run_trainer outputFilepath = let dbnSizes' = ?dbnSizes in [str|
 function dbn = run_trainer(train_x)
-    dbn.sizes = $:dbnSizes$;
+    dbn.sizes = $:dbnSizes'$;
     opts.numepochs =   5;
     opts.batchsize = 100;
     opts.momentum  =   0;

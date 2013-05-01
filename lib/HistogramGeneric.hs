@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleContexts, FlexibleInstances #-}
+{-# OPTIONS_GHC -fno-warn-unused-do-bind #-}
 
 module HistogramGeneric where
 

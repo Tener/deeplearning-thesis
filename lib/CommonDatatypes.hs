@@ -29,9 +29,12 @@ instance Tagged BBoard WBoard where
 class Agent a where
     mkAgent :: Color -> IO a
     setColor :: Color -> a -> a
+    setColor _ _ = error "setColor: not implemented (by default)"
     makeMove :: a -> BBoard -> IO WBoard
     getAgentName :: a -> String
+    getAgentName _ = error "getAgentName: not implemented (by default)"
     evaluateBoard :: a -> BBoard -> [(String,String)]
+    evaluateBoard _ _ = error "evaluateBoard: not implemented (by default)"
 
 data GameState = GameState { gtBoard :: BBoard
                            , gtEvalSelf :: GameState -> Int

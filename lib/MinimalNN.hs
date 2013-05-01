@@ -1,5 +1,5 @@
 {-# LANGUAGE BangPatterns, FlexibleInstances, DeriveDataTypeable #-} 
-
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 -- | minimal NN implementation based on hmatrix
 
 module MinimalNN where

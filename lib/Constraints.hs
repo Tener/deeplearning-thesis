@@ -1,7 +1,8 @@
+{-# OPTIONS_GHC -fno-warn-unused-do-bind #-}
+
 module Constraints where
 
 import Board
--- import CommonDatatypes
 import MinimalNN
 import NeuralNets
 
@@ -109,7 +110,11 @@ good'moves = [(b0,b1),(b2,b3)] ++ concatMap movesFromGame games'all
 
 -- | benchmark random single-neuron networks
 
--- singleNeuronRandomSearch :: Double -> Int -> IO ()
+-- singleNeuronRandomSearch :: Double -> Double -> Int -> IO ()
+singleNeuronRandomSearch :: PrintfArg t =>
+                           ((([[[Double]]], [[Double]]), Double, IO ()) -> IO a)
+                           -> Double -> t -> IO (([[[Double]]], [[Double]]), Double)
+
 singleNeuronRandomSearch newBest target thrnum = do
   gen <- withSystemRandom $ asGenIO $ return
   (dbn,sizes) <- parseNetFromFile `fmap` (readFile =<< nn'filename)
@@ -120,9 +125,9 @@ singleNeuronRandomSearch newBest target thrnum = do
       
       randomNeuron :: IO ([[[Double]]], [[Double]])
       randomNeuron = do
-        (weights) <- (replicateM lastLayerSize (uniformR (-1,1) gen))
+        (weights') <- (replicateM lastLayerSize (uniformR (-1,1) gen))
         let bias = 0
-        return ([[weights]],[[bias]])
+        return ([[weights']],[[bias]])
 
   let inf = 1/0
 
@@ -175,14 +180,14 @@ singleNeuronLocalSearch newBest bestNeuronRef localSearchRange target thrnum = d
       
       randomNeuron :: IO ([[[Double]]], [[Double]])
       randomNeuron = do
-        (([[weights'best]],_bias),score) <- readIORef bestNeuronRef
+        (([[weights'best]],_bias),_score) <- readIORef bestNeuronRef
         
         let actualRange = (fromIntegral thrnum) * localSearchRange * 3
 
-        (weights) <- (replicateM lastLayerSize (uniformR (1-actualRange,1+actualRange) gen))
+        weights' <- (replicateM lastLayerSize (uniformR (1-actualRange,1+actualRange) gen))
         let bias = 0
---            weights'really'best = if score > 0 then weights'best else weights -- hack
-        return ([[zipWith (*) weights'best weights]],[[bias]])
+--            weights'really'best = if score > 0 then weights'best else weights' -- hack
+        return ([[zipWith (*) weights'best weights']],[[bias]])
 
   let inf = 1/0
 
@@ -244,8 +249,10 @@ singleNeuronLocalSearch newBest bestNeuronRef localSearchRange target thrnum = d
 -- Game 1:
 
 readGame :: Board -> String -> [Board]
-readGame brd'start str = scanl (\ brd (col,mv)  -> runTxtMove col brd mv ) brd'start (zip (cycle [Black, White]) (words str))
+readGame brd'start str = scanl (\ brd (col',mv)  -> runTxtMove col' brd mv ) brd'start (zip (cycle [Black, White]) (words str))
 
+
+(<>) :: a -> b -> (a, b)
 a <> b = (a,b)
 
 movesFromGame :: (Color, [Board]) -> [(Board,Board)]
@@ -257,6 +264,7 @@ movesFromGame (good, moves) = map (neg . snd) $ filter ((==good) . fst) $ zip (c
 -- (dobry gracz, sekwencja ruchów)
 -- 1, 9, 13, 10, 12
 
+games'all :: [(Color, [Board])]
 games'all = [game1, game2, game3, game4, game5]
 -- games'all = [game4, game3]
 -- games'all = [game2]

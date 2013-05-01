@@ -9,11 +9,8 @@ import Text.Printf
 import System.Random.MWC
 import Data.Ord
 import Data.List (sortBy)
-import System.IO
-import qualified Math.Geometry.GridMap as GridMap
 
 import qualified Data.Tree.Game_tree.Negascout as GTreeAlgo
-import Data.Tree.Game_tree.Game_tree as GTree
 
 -- plansza i aktualny kolor gracza
 
@@ -25,7 +22,7 @@ instance Agent AgentGameTree where
     mkAgent col = do
       g <- withSystemRandom $ asGenIO $ return
       return (AgentGameTree g col)
-    makeMove agent@(AgentGameTree gen col) brd = do
+    makeMove _agent@(AgentGameTree _gen col) brd = do
       let gst = GameState brd (\ g -> evalBoardB (gtColorNow g) (gtBoard g)) col col
           depth = 4
           (princ, score) = GTreeAlgo.negascout gst depth
