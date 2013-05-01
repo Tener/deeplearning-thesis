@@ -1,14 +1,15 @@
-{-# LANGUAGE FlexibleContexts, TypeFamilies #-}
+{-# LANGUAGE BangPatterns, FlexibleContexts, TypeFamilies #-}
 
 -- | few agents for generic games as defined in 'GenericGame'
 module AgentGeneric where
 
 import System.Random.MWC
 import Control.Applicative
-import Control.Monad (when, replicateM)
+import Control.Monad (when, replicateM, forever)
 import Numeric.Container (sumElements)
 import Data.Default
 import Data.List (sort, group, groupBy, sortBy)
+import Data.IORef
 import Data.Ord
 
 import GenericGame
@@ -104,9 +105,11 @@ instance Agent2 AgentMCTS where
             let count = length $ filter (==(Just p)) winners
             return (count, move)
           randomGame game = driverG2 game agRnd agRnd (GameDriverCallback (\_ -> return ()) (\_ _ -> return True))
+          takeBest n some'moves = take n $ reverse $ map snd $ sortBy (comparing fst) $ some'moves
       
-      mv'evaled <- mapM myeval mv
-      let best'moves = reverse $ map snd $ sortBy (comparing fst) $ mv'evaled
+      mv'evaled <- takeBest 3 `fmap` mapM myeval mv
+      best'moves <- takeBest 3 `fmap` mapM myeval mv'evaled
+
       when (null best'moves) (fail "AgentMCTS: Stuck, no moves left.")
       return (head best'moves)
 
@@ -145,3 +148,48 @@ driverG2 g0 a1 a2 cb = do
                     else end g
           Just _p  -> end g
   loop g0 allSteps
+
+--------------- various utility functions built on top of driverG2
+
+-- | generate an infinite stream of random games, extracted via callback. exits when provided action returns False.
+sampleRandomGames :: (Repr (GameRepr g), Game2 g) 
+                  => (IO Bool) -- ^ should we exit now?
+                  -> Float -- ^ probability to call a callback on any generated game state
+                  -> (g -> IO ()) -- ^ callback
+                  -> IO ()
+sampleRandomGames canContinue prob cbChosen = do
+  gen <- withSystemRandom $ asGenIO $ return  
+  agRnd <- mkAgent () :: IO AgentRandom
+
+  let cb = GameDriverCallback (callbackOut)
+                              (\g p -> callbackOut g >> return True)
+      callbackOut g = do
+        chance <- uniform gen
+        when (chance < prob) (cbChosen g)
+
+  while canContinue (driverG2 freshGameDefaultParams agRnd agRnd cb >> return ())
+
+-- | generate an infinite stream depth of random games, extracted via callback. exits when provided action returns False.
+sampleRandomGameDepth :: (Repr (GameRepr g), Game2 g) 
+                         => (IO Bool) -- ^ should we exit now?
+                         -> (g -> Int -> IO ()) -- ^ callback
+                         -> IO ()
+sampleRandomGameDepth canContinue cbFinished = do
+  gen <- withSystemRandom $ asGenIO $ return  
+  agRnd <- mkAgent () :: IO AgentRandom
+  ref <- newIORef 0
+  let cb = GameDriverCallback (\_ -> return ()) (\_ _ -> modifyIORef ref (+1) >> return True)
+
+  while canContinue (do
+            writeIORef ref 0
+            done <- driverG2 freshGameDefaultParams agRnd agRnd cb
+            !count <- readIORef ref
+            cbFinished done count
+          )
+
+while :: (Monad m) => (m Bool) -> (m ()) -> (m ())
+while go a = do
+  b <- go 
+  when b (a >> while go a)
+
+
