@@ -48,6 +48,8 @@ instance Game2 Breakthrough where
     type GameRepr Breakthrough = [Int] -- sparse field repr.
     type GameParams Breakthrough = (Int,Int) -- board size
 
+    freshGameDefaultParams = freshGame (6,6)
+
     freshGame bsize@(sw,sh) = Breakthrough { board = HashMap.fromList [ (pos,P1) | pos <- row 0 sw ] `mappend`
                                                      HashMap.fromList [ (pos,P1) | pos <- row 1 sw ] `mappend`
                                                      HashMap.fromList [ (pos,P2) | pos <- row (sh-2) sw ] `mappend`

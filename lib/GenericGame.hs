@@ -28,6 +28,9 @@ class Game2 a where
     -- | initiate new game
     freshGame :: GameParams a -> a
 
+    -- | initiate new game using default parameters
+    freshGameDefaultParams :: a
+
     -- | get valid moves for a specified player as a list of new states and a move descriptor. if no moves can be made should return empty list. a "passed" move is allowed by including original state in output list and appropriate moveDesc.
     movesDesc :: a -> Player2 -> [(MoveDesc a, a)]
     -- | same as movesDesc but without descriptors. default implementation could be overriden for efficiency.

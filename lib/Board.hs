@@ -1,4 +1,4 @@
-{-# LANGUAGE CPP, StandaloneDeriving, TypeSynonymInstances, FlexibleInstances #-} 
+{-# LANGUAGE CPP, StandaloneDeriving, TypeSynonymInstances, FlexibleInstances, TypeFamilies #-} 
 
 module Board where
 
@@ -18,6 +18,8 @@ import qualified Data.Hashable as Hashable
 
 import qualified Data.Packed.Vector as V
 
+import GenericGame
+
 data Color = Black | White deriving (Eq, Ord, Read, Show)
 
 type BoardOld = GridMap.GridMap HexHexGrid Position (Maybe Color)
@@ -28,6 +30,31 @@ data Board = Board { hashmap :: !BoardHM
                    , countWhite :: !Int
                    , countBlack :: !Int
                    } deriving (Show, Eq)
+
+type Abalone = Board
+
+instance Game2 Board where
+    type MoveDesc Board = () -- fixme
+    type GameRepr Board = [Int]
+    type GameParams Board = ()
+
+    freshGame () = starting'board'default
+    freshGameDefaultParams = freshGame ()
+
+    movesDesc = error "movesDesc: Not implemented for Board"
+    applyMove = error "applyMove: Not implemented for Board"
+
+    moves b p = getMoves (player2ToColor p) b
+    winner b = fmap colorToPlayer2 (getWinner b)
+    
+    toRepr = boardToSparse
+    fromRepr () = denseReprToBoard
+    
+
+player2ToColor P1 = White
+player2ToColor P2 = Black
+colorToPlayer2 White = P1
+colorToPlayer2 Black = P2
 
 onHashMap :: (BoardHM -> BoardHM) -> Board -> Board
 onHashMap f brd = brd { hashmap = f (hashmap brd) } 
