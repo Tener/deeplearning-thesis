@@ -11,42 +11,35 @@ import Matlab
 
 import Data.Default
 import System.FilePath
-import qualified Data.ByteString as BS
-import qualified Data.ByteString.Char8 ()
+import System.Directory
+import qualified Data.ByteString.Char8 as BSC8
 import Data.IORef
 import Control.Monad
 import System.Random.MWC
--- import System.Process
+import System.IO
 
 getRandomFileName :: IO String
-getRandomFileName = do
-  rgen <- (withSystemRandom $ asGenIO $ return)
-  (map toEnum) `fmap` replicateM 20 (uniformR (fromEnum 'a',fromEnum 'z') rgen)
+getRandomFileName = (map toEnum) `fmap` replicateM 20 (withSystemRandom $ asGenIO $ uniformR (fromEnum 'a',fromEnum 'z'))
 
-sampleGamesTrainNetwork :: (Repr (GameRepr g), Game2 g) => g -> Int -> IO ()
-sampleGamesTrainNetwork game sampleCount = do
+-- | train DBN on randomly sampled @sampleCount@ games of type @game@. Returns filepath with DBN.
+sampleGamesTrainNetwork :: (Repr (GameRepr g), Game2 g) => g -> Int -> Float -> IO FilePath
+sampleGamesTrainNetwork game sampleCount prob = do
   sR <- newIORef sampleCount
-  cR <- newIORef []
-
-  let cb g = do
-        modifyIORef cR ((ofType g game):)
-        modifyIORef sR (\d -> d-1)
-        print =<< readIORef sR
-
-      ofType :: a -> a -> a
-      ofType a _ = a
-
-  sampleRandomGames ((>0) `fmap` readIORef sR) 0.001 cb
-
-  games'random'sample <- readIORef cR
-
-  outputDir <- return "tmp-data"
+  outputDir <- ("tmp-data" </>) `fmap` getRandomFileName
+  createDirectoryIfMissing True outputDir
   filename'data <- (\f -> outputDir </> f <.> "csv") `fmap` getRandomFileName
 
-  BS.writeFile filename'data (BS.intercalate "\n" (map serializeGame games'random'sample))
+  withFile filename'data WriteMode $ \ han -> do
+      let cb g = do
+            BSC8.hPutStrLn han (serializeGame (ofType g game))
+            modifyIORef sR (\d -> d-1)
+            print =<< readIORef sR
 
---  system "sleep 5s"
+          ofType :: a -> a -> a
+          ofType a _ = a
 
+      sampleRandomGames ((>0) `fmap` readIORef sR) prob cb
+      hFlush han
+  
   print =<< prepAndRun def outputDir filename'data
-
-  return ()
+  return (outputDir </> "dbn.txt")

@@ -4,4 +4,4 @@ import BreakthroughGame
 import GenericGameExperiments
 import GenericGame
 
-main = sampleGamesTrainNetwork (freshGameDefaultParams :: Breakthrough) 10000
+main = print =<< sampleGamesTrainNetwork (freshGameDefaultParams :: Breakthrough) 100000 0.01
