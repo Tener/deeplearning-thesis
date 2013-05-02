@@ -20,7 +20,8 @@ Library
                           MonteCarloTS, CommonDatatypes, NeuralNets,
                           Tournament, Utils, MinimalNN, Constraints,
                           Config, Matlab,
-                          GenericGame, AgentGeneric, BreakthroughGame, HistogramGeneric
+                          GenericGame, AgentGeneric, BreakthroughGame, HistogramGeneric,
+                          GenericGameExperiments
   Build-depends:          base, mwc-random, grid == 2.0, process, containers, hashmap, game-tree, split, 
 --                        hashable == 1.2.0.2.20121217, -- with removed hashable instance for pair...
                           hashable, 
@@ -31,7 +32,7 @@ Library
 --  if flag(cairo)
 --     build-depends: cairo
   cpp-options: -DCAIRO
-  Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -rtsopts -threaded -O2 -Werror
+  Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -rtsopts -threaded -Werror
 
 Executable abalone
   Main-is:                src/abalone.hs
@@ -65,6 +66,11 @@ Executable breakthrough-driver
 
 Executable histograms-printer
   Main-is:                src/histograms-printer.hs
+  Build-depends:          base, abalone, async, data-default
+  Ghc-options:            -rtsopts
+
+Executable gg-exp1
+  Main-is:                src/gg-exp1.hs
   Build-depends:          base, abalone, async, data-default
   Ghc-options:            -rtsopts
 

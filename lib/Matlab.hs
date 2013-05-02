@@ -18,9 +18,12 @@ instance Default MatlabOpts where
     def = MatlabOpts { dbnSizes = [100], numEpochs = 5, implementation = Octave }
 
 prepAndRun :: MatlabOpts -> FilePath -> FilePath -> IO ExitCode
-prepAndRun matlabOpts outputDirectory inputDataFile = do
+prepAndRun matlabOpts outputDirectory' inputDataFile' = do
   let ?dbnSizes = dbnSizes matlabOpts
       ?numEpochs = numEpochs matlabOpts
+
+  outputDirectory <- canonicalizePath outputDirectory'
+  inputDataFile <- canonicalizePath inputDataFile'
 
   createDirectoryIfMissing True outputDirectory
 
