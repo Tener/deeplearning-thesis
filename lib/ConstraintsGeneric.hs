@@ -55,7 +55,7 @@ singleNeuronRandomSearch :: (Eq g, Repr (GameRepr g), Game2 g) =>
 singleNeuronRandomSearch newBest target thrnum filename good'moves = do
   rgen <- withSystemRandom $ asGenIO $ return
   (dbn,sizes) <- parseNetFromFile `fmap` (readFile filename)
-  print (dbn,sizes)
+  -- print (dbn,sizes)
   let lastLayerSize :: Int
       lastLayerSize = last sizes
       
@@ -95,7 +95,7 @@ singleNeuronLocalSearch :: (Eq g, Repr (GameRepr g), Game2 g) =>
 singleNeuronLocalSearch newBest bestNeuronRef localSearchRange target thrnum filenameNN good'moves = do
   rgen <- withSystemRandom $ asGenIO $ return
   (dbn,sizes) <- parseNetFromFile `fmap` (readFile filenameNN)
-  print (dbn,sizes)
+  -- print (dbn,sizes)
   let lastLayerSize :: Int
       lastLayerSize = last sizes
       

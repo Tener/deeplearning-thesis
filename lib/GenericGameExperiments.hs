@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, FlexibleContexts #-} 
+{-# LANGUAGE OverloadedStrings, FlexibleContexts, BangPatterns #-} 
 -- | various utility functions for writing near-complete experiments with generic games (@Game2@)
 
 module GenericGameExperiments where
@@ -40,8 +40,7 @@ sampleGamesTrainNetwork game sampleCount prob = do
       sR <- newIORef sampleCount
       let cb g = do
             BSC8.hPutStrLn han (serializeGame (ofType g game))
-            modifyIORef sR (\d -> d-1)
-            print =<< readIORef sR
+            atomicModifyIORef sR (\ !d -> (d-1,()))
 
           ofType :: a -> a -> a
           ofType a _ = a
