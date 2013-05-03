@@ -74,6 +74,11 @@ Executable gg-exp1
   Build-depends:          base, abalone, async, data-default
   Ghc-options:            -rtsopts
 
+Executable gg-exp2
+  Main-is:                src/gg-exp2.hs
+  Build-depends:          base, abalone, async, data-default
+  Ghc-options:            -rtsopts
+
 
 
 -- Executable nn-benchmark-01

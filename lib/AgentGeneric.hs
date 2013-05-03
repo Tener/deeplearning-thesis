@@ -14,7 +14,7 @@ import Data.Ord
 
 import GenericGame
 import MinimalNN
-
+import NeuralNets(parseNetFromFile)
 
 -- | agent for Game2 games
 class Agent2 a where
@@ -93,6 +93,11 @@ instance Agent2 AgentSimple where
 
       when (null best'moves) (fail "AgentSimple: Stuck, no moves left.")
       pickList (gen agent) best'moves
+
+mkAgentSimpleFile :: FilePath -> IO AgentSimple
+mkAgentSimpleFile fp = do
+  (net,_) <- parseNetFromFile `fmap` readFile fp
+  mkAgent net
 
 instance Agent2 AgentMCTS where
     type AgentParams AgentMCTS = Int
@@ -178,7 +183,16 @@ sampleRandomGameDepth :: (Repr (GameRepr g), Game2 g)
                          -> IO ()
 sampleRandomGameDepth canContinue cbFinished = do
   agRnd <- mkAgent () :: IO AgentRandom
+  sampleGameDepth agRnd agRnd canContinue cbFinished 
 
+-- | generate an infinite stream depth of games between given agents, extracted via callback. exits when provided action returns False.
+sampleGameDepth :: (Repr (GameRepr g), Game2 g, Agent2 a1, Agent2 a2) 
+                         => a1
+                         -> a2
+                         -> (IO Bool) -- ^ should we exit now?
+                         -> (g -> Int -> IO ()) -- ^ callback
+                         -> IO ()
+sampleGameDepth ag1 ag2 canContinue cbFinished = do
   ref <- newIORef 0
   let cb = GameDriverCallback (\_ -> return ()) (\_ _ -> do
                                                    modifyIORef ref (+1) 
@@ -186,7 +200,7 @@ sampleRandomGameDepth canContinue cbFinished = do
 
   while canContinue (do
             writeIORef ref 0
-            done <- driverG2 freshGameDefaultParams agRnd agRnd cb
+            done <- driverG2 freshGameDefaultParams ag1 ag2 cb
             !count <- readIORef ref
             cbFinished done count
           )
