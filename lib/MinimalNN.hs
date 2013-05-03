@@ -29,6 +29,12 @@ mkTNetwork :: [[[Double]]] -> [[Double]] -> TNetwork
 mkTNetwork w b | length w == length b = TNetwork (map (Matrix.trans . Matrix.fromLists) w) (map Vector.fromList b)
                | otherwise = error "Inequal number of layers for biases and weights"
 
+-- | append one network after another. input/output sizes must work out (which isn't checked until later)
+appendNetwork :: TNetwork -- ^ first network, will receive input first
+              -> TNetwork -- ^ second network, will be fed output of first network
+              -> TNetwork -- ^ resulting network
+appendNetwork tnet1 tnet2 = TNetwork (weights tnet1 ++ weights tnet2) (biases tnet1 ++ biases tnet2)
+
 -- | return last layer in nn, assuming it is one neuron big
 lastLayerTN :: TNetwork -> [(Double,[Double])]
 lastLayerTN tn = zip b w
