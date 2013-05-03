@@ -84,7 +84,7 @@ singleNeuronRandomSearch newBest target thrnum filename good'moves = do
 
 singleNeuronLocalSearch :: (Eq g, Repr (GameRepr g), Game2 g) =>
                            ((SingleNeuron, Double, IO ()) -> IO ()) -- ^ callback called for new best neuron
-                        -> IORef (SingleNeuron,Double)              -- ^ best neuron IORef
+                        -> IORef (SingleNeuron,Double)              -- ^ best neuron IORef. **WARNING**: make sure to update this IORef with values passed to callback.
                         -> Double                                   -- ^ base local search range
                         -> Double                                   -- ^ target value
                         -> Int                                      -- ^ thread num (affects effective search range)
@@ -135,6 +135,7 @@ neginf = negate (1/0)
 scoreNeuron :: (Repr (GameRepr g), Game2 g) => SingleNeuron -> TNetwork -> [Constraint g] -> Double
 scoreNeuron n dbn constraints = scoreConstraints (evalNeuronGame n dbn) constraints
 
+-- | fixme: merge with AgentSimpleLL code
 evalNeuronGame :: (Repr (GameRepr g), Game2 g) => SingleNeuron -> TNetwork -> g -> Double
 evalNeuronGame neuron dbn game = 
     let final = Vector.toList $ computeTNetworkSigmoid neuronTNet 

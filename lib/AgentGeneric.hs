@@ -30,6 +30,10 @@ data AgentRandom = AgentRandom GenIO
 -- | agent that picks a random move from all available *best* moves, where move fitness is determined by neural network evaluation
 data AgentSimple = AgentSimple TNetwork GenIO
 
+-- | same as agent simple but with two networks. 
+--   fixme: merge with AgentSimple by merging the networks
+data AgentSimpleLL = AgentSimpleLL TNetwork TNetwork GenIO
+
 -- | agent based on monte carlo tree search: evaluate moves counting how many times following that move and playing randomly till the end yields victory.
 data AgentMCTS = AgentMCTS Int   -- how many games to evaluate for each possible move
                            AgentRandom -- cached AgentRandom for random game walks
@@ -68,6 +72,7 @@ data AgentMCTS = AgentMCTS Int   -- how many games to evaluate for each possible
 class HasGen a where gen :: a -> GenIO
 instance HasGen AgentRandom where gen (AgentRandom g) = g
 instance HasGen AgentSimple where gen (AgentSimple _ g) = g
+instance HasGen AgentSimpleLL where gen (AgentSimpleLL _ _ g) = g
 instance HasGen AgentMCTS where gen (AgentMCTS _ _ g) = g
 
 class HasTNet a where tnet :: a -> TNetwork
@@ -93,6 +98,19 @@ instance Agent2 AgentSimple where
 
       when (null best'moves) (fail "AgentSimple: Stuck, no moves left.")
       pickList (gen agent) best'moves
+
+instance Agent2 AgentSimpleLL where
+    type AgentParams AgentSimpleLL = (TNetwork, TNetwork)
+    mkAgent (tn1,tn2) = AgentSimpleLL tn1 tn2 <$> (withSystemRandom $ asGenIO $ return)
+
+    applyAgent agent@(AgentSimpleLL tn1 tn2 _) g p = do
+      let mv = moves g p
+          mv'evaled = zip (map (evalGameTNetworkLL tn1 tn2) mv) mv
+          best'moves = map snd $ head $ groupBy (\a b -> fst a == fst b) $ sortBy (comparing fst) $ mv'evaled
+
+      when (null best'moves) (fail "AgentSimple: Stuck, no moves left.")
+      pickList (gen agent) best'moves
+
 
 mkAgentSimpleFile :: FilePath -> IO AgentSimple
 mkAgentSimpleFile fp = do
@@ -125,6 +143,9 @@ pickList rgen xs = do
 
 evalGameTNetwork :: (Game2 g, Repr (GameRepr g)) => TNetwork -> g -> Double
 evalGameTNetwork tn g = sumElements $ computeTNetworkSigmoid tn (reprToNN (toRepr g))
+
+evalGameTNetworkLL :: (Game2 g, Repr (GameRepr g)) => TNetwork -> TNetwork -> g -> Double
+evalGameTNetworkLL tn1 tn2 g = sumElements $ computeTNetworkSigmoid tn2 $ computeTNetworkSigmoid tn1 $ (reprToNN (toRepr g))
 
 -- | data structure with callbacks for any occasion
 data GameDriverCallback g = GameDriverCallback 
@@ -197,6 +218,20 @@ sampleRandomGameDepth :: (Repr (GameRepr g), Game2 g)
 sampleRandomGameDepth canContinue cbFinished = do
   agRnd <- mkAgent () :: IO AgentRandom
   sampleGameDepth agRnd agRnd canContinue cbFinished 
+
+-- | generate a stream of games between given agents, extracted via callback. exits after calling callback given number of times.
+sampleGameDepthCount :: (Repr (GameRepr g), Game2 g, Agent2 a1, Agent2 a2) 
+                         => a1
+                         -> a2
+                         -> Int -- ^ callback call count
+                         -> (g -> Int -> IO ()) -- ^ callback
+                         -> IO ()
+sampleGameDepthCount ag1 ag2 count cbFinished = do
+  countRef <- newIORef 0
+  let canContinue = (<count) `fmap` readIORef countRef
+      incCount :: IO ()
+      incCount = atomicModifyIORef countRef (\ !val -> (val+1,val)) >> return ()
+  sampleGameDepth ag1 ag2 canContinue (\g i -> incCount >> cbFinished g i)
 
 -- | generate an infinite stream depth of games between given agents, extracted via callback. exits when provided action returns False.
 sampleGameDepth :: (Repr (GameRepr g), Game2 g, Agent2 a1, Agent2 a2) 
