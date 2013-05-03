@@ -28,9 +28,9 @@ someGame = freshGameDefaultParams
 genConstraints = do
   cR <- newIORef []
   let addConstraints cs = atomicModifyIORef cR (\ !old -> ((cs:old),()))
-  sampleRandomGamesCount 10 0.01 (\ g -> do
+  sampleRandomGamesCount 100 0.01 (\ g -> do
                                      print "gen start"
-                                     cs <- generateConstraintsMCTS 100 (g :: MyGame)
+                                     cs <- generateConstraintsMCTS 1000 (g :: MyGame)
                                      addConstraints cs
                                      print =<< length `fmap` readIORef cR
                                   )
@@ -62,14 +62,23 @@ main = do
           (_, _, _) -> fnTN
 
   let searchCB ref = (\ new@(bnNew,bsNew,acNew) -> do
-                        print (a,b) >> c)
+                        let newTrim = (bnNew, bsNew)
+                        updated <- atomicModifyIORef 
+                                    ref (\ old@(bnOld, bsOld) -> do
+                                                       if bsOld < bsNew
+                                                        then (newTrim, True)
+                                                        else (old,False))
+                        when updated (print newTrim >> acNew)
+                     )
 
   forever $ do
     threads <- getNumCapabilities
     let thrG = 0.8
-    (_, best) <- waitAnyCancel =<< (mapM (\ thr -> async (singleNeuronRandomSearch searchCB thrG thr fn constraints)) [1..threads])
-    bestRef <- newIORef best
-    (_, bestLocal) <- waitAnyCancel =<< (mapM (\ thr -> async (singleNeuronLocalSearch searchCB bestRef 0.04 (thrG+0.05) thr fn constraints)) [1..threads])
+        thrL = 0.95
+        localSearch = 0.08
+    bestRef <- newIORef (undefined, neginf)
+    (_, best) <- waitAnyCancel =<< (mapM (\ thr -> async (singleNeuronRandomSearch (searchCB bestRef) thrG thr fn constraints)) [1..threads])
+    (_, bestLocal) <- waitAnyCancel =<< (mapM (\ thr -> async (singleNeuronLocalSearch (searchCB bestRef) bestRef localSearch thrL thr fn constraints)) [1..threads])
 
     let llNetwork = uncurry mkTNetwork (fst bestLocal)
     (dbn, _) <- parseNetFromFile `fmap` readFile fn 
