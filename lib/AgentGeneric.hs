@@ -169,12 +169,25 @@ sampleRandomGames canContinue prob cbChosen = do
   agRnd <- mkAgent () :: IO AgentRandom
 
   let cb = GameDriverCallback (callbackOut)
-                              (\g _ -> callbackOut g >> return True)
+                              (\g _ -> callbackOut g >> canContinue)
       callbackOut g = do
         chance <- uniform mygen
         when (chance < prob) (cbChosen g)
 
   while canContinue (driverG2 freshGameDefaultParams agRnd agRnd cb >> return ())
+
+-- | generate an stream of random games, extracted via callback. exits after calling callback @count@ times.
+sampleRandomGamesCount :: (Repr (GameRepr g), Game2 g)
+                       => Int -- ^ callback call @count@
+                       -> Float -- ^ probability to call a callback on any generated game state
+                       -> (g -> IO ()) -- ^ callback
+                       -> IO ()
+sampleRandomGamesCount count prob cbChosen = do
+  countRef <- newIORef 0
+  let canContinue = (<count) `fmap` readIORef countRef
+      incCount :: IO ()
+      incCount = atomicModifyIORef countRef (\ !val -> (val+1,val)) >> return ()
+  sampleRandomGames canContinue prob (\g -> incCount >> cbChosen g)
 
 -- | generate an infinite stream depth of random games, extracted via callback. exits when provided action returns False.
 sampleRandomGameDepth :: (Repr (GameRepr g), Game2 g) 

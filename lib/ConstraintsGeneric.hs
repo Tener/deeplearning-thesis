@@ -3,6 +3,7 @@
 module ConstraintsGeneric where
 
 import GenericGame
+import AgentGeneric
 import MinimalNN
 import NeuralNets (parseNetFromFile)
 
@@ -29,10 +30,18 @@ scoreConstraints f cons = let len = length cons
                               true = length $ filter id (map (checkConstraint f) cons)
                           in (fromIntegral true) / (fromIntegral len)
 
+-- | generate constraints using base game state and a best choice following that state
 generateConstraintsSimple :: (Game2 g, Eq g) => g -> g -> [Constraint g]
 generateConstraintsSimple g'base g'good = if g'good `elem` moves g'base P1
                                                then [CBetter g'good g | g <- moves g'base P1, g /= g'good]
                                                else error "generateConstraintsSimple: best move not possible"
+
+-- | generate constraints with `generateConstraintsSimple` and `AgentMCTS`
+generateConstraintsMCTS :: (Repr (GameRepr g), Game2 g) => Int -> g -> IO (g,g)
+generateConstraintsMCTS mcts'gameCoutn g0 = do
+  ag <- mkAgent mcts'gameCoutn :: IO AgentMCTS
+  g1 <- applyAgent ag g0 P1
+  return (g0,g1)
 
 
 singleNeuronRandomSearch :: (Eq g, Repr (GameRepr g), Game2 g) =>
@@ -84,7 +93,7 @@ singleNeuronLocalSearch :: (Eq g, Repr (GameRepr g), Game2 g) =>
                         -> IO (SingleNeuron, Double)                -- ^ @(best'neuron, best'score)@ pair
  
 singleNeuronLocalSearch newBest bestNeuronRef localSearchRange target thrnum filenameNN good'moves = do
-  gen <- withSystemRandom $ asGenIO $ return
+  rgen <- withSystemRandom $ asGenIO $ return
   (dbn,sizes) <- parseNetFromFile `fmap` (readFile filenameNN)
   print (dbn,sizes)
   let lastLayerSize :: Int
@@ -96,7 +105,7 @@ singleNeuronLocalSearch newBest bestNeuronRef localSearchRange target thrnum fil
         
         let actualRange = (fromIntegral thrnum) * localSearchRange
  
-        weights' <- (replicateM lastLayerSize (uniformR (1-actualRange,1+actualRange) gen))
+        weights' <- (replicateM lastLayerSize (uniformR (1-actualRange,1+actualRange) rgen))
         let bias = 0
         return ([[zipWith (*) weights'best weights']],[[bias]])
  
