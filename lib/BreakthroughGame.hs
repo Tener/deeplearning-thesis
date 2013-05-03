@@ -20,7 +20,7 @@ data Breakthrough = Breakthrough { board :: BoardMap -- ^ map from position to P
                                  , winningP2 :: Set Position -- ^ fixed set of winning positions for P2
                                  , countP1 :: !Int -- ^ how many pieces P1 have
                                  , countP2 :: !Int -- ^ how many pieces P2 have
-                                 } deriving (Show, Eq)
+                                 } deriving (Show, Eq, Read)
 
 instance GameTxtRender Breakthrough where
     prettyPrintGame g = let ll = "---------------------------" 
