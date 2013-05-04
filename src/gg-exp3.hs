@@ -33,13 +33,22 @@ someGame = freshGameDefaultParams
 
 printFlush p = print p >> hFlush stdout
 
-constraintsCacheFilename = ("tmp-data" </> "cache" </> "constraints-" ++ gameName someGame <.> "txt")
+
+constraintCount, constraintDepth :: Int
+constraintCount = 100
+constraintDepth = 100
+
+constraintsCacheFilename = let spec :: String
+                               spec = printf "constraints-d%d-c%d-%s.txt" constraintDepth constraintCount (gameName someGame)
+                           in "tmp-data" </> "cache" </> spec
 
 genConstraints = do
   cR <- newIORef []
   let addConstraints cs = atomicModifyIORef cR (\ !old -> ((cs:old),()))
-  sampleRandomGamesCount 1500 0.01 (\ g -> do
-                                     cs <- generateConstraintsMCTS 10 (g :: MyGame)
+  
+  ag <- mkAgent constraintDepth :: IO AgentMCTS
+  sampleRandomGamesCount constraintCount 0.01 (\ g -> do
+                                     cs <- generateConstraintsMCTS' ag (g :: MyGame)
                                      addConstraints cs
                                      printFlush =<< length `fmap` readIORef cR
                                   )
@@ -73,14 +82,14 @@ main = do
   let useConstraintCache = True
   constraints <- if useConstraintCache then genConstraintsCached else genConstraints 
 
-  let fnBr = return "tmp-data/tfkullxtitqcyvroeryd/dbn.txt" -- "tmp-data/irlfjflptuwgzpqzejrd/dbn.txt"
+  let fnBr = return "tmp-data/irlfjflptuwgzpqzejrd/dbn.txt"
       fnAb = return "tmp-data/mlubiwjdnaaovrlgsqxu/dbn.txt"
-      fnTN = sampleGamesTrainNetwork (freshGameDefaultParams :: MyGame) 100000 0.1
+      fnTN = sampleGamesTrainNetwork (freshGameDefaultParams :: MyGame) 100000 0.7
 
       isAbalone = toRepr someGame == toRepr (freshGameDefaultParams :: Abalone)
       isBreakthrough = toRepr someGame == toRepr (freshGameDefaultParams :: Breakthrough)
 
-      useCachedDBN = True
+      useCachedDBN = False
 
   printFlush "DBN read/train"
   fn <- case (isAbalone, isBreakthrough, useCachedDBN) of
@@ -119,7 +128,7 @@ main = do
                        printFlush "UNABLE TO IMPROVE, TIMEOUT"
                        readIORef bestRef 
                      else loop
-                  delay = Timeout.threadDelay (1 # Minute)
+                  delay = Timeout.threadDelay ((constraintCount `div` 5) # Seconds)
               timeoutAsync <- async loop
               return (timeoutAsync:asyncs)
 
