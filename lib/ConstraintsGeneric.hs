@@ -51,6 +51,42 @@ generateConstraintsMCTS mcts'gameCoutn g0 = do
   return (g0,g1)
 
 
+
+singleNeuronRandomReprSearch :: ((SingleNeuron, Double, IO ()) -> IO a) -- ^ callback called for new best score 
+                             -> Double                                  -- ^ target value for score
+                             -> Int                                     -- ^ thread number
+                             -> [Constraint (Vector Double)]            -- ^ a list of good moves: @[(first state, second state)]@
+                             -> IO (SingleNeuron, Double)               -- ^ @(best'neuron, best'score)@ pair
+
+singleNeuronRandomReprSearch newBest target thrnum constraints = do
+  rgen <- withSystemRandom $ asGenIO $ return
+  let lastLayerSize :: Int
+      lastLayerSize = case head constraints of
+                        CBetter c _ -> length (Vector.toList c)
+                        CBetterAll c _ -> length (Vector.toList c)
+      
+      randomNeuron :: IO ([[[Double]]], [[Double]])
+      randomNeuron = do
+        (weights') <- (replicateM lastLayerSize (uniformR (-1,1) rgen))
+        let bias = 0
+        return ([[weights']],[[bias]])
+
+      go (best'neuron,best'score) | best'score >= target = return (best'neuron,best'score)
+                                  | otherwise = do
+         neuron <- randomNeuron
+         let score = scoreConstraints (sumElements . computeTNetworkSigmoid (uncurry mkTNetwork neuron)) constraints
+         if score > best'score 
+          then do
+            let action = do
+                             putStrLn (printf "[%d] NEURON %s" thrnum (show neuron))
+                             putStrLn (printf "[%d] SCORE %f (cnum=%d)" thrnum score (length constraints))
+            void (newBest (neuron,score,action))
+            go (neuron,score) 
+          else go (best'neuron,best'score)
+         
+  go (undefined,neginf)
+
+
 singleNeuronRandomSearch :: (Eq g, Repr (GameRepr g), Game2 g) =>
                             ((SingleNeuron, Double, IO ()) -> IO a) -- ^ callback called for new best score 
                             -> Double                               -- ^ target value for score
@@ -62,7 +98,6 @@ singleNeuronRandomSearch :: (Eq g, Repr (GameRepr g), Game2 g) =>
 singleNeuronRandomSearch newBest target thrnum filename good'moves = do
   rgen <- withSystemRandom $ asGenIO $ return
   (dbn,sizes) <- parseNetFromFile `fmap` (readFile filename)
-  -- print (dbn,sizes)
   let lastLayerSize :: Int
       lastLayerSize = last sizes
       
@@ -143,7 +178,6 @@ singleNeuronLocalSearch :: (Eq g, Repr (GameRepr g), Game2 g) =>
 singleNeuronLocalSearch newBest bestNeuronRef localSearchRange target thrnum filenameNN good'moves = do
   rgen <- withSystemRandom $ asGenIO $ return
   (dbn,sizes) <- parseNetFromFile `fmap` (readFile filenameNN)
-  -- print (dbn,sizes)
   let lastLayerSize :: Int
       lastLayerSize = last sizes
       
