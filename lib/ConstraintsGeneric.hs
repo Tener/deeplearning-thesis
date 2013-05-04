@@ -7,14 +7,21 @@ import AgentGeneric
 import MinimalNN
 import NeuralNets (parseNetFromFile)
 
+import Numeric.Container (sumElements)
+import Data.Packed.Vector (Vector)
+import qualified Data.Packed.Vector as Vector
+
 import Control.Monad
 import Data.IORef
 import System.Random.MWC
 import Text.Printf
-import qualified Data.Packed.Vector as Vector
 
 data Constraint g = CBetter g g -- ^ first state is better than the other. assumes this is P1 turn.
                   | CBetterAll g [g] -- ^ first state is better then ALL the others. assumes this is P1 turn.
+
+instance Functor Constraint where
+    fmap f (CBetter g1 g2) = CBetter (f g1) (f g2)
+    fmap f (CBetterAll g gs) = CBetterAll (f g) (fmap f gs)
 
 type SingleNeuron = ([[[Double]]], [[Double]])
 
@@ -77,6 +84,47 @@ singleNeuronRandomSearch newBest target thrnum filename good'moves = do
                              putStrLn (printf "[%d] NEURON %s" thrnum (show neuron))
                              putStrLn (printf "[%d] SCORE %f (cnum=%d)" thrnum score (length constraints))
             void (newBest (neuron,score,action))
+            go (neuron,score) 
+          else go (best'neuron,best'score)
+         
+  go (undefined,neginf)
+
+-- | simplified and possibly faster version of singleNeuronLocalSearch. constraints need to have preapplied game and toRepr functions as well as response from DBN.
+singleNeuronLocalReprSearch :: ((SingleNeuron, Double, IO ()) -> IO ()) -- ^ callback called for new best neuron
+                            -> IORef (SingleNeuron,Double)              -- ^ best neuron IORef. **WARNING**: make sure to update this IORef with values passed to callback.
+                            -> Double                                   -- ^ base local search range
+                            -> Double                                   -- ^ target value
+                            -> Int                                      -- ^ thread num (affects effective search range)
+                            -> [Constraint (Vector Double)]             -- ^ a list of constraints
+                            -> IO (SingleNeuron, Double)                -- ^ @(best'neuron, best'score)@ pair
+singleNeuronLocalReprSearch newBest bestNeuronRef localSearchRange target thrnum constraints = do
+  rgen <- withSystemRandom $ asGenIO $ return
+  let lastLayerSize :: Int
+      lastLayerSize = case head constraints of
+                        CBetter c _ -> length (Vector.toList c)
+                        CBetterAll c _ -> length (Vector.toList c)
+                      
+      randomNeuron :: IO ([[[Double]]], [[Double]])
+      randomNeuron = do
+        (([[weights'best]],_bias),_score) <- readIORef bestNeuronRef
+        
+        let actualRange = (fromIntegral thrnum) * localSearchRange
+ 
+        weights' <- (replicateM lastLayerSize (uniformR (1-actualRange,1+actualRange) rgen))
+        let bias = 0
+        return ([[zipWith (*) weights'best weights']],[[bias]])
+ 
+  let go (best'neuron,best'score) | best'score >= target = return (best'neuron,best'score)
+                                  | otherwise = do
+         neuron <- randomNeuron
+         let score = scoreConstraints (sumElements . computeTNetworkSigmoid (uncurry mkTNetwork neuron)) constraints
+         if score > best'score 
+          then do
+            let action = do
+                             putStrLn (printf "[%d] LOCAL NEURON %s" thrnum (show neuron))
+                             let ccount = length constraints
+                             putStrLn (printf "[%d] LOCAL SCORE %f (cnum=%d, bad=%d)" thrnum score ccount (ceiling $ fromIntegral ccount * (1-score) :: Int) )
+            newBest (neuron,score,action)
             go (neuron,score) 
           else go (best'neuron,best'score)
          
