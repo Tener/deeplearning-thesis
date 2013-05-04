@@ -94,7 +94,7 @@ instance Agent2 AgentSimple where
     applyAgent agent g p = do
       let mv = moves g p
           mv'evaled = zip (map (evalGameTNetwork (tnet agent)) mv) mv
-          best'moves = map snd $ head $ groupBy (\a b -> fst a == fst b) $ sortBy (comparing fst) $ mv'evaled
+          best'moves = map snd $ head $ reverse $ groupBy (\a b -> fst a == fst b) $ sortBy (comparing fst) $ mv'evaled
 
       when (null best'moves) (fail "AgentSimple: Stuck, no moves left.")
       pickList (gen agent) best'moves
