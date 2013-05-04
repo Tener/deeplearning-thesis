@@ -47,6 +47,11 @@ generateConstraintsSimple g'base g'good = if g'good `elem` moves g'base P1
 generateConstraintsMCTS :: (Repr (GameRepr g), Game2 g) => Int -> g -> IO (g,g)
 generateConstraintsMCTS mcts'gameCoutn g0 = do
   ag <- mkAgent mcts'gameCoutn :: IO AgentMCTS
+  generateConstraintsMCTS' ag g0
+
+-- | generate constraints with `generateConstraintsSimple` and `AgentMCTS`
+generateConstraintsMCTS' :: (Repr (GameRepr g), Game2 g) => AgentMCTS -> g -> IO (g,g)
+generateConstraintsMCTS' ag g0 = do
   g1 <- applyAgent ag g0 P1
   return (g0,g1)
 
