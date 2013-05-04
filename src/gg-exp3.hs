@@ -70,7 +70,7 @@ main = do
   hSetBuffering stdout NoBuffering
 
   printFlush "Constraint generation"
-  let useConstraintCache = False
+  let useConstraintCache = True
   constraints <- if useConstraintCache then genConstraintsCached else genConstraints 
 
   let fnBr = return "tmp-data/tfkullxtitqcyvroeryd/dbn.txt" -- "tmp-data/irlfjflptuwgzpqzejrd/dbn.txt"
@@ -111,27 +111,33 @@ main = do
         withTimeout act = do
               asyncs <- act 
               let loop = do
-                    best'0 <- snd `fmap` readIORef bestRef 
+                    best'0 <- snd `fmap` readIORef bestRef
                     delay
-                    best'1 <- snd `fmap` readIORef bestRef 
+                    best'1 <- snd `fmap` readIORef bestRef
                     if best'0 == best'1 
                      then do
                        printFlush "UNABLE TO IMPROVE, TIMEOUT"
                        readIORef bestRef 
                      else loop
-                  delay = Timeout.threadDelay (4 # Minute)
+                  delay = Timeout.threadDelay (1 # Minute)
               timeoutAsync <- async loop
               return (timeoutAsync:asyncs)
 
                                       
-    (_, best) <- waitAnyCancel =<< withTimeout (mapM (\ thr -> async (singleNeuronRandomSearch (searchCB bestRef) thrG thr fn constraints)) [1..threads])
-    (_, bestLocal) <- waitAnyCancel =<< withTimeout (mapM (\ thr -> async (singleNeuronLocalSearch (searchCB bestRef) bestRef localSearch thrL thr fn constraints)) [1..threads])
+--    (_, best) <- waitAnyCancel =<< withTimeout (mapM (\ thr -> async (singleNeuronRandomSearch (searchCB bestRef) thrG thr fn constraints)) [1..threads])
+--    (_, bestLocal) <- waitAnyCancel =<< withTimeout (mapM (\ thr -> async (singleNeuronLocalSearch (searchCB bestRef) bestRef localSearch thrL thr fn constraints)) [1..threads])
+    (dbn, _) <- parseNetFromFile `fmap` readFile fn 
+    let constraintsPacked = map packConstraint $ concatMap (uncurry generateConstraintsSimple) constraints
+        packConstraint c = fmap packGame c
+        packGame game = computeTNetworkSigmoid dbn $ reprToNN $ toRepr game
+
+    (_, best) <- waitAnyCancel =<< withTimeout (mapM (\ thr -> async (singleNeuronRandomReprSearch (searchCB bestRef) thrG thr constraintsPacked)) [1..threads])
+    (_, bestLocal) <- waitAnyCancel =<< withTimeout (mapM (\ thr -> async (singleNeuronLocalReprSearch (searchCB bestRef) bestRef localSearch thrL thr constraintsPacked)) [1..threads])
 
     let llNetwork = uncurry mkTNetwork (fst bestLocal)
 
     printFlush "BEGIN EVALUATE"
         
-    (dbn, _) <- parseNetFromFile `fmap` readFile fn 
     myTrainedAgent <- mkAgent (appendNetwork dbn llNetwork) :: IO AgentSimple
     agRnd <- mkAgent () :: IO AgentRandom
 
