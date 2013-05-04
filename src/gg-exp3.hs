@@ -38,8 +38,8 @@ constraintsCacheFilename = ("tmp-data" </> "cache" </> "constraints-" ++ gameNam
 genConstraints = do
   cR <- newIORef []
   let addConstraints cs = atomicModifyIORef cR (\ !old -> ((cs:old),()))
-  sampleRandomGamesCount 150 0.01 (\ g -> do
-                                     cs <- generateConstraintsMCTS 1000 (g :: MyGame)
+  sampleRandomGamesCount 1500 0.01 (\ g -> do
+                                     cs <- generateConstraintsMCTS 10 (g :: MyGame)
                                      addConstraints cs
                                      printFlush =<< length `fmap` readIORef cR
                                   )
@@ -56,12 +56,12 @@ genConstraintsCached = do
 
 evaluateWinnersCount = 1000 :: Int
 
-calculateWinnersPCT ref g _dep = when (winner (g :: MyGame) == Just P1) (atomicModifyIORef ref (\ !v -> ((v+1),())))
-reportWinnersPCT ref = do
+calculateWinnersPCT pl ref g _dep = when (winner (g :: MyGame) == Just pl) (atomicModifyIORef ref (\ !v -> ((v+1),())))
+reportWinnersPCT pl ref = do
   winCount <- readIORef ref
   let winPCT = 100 * ((fromIntegral winCount) / (fromIntegral evaluateWinnersCount)) :: Double
   putStrLn "======================================================================================"
-  putStrLn (printf "P1 won in %d matches, win percentage: %f%%" (winCount :: Int) winPCT :: String)
+  putStrLn (printf "%s won in %d matches, win percentage: %f%%" (show pl) (winCount :: Int) winPCT :: String)
   putStrLn "======================================================================================"
   hFlush stdout
   -- threadDelay (10000 * (10^6))
@@ -70,23 +70,25 @@ main = do
   hSetBuffering stdout NoBuffering
 
   printFlush "Constraint generation"
-  let useConstraintCache = True
+  let useConstraintCache = False
   constraints <- if useConstraintCache then genConstraintsCached else genConstraints 
 
-  let fnBr = return "tmp-data/irlfjflptuwgzpqzejrd/dbn.txt"
+  let fnBr = return "tmp-data/tfkullxtitqcyvroeryd/dbn.txt" -- "tmp-data/irlfjflptuwgzpqzejrd/dbn.txt"
       fnAb = return "tmp-data/mlubiwjdnaaovrlgsqxu/dbn.txt"
       fnTN = sampleGamesTrainNetwork (freshGameDefaultParams :: MyGame) 100000 0.1
 
       isAbalone = toRepr someGame == toRepr (freshGameDefaultParams :: Abalone)
       isBreakthrough = toRepr someGame == toRepr (freshGameDefaultParams :: Breakthrough)
 
-      useCachedDBN = False
+      useCachedDBN = True
 
   printFlush "DBN read/train"
   fn <- case (isAbalone, isBreakthrough, useCachedDBN) of
           (True, False, True) -> fnAb
           (False, True, True) -> fnBr
           (_, _, _) -> fnTN
+
+  print ("DBN FN=",fn)
 
   let searchCB ref = (\ new@(bnNew,bsNew,acNew) -> do
                         let newTrim = (bnNew, bsNew)
@@ -117,7 +119,7 @@ main = do
                        printFlush "UNABLE TO IMPROVE, TIMEOUT"
                        readIORef bestRef 
                      else loop
-                  delay = Timeout.threadDelay (1 # Minute)
+                  delay = Timeout.threadDelay (4 # Minute)
               timeoutAsync <- async loop
               return (timeoutAsync:asyncs)
 
@@ -133,9 +135,16 @@ main = do
     myTrainedAgent <- mkAgent (appendNetwork dbn llNetwork) :: IO AgentSimple
     agRnd <- mkAgent () :: IO AgentRandom
 
-    winRef <- newIORef 0
-    sampleGameDepthCount myTrainedAgent agRnd evaluateWinnersCount (calculateWinnersPCT winRef)
-    reportWinnersPCT winRef
+    let reportWin pl = do
+              winRef <- newIORef 0
+              sampleGameDepthCount myTrainedAgent agRnd evaluateWinnersCount (calculateWinnersPCT pl winRef)
+              reportWinnersPCT pl winRef
+
+    reportWin P1
+    reportWin P2
+
+              
+             
     return ()
 
   return ()
