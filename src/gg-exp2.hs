@@ -14,7 +14,7 @@ someGame :: MyGame
 someGame = freshGameDefaultParams
 
 main = do
-  fn <- sampleGamesTrainNetwork (freshGameDefaultParams :: MyGame) 100000 1
+  fn <- sampleGamesTrainNetwork (freshGameDefaultParams :: MyGame) 100000 1 Nothing
   agSmp <- mkAgentSimpleFile fn
   agRnd <- mkAgent () :: IO AgentRandom
   agMT <- mkAgent 5 :: IO AgentMCTS

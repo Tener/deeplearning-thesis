@@ -17,6 +17,7 @@ import Data.IORef
 import Control.Monad
 import System.Random.MWC
 import System.IO
+import Data.Maybe
 
 getRandomFileName :: IO String
 getRandomFileName = (map toEnum) `fmap` replicateM 20 (withSystemRandom $ asGenIO $ uniformR (fromEnum 'a',fromEnum 'z'))
@@ -30,8 +31,8 @@ compressRemoveFile file'orig = do
   return file'out
 
 -- | train DBN on randomly sampled @sampleCount@ games of type @game@. Returns filepath with DBN.
-sampleGamesTrainNetwork :: (Repr (GameRepr g), Game2 g) => g -> Int -> Float -> IO FilePath
-sampleGamesTrainNetwork game sampleCount prob = do
+sampleGamesTrainNetwork :: (Repr (GameRepr g), Game2 g) => g -> Int -> Float -> Maybe MatlabOpts -> IO FilePath
+sampleGamesTrainNetwork game sampleCount prob mlopts = do
   outputDir <- ("tmp-data" </>) `fmap` getRandomFileName
   createDirectoryIfMissing True outputDir
   filename'data <- (\f -> outputDir </> f <.> "csv") `fmap` getRandomFileName
@@ -49,5 +50,5 @@ sampleGamesTrainNetwork game sampleCount prob = do
       hFlush han
 
 --  filename'data'comp <- compressRemoveFile filename'data
-  print =<< prepAndRun def outputDir filename'data
+  print =<< prepAndRun (fromMaybe def mlopts) outputDir filename'data
   return (outputDir </> "dbn.txt")

@@ -84,7 +84,7 @@ main = do
 
   let fnBr = return "tmp-data/irlfjflptuwgzpqzejrd/dbn.txt"
       fnAb = return "tmp-data/mlubiwjdnaaovrlgsqxu/dbn.txt"
-      fnTN = sampleGamesTrainNetwork (freshGameDefaultParams :: MyGame) 100000 0.7
+      fnTN = sampleGamesTrainNetwork (freshGameDefaultParams :: MyGame) 20000 0.5 (Just (def {dbnSizes = [1000]}))
 
       isAbalone = toRepr someGame == toRepr (freshGameDefaultParams :: Abalone)
       isBreakthrough = toRepr someGame == toRepr (freshGameDefaultParams :: Breakthrough)
