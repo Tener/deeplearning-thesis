@@ -19,9 +19,10 @@ library
                      Settings.StaticFiles
                      Settings.Development
                      Handler.Home
-                     Handler.Board
-                     Handler.BoardRender
-                     Handler.Foo
+--                     Handler.Board
+--                     Handler.BoardRender
+--                     Handler.Foo
+                     Handler.Breakthrough
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT
@@ -67,7 +68,7 @@ library
                  , data-default
                  , aeson
 
-                 , abalone, split, process
+                 , abalone, split, process, blaze-html
 
 
 executable         abaloney

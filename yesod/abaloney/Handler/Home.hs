@@ -2,11 +2,17 @@
 module Handler.Home where
 
 import Import
-import Board
+import BreakthroughGame
+import AgentGeneric
+import GenericGame
 import qualified Data.Text as T
 
+import Data.List (tail)
+
 -- boardRepr :: Text
-boardRepr b = T.pack $ reprToRow $ boardToDense b
+-- boardRepr b = T.pack $ reprToRow $ boardToDense b
+
+gameRepr g = T.pack $ reverse $ tail $ reverse $ tail $ show $ toRepr $ (g :: Breakthrough)
 
 -- This is a handler function for the GET request method on the HomeR
 -- resource pattern. All of your resource patterns are defined in

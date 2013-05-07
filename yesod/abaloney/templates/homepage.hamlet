@@ -1,13 +1,6 @@
 <h1>_{MsgHello}
 
 <p> 
- <a href="@{BoardR (boardRepr starting'board'default)}">
-   starting'board'default
+ <a href="@{BreakthroughR 100 (gameRepr freshGameDefaultParams)}">
+   start (6x6)
 
-<p>
- <a href="@{BoardR (boardRepr starting'board'death)}">
-   starting'board'death
-
-<p>
- <a href="@{BoardR (boardRepr starting'board'belgianDaisy)}">
-   starting'board'belgianDaisy

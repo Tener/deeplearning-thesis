@@ -23,20 +23,24 @@ data Breakthrough = Breakthrough { board :: BoardMap -- ^ map from position to P
                                  } deriving (Show, Eq, Read)
 
 instance GameTxtRender Breakthrough where
-    prettyPrintGame g = let ll = "---------------------------" 
+    prettyPrintGame g = let -- ll = "---------------------------" 
                             rl = fst (boardSize g)
                             charPos pos = case HashMap.lookup pos (board g) of
                                             Nothing -> '.'
                                             Just P1 -> '1'
                                             Just P2 -> '2'
-                            pprow n = "> " ++ map charPos (row n rl) ++ " <"
+                            pprow n = "| " ++ map charPos (row n rl) ++ " |"
+
+                            bareBoard = map pprow [0..(snd (boardSize g))-1]
                         in
-                        unlines ( 
-                        [ll
-                        ,show g
-                        ,ll] ++
-                        map pprow [0..(snd (boardSize g))-1]
-                        ++ [ll])
+                          unlines bareBoard
+                          
+--                         unlines ( 
+--                         [ll
+--                         ,show g
+--                         ,ll] ++
+--                         bareBoard
+--                         ++ [ll])
 
 instance Game2 Breakthrough where
     type MoveDesc Breakthrough = (Position,Position) -- first position, second position

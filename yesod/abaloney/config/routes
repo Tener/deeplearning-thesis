@@ -4,6 +4,4 @@
 /robots.txt RobotsR GET
 
 / HomeR GET POST
-/board/#Text BoardR GET
-/boardRender/#Text/#Text BoardRenderR GET
-/entry/#Text/#Text FooR GET
+/br/#Int/#Text BreakthroughR GET

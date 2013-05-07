@@ -1,0 +1,26 @@
+<p>Current state:
+<tt>#{prettyPrintGame' game}
+
+<p> Best move for P1:
+<tt>#{prettyPrintGame' agMoveP1}
+<p> Best move for P2:
+<tt>#{prettyPrintGame' agMoveP2}
+
+
+<p> Moves for P1:
+<table border="1">
+   $forall b <- possibleMoves'P1
+    <tr>
+      <td>
+         <a href="@{BreakthroughR mctsRating (gameRepr b)}">
+          <tt>
+           #{prettyPrintGame' b}
+
+<p> Moves for P2:
+<table border="1">
+   $forall b <- possibleMoves'P2
+    <tr>
+      <td>
+         <a href="@{BreakthroughR mctsRating (gameRepr b)}">
+          <tt>
+           #{prettyPrintGame' b}

@@ -7,7 +7,7 @@ Default: &defaults
 
 Development:
   <<: *defaults
-  approot: "http://10.20.30.9:3000"
+  approot: "http://localhost:3000"
 
 Testing:
   <<: *defaults
