@@ -21,7 +21,7 @@ Library
                           Tournament, Utils, MinimalNN, Constraints,
                           Config, Matlab,
                           GenericGame, AgentGeneric, BreakthroughGame, HistogramGeneric,
-                          GenericGameExperiments, ConstraintsGeneric
+                          GenericGameExperiments, ConstraintsGeneric, ThreadLocal
   Build-depends:          base, mwc-random, grid == 2.0, process, containers, hashmap, game-tree, split, 
 --                        hashable == 1.2.0.2.20121217, -- with removed hashable instance for pair...
                           hashable, 
