@@ -28,12 +28,7 @@ import Data.Default
 
 import qualified Control.Concurrent.Timeout as Timeout
 import Data.Timeout
-import Data.Chronograph
-
-type MyGameA = Abalone
-type MyGameB = Breakthrough
-type MyGame = MyGameB
-
+-- import Data.Chronograph
 
 
 someGame :: MyGame
@@ -52,18 +47,6 @@ constraintsCacheFilename = let spec :: String
 genConstraints :: ThrLocIO [(MyGame, MyGame)]
 genConstraints = concat `fmap` parWorkThreads constraintCount genConstraintsCnt
 
-parWorkThreads :: Int -> (Int -> ThrLocIO a) -> ThrLocIO [a]
-parWorkThreads c fun = do
-  threads <- getNumCapabilities
-  let oneThr = c `div` threads
-      re = c - (oneThr * threads)
-      cnt 1 = oneThr+re
-      cnt _ = oneThr
-  let mvar'stdout = tl_stdout ?thrLoc
-  ccs <- mapConcurrently (\ thr -> do
-                            runThrLocIO (ThreadLocal mvar'stdout (show thr)) (fun (cnt thr)))
-                         [1..threads] 
-  return ccs
 
 genConstraintsCnt :: Int -> ThrLocIO [(MyGame, MyGame)]
 genConstraintsCnt conCount = do
@@ -89,36 +72,16 @@ genConstraintsCached = do
        else genConstraints
 
 
-evaluateWinnersCount :: Int
-evaluateWinnersCount = 100
-
-calculateWinnersPCT pl ref g d = do
-  let w = if (winner (g :: MyGame) == Just pl) then 1 else 0
-
-  wins <- atomicModifyIORef ref (\ (!cnt, !dep) -> ((cnt+w, dep+d), (cnt+w)))
-  if (w == 1) then (printTL ("WINS",wins)) else printTL ("LOSE",d)
-
-
-reportWinnersPCT ag1 ag2 pl ref = do
-  (winCount,depths) <- readIORef ref
-  let winPCT = 100 * ((fromIntegral winCount) / (fromIntegral evaluateWinnersCount)) :: Double
-      depthAVG = (fromIntegral depths) / (fromIntegral evaluateWinnersCount) :: Double
-      n1 = if pl == P1 then agentName ag1 else agentName ag2
-      n2 = if pl == P2 then agentName ag1 else agentName ag2
-  putStrLnTL (printf "%s[%s] won vs [%s] in %d matches, win percentage: %f%%, avg depth=%f" (show pl) n1 n2 (winCount :: Int) winPCT depthAVG :: String)
-  hFlush stdout
-  
 main :: IO ()
 main = runThrLocMainIO $ do
-  hSetBuffering stdout NoBuffering
-
   printTL "Constraint generation"
   let useConstraintCache = True
   constraints <- if useConstraintCache then genConstraintsCached else genConstraints 
 
-  let fnBr = return "tmp-data/irlfjflptuwgzpqzejrd/dbn.txt"
-      fnAb = return "tmp-data/mlubiwjdnaaovrlgsqxu/dbn.txt"
-      fnTN = sampleGamesTrainNetwork (freshGameDefaultParams :: MyGame) 20000 0.5 (Just (def {dbnSizes = [1000]}))
+  let fnAb = return "tmp-data/mlubiwjdnaaovrlgsqxu/dbn.txt"
+      fnBr = return "tmp-data/irlfjflptuwgzpqzejrd/dbn.txt"
+      -- fnBr = return "tmp-data/esodbghkmfiofntjxlph/dbn.txt" -- 1000, 1000
+      fnTN = sampleGamesTrainNetwork (freshGameDefaultParams :: MyGame) 100000 0.3 (Just (def {dbnSizes = [750]}))
 
       isAbalone = toRepr someGame == toRepr (freshGameDefaultParams :: Abalone)
       isBreakthrough = toRepr someGame == toRepr (freshGameDefaultParams :: Breakthrough)
@@ -164,7 +127,7 @@ main = runThrLocMainIO $ do
                        printTL "UNABLE TO IMPROVE, TIMEOUT"
                        readIORef bestRef 
                      else loop
-                  delay = Timeout.threadDelay (30 # Second)
+                  delay = Timeout.threadDelay (60 # Second)
               timeoutAsync <- async loop
               return (timeoutAsync:asyncs)
 
@@ -185,24 +148,17 @@ main = runThrLocMainIO $ do
 
     let llNetwork = uncurry mkTNetwork (fst bestLocal)
         evalNetwork = appendNetwork dbn llNetwork
-        timed s a = do
-          (Chronograph r t) <- chronoIO a
-          printTL (s,t)
-          return r
-        
-        mkTimed label arg = mkAgent ((IOAct (timed label)), arg)
         
     agSmpl <- mkTimed "simple" evalNetwork :: IO (AgentTrace AgentSimple)
-    agTree <- mkTimed "tree" (evalNetwork, 5) :: IO (AgentTrace AgentGameTree)
+    agTree <- mkTimed "tree" (evalNetwork, 4) :: IO (AgentTrace AgentGameTree)
     
     agRnd <- mkTimed "random" () :: IO (AgentTrace AgentRandom)
     agMTC <- mkTimed "mcts" 5 :: IO (AgentTrace AgentMCTS)
 
-    let reportWin ag ag2 pl = do
-              winRef <- newIORef (0,0)
-              -- sampleGameDepthCount ag ag2 evaluateWinnersCount (calculateWinnersPCT pl winRef)
-              parWorkThreads evaluateWinnersCount (\ cnt -> sampleGameDepthCount ag ag2 cnt (calculateWinnersPCT pl winRef))
-              reportWinnersPCT ag ag2 pl winRef
+--     let reportWin ag ag2 pl = do
+--               winRef <- newIORef (0,0)
+--               parWorkThreads evaluateWinnersCount (\ cnt -> sampleGameDepthCount ag ag2 cnt (calculateWinnersPCT pl winRef))
+--               reportWinnersPCT ag ag2 pl winRef
     putStrLnTL "======================================================================================"
     -- reportWin agSmpl agRnd P1
     reportWin agSmpl agMTC P1

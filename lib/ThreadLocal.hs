@@ -13,6 +13,7 @@ data ThreadLocal = ThreadLocal { tl_stdout :: MVar Handle
 
 runThrLocMainIO :: (ThrLocIO a) -> IO a
 runThrLocMainIO main = do
+  hSetBuffering stdout NoBuffering
   var <- newMVar stdout
   runThrLocIO (ThreadLocal var "MAIN") main
 

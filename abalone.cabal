@@ -28,7 +28,7 @@ Library
 --                        hnn == 0.2.0.0.20121218, 
                           vector, hmatrix, io-memoize, cairo, data-default, async,
                           global-config, filepath, directory, transformers, global-variables, Interpolation,
-                          bytestring, Histogram, gnuplot, zlib
+                          bytestring, Histogram, gnuplot, zlib, chronograph
 --  if flag(cairo)
 --     build-depends: cairo
   cpp-options: -DCAIRO
@@ -82,6 +82,12 @@ Executable gg-exp2
 Executable gg-exp3
   Main-is:                src/gg-exp3.hs
   Build-depends:          base, abalone, async, data-timeout, filepath, directory, chronograph, data-default
+  Ghc-options:            -rtsopts -threaded -Wall
+
+Executable gg-exp4
+  Main-is:                src/gg-exp4.hs
+  Build-depends:          base, abalone 
+-- , async, data-timeout, filepath, directory, chronograph, data-default
   Ghc-options:            -rtsopts -threaded -Wall
 
 
