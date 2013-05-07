@@ -1,4 +1,4 @@
- {-# LANGUAGE DeriveDataTypeable #-}
+ {-# LANGUAGE ImplicitParams, Rank2Types, DeriveDataTypeable #-}
 module Config where
 
 import Data.Typeable (Typeable)
@@ -15,8 +15,17 @@ data Config = Config { configNeuralNetsDirectory :: FilePath
                      }
    deriving (Show, Typeable)
 
+type ConfIO a = (?conf :: Config) => IO a
+
+runConfIO :: ConfIO a -> IO a
+runConfIO action = do
+  c <- getConfig
+  let ?conf = c in action
+
 fetchConfig :: (Config -> a) -> IO a
 fetchConfig field = fmap field (getConfig :: IO Config)
+
+
 
 instance Default Config where
    def = fix (\self -> let d = configNeuralNetsDirectory self in 
