@@ -2,10 +2,13 @@
 
 module ConstraintsGeneric where
 
+import Prelude hiding (putStr, putStrLn)
+
 import GenericGame
 import AgentGeneric
 import MinimalNN
 import NeuralNets (parseNetFromFile)
+import ThreadLocal
 
 import Numeric.Container (sumElements)
 import Data.Packed.Vector (Vector)
@@ -61,7 +64,7 @@ singleNeuronRandomReprSearch :: ((SingleNeuron, Double, IO ()) -> IO a) -- ^ cal
                              -> Double                                  -- ^ target value for score
                              -> Int                                     -- ^ thread number
                              -> [Constraint (Vector Double)]            -- ^ a list of good moves: @[(first state, second state)]@
-                             -> IO (SingleNeuron, Double)               -- ^ @(best'neuron, best'score)@ pair
+                             -> ThrLocIO (SingleNeuron, Double)         -- ^ @(best'neuron, best'score)@ pair
 
 singleNeuronRandomReprSearch newBest target thrnum constraints = do
   rgen <- withSystemRandom $ asGenIO $ return
@@ -83,8 +86,8 @@ singleNeuronRandomReprSearch newBest target thrnum constraints = do
          if score > best'score 
           then do
             let action = do
-                             putStrLn (printf "[%d] NEURON %s" thrnum (show neuron))
-                             putStrLn (printf "[%d] SCORE %f (cnum=%d)" thrnum score (length constraints))
+                             putStrLnTL (printf "[%d] NEURON %s" thrnum (show neuron))
+                             putStrLnTL (printf "[%d] SCORE %f (cnum=%d)" thrnum score (length constraints))
             void (newBest (neuron,score,action))
             go (neuron,score) 
           else go (best'neuron,best'score)
@@ -98,7 +101,7 @@ singleNeuronRandomSearch :: (Eq g, Repr (GameRepr g), Game2 g) =>
                             -> Int                                  -- ^ thread number
                             -> FilePath                             -- ^ file with NN to read
                             -> [(g, g)]                             -- ^ a list of good moves: @[(first state, second state)]@
-                            -> IO (SingleNeuron, Double)            -- ^ @(best'neuron, best'score)@ pair
+                            -> ThrLocIO (SingleNeuron, Double)      -- ^ @(best'neuron, best'score)@ pair
 
 singleNeuronRandomSearch newBest target thrnum filename good'moves = do
   rgen <- withSystemRandom $ asGenIO $ return
@@ -121,8 +124,8 @@ singleNeuronRandomSearch newBest target thrnum filename good'moves = do
          if score > best'score 
           then do
             let action = do
-                             putStrLn (printf "[%d] NEURON %s" thrnum (show neuron))
-                             putStrLn (printf "[%d] SCORE %f (cnum=%d)" thrnum score (length constraints))
+                             putStrLnTL (printf "[%d] NEURON %s" thrnum (show neuron))
+                             putStrLnTL (printf "[%d] SCORE %f (cnum=%d)" thrnum score (length constraints))
             void (newBest (neuron,score,action))
             go (neuron,score) 
           else go (best'neuron,best'score)
@@ -136,7 +139,7 @@ singleNeuronLocalReprSearch :: ((SingleNeuron, Double, IO ()) -> IO ()) -- ^ cal
                             -> Double                                   -- ^ target value
                             -> Int                                      -- ^ thread num (affects effective search range)
                             -> [Constraint (Vector Double)]             -- ^ a list of constraints
-                            -> IO (SingleNeuron, Double)                -- ^ @(best'neuron, best'score)@ pair
+                            -> ThrLocIO (SingleNeuron, Double)          -- ^ @(best'neuron, best'score)@ pair
 singleNeuronLocalReprSearch newBest bestNeuronRef localSearchRange target thrnum constraints = do
   rgen <- withSystemRandom $ asGenIO $ return
   let lastLayerSize :: Int
@@ -161,9 +164,9 @@ singleNeuronLocalReprSearch newBest bestNeuronRef localSearchRange target thrnum
          if score > best'score 
           then do
             let action = do
-                             putStrLn (printf "[%d] LOCAL NEURON %s" thrnum (show neuron))
+                             putStrLnTL (printf "[%d] LOCAL NEURON %s" thrnum (show neuron))
                              let ccount = length constraints
-                             putStrLn (printf "[%d] LOCAL SCORE %f (cnum=%d, bad=%d)" thrnum score ccount (ceiling $ fromIntegral ccount * (1-score) :: Int) )
+                             putStrLnTL (printf "[%d] LOCAL SCORE %f (cnum=%d, bad=%d)" thrnum score ccount (ceiling $ fromIntegral ccount * (1-score) :: Int) )
             newBest (neuron,score,action)
             go (neuron,score) 
           else go (best'neuron,best'score)
@@ -178,7 +181,7 @@ singleNeuronLocalSearch :: (Eq g, Repr (GameRepr g), Game2 g) =>
                         -> Int                                      -- ^ thread num (affects effective search range)
                         -> FilePath                                 -- ^ filename with NN
                         -> [(g, g)]                                 -- ^ a list of good moves: @[(first state, second state)]@
-                        -> IO (SingleNeuron, Double)                -- ^ @(best'neuron, best'score)@ pair
+                        -> ThrLocIO (SingleNeuron, Double)          -- ^ @(best'neuron, best'score)@ pair
  
 singleNeuronLocalSearch newBest bestNeuronRef localSearchRange target thrnum filenameNN good'moves = do
   rgen <- withSystemRandom $ asGenIO $ return
@@ -205,9 +208,9 @@ singleNeuronLocalSearch newBest bestNeuronRef localSearchRange target thrnum fil
          if score > best'score 
           then do
             let action = do
-                             putStrLn (printf "[%d] LOCAL NEURON %s" thrnum (show neuron))
+                             putStrLnTL (printf "[%d] LOCAL NEURON %s" thrnum (show neuron))
                              let ccount = length constraints
-                             putStrLn (printf "[%d] LOCAL SCORE %f (cnum=%d, bad=%d)" thrnum score ccount (ceiling $ fromIntegral ccount * (1-score) :: Int) )
+                             putStrLnTL (printf "[%d] LOCAL SCORE %f (cnum=%d, bad=%d)" thrnum score ccount (ceiling $ fromIntegral ccount * (1-score) :: Int) )
             newBest (neuron,score,action)
             go (neuron,score) 
           else go (best'neuron,best'score)
