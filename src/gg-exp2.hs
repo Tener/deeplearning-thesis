@@ -8,8 +8,6 @@ import GenericGameExperiments
 import GenericGame
 import AgentGeneric
 
-type MyGame = Breakthrough
-
 someGame :: MyGame
 someGame = freshGameDefaultParams
 
