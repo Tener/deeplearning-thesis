@@ -2,6 +2,8 @@
 
 module Main where
 
+import Prelude hiding (putStr, putStrLn)
+
 import BreakthroughGame
 import Board
 
@@ -103,7 +105,7 @@ reportWinnersPCT ag1 ag2 pl ref = do
       depthAVG = (fromIntegral depths) / (fromIntegral evaluateWinnersCount) :: Double
       n1 = if pl == P1 then agentName ag1 else agentName ag2
       n2 = if pl == P2 then agentName ag1 else agentName ag2
-  putStrLn (printf "%s[%s] won vs [%s] in %d matches, win percentage: %f%%, avg depth=%f" (show pl) n1 n2 (winCount :: Int) winPCT depthAVG :: String)
+  putStrLnTL (printf "%s[%s] won vs [%s] in %d matches, win percentage: %f%%, avg depth=%f" (show pl) n1 n2 (winCount :: Int) winPCT depthAVG :: String)
   hFlush stdout
   
 main :: IO ()
@@ -177,7 +179,7 @@ main = runThrLocMainIO $ do
     (_, _best) <- waitAnyCancel =<< withTimeout (mapM (\ thr -> async (singleNeuronRandomReprSearch (searchCB bestRef) thrG thr constraintsPacked)) [1..threads])
     (_, bestLocal) <- waitAnyCancel =<< withTimeout (mapM (\ thr -> async (singleNeuronLocalReprSearch (searchCB bestRef) bestRef localSearch thrL thr constraintsPacked)) [1..threads])
 
-    putStrLn $ printf "FINAL SCORE %s" (show bestLocal)
+    putStrLnTL $ printf "FINAL SCORE %s" (show bestLocal)
 
     printTL "BEGIN EVALUATE"
 
@@ -194,22 +196,20 @@ main = runThrLocMainIO $ do
     agTree <- mkTimed "tree" (evalNetwork, 5) :: IO (AgentTrace AgentGameTree)
     
     agRnd <- mkTimed "random" () :: IO (AgentTrace AgentRandom)
-    agMTC <- mkTimed "mcts" 30 :: IO (AgentTrace AgentMCTS)
+    agMTC <- mkTimed "mcts" 5 :: IO (AgentTrace AgentMCTS)
 
     let reportWin ag ag2 pl = do
               winRef <- newIORef (0,0)
               -- sampleGameDepthCount ag ag2 evaluateWinnersCount (calculateWinnersPCT pl winRef)
               parWorkThreads evaluateWinnersCount (\ cnt -> sampleGameDepthCount ag ag2 cnt (calculateWinnersPCT pl winRef))
               reportWinnersPCT ag ag2 pl winRef
-    putStrLn "======================================================================================"
+    putStrLnTL "======================================================================================"
     -- reportWin agSmpl agRnd P1
     reportWin agSmpl agMTC P1
     -- reportWin agTree agRnd P1
     reportWin agTree agMTC P1
-    putStrLn "======================================================================================"
+    putStrLnTL "======================================================================================"
 
-              
-             
     return ()
 
   printTL "Source file changed, exiting"
