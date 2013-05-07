@@ -1,4 +1,4 @@
-{-# LANGUAGE BangPatterns, FlexibleContexts, TypeFamilies #-}
+{-# LANGUAGE BangPatterns, FlexibleContexts, TypeFamilies, RankNTypes #-}
 
 -- | few agents for generic games as defined in 'GenericGame'
 module AgentGeneric where
@@ -11,10 +11,15 @@ import Data.Default
 import Data.List (groupBy, sortBy)
 import Data.IORef
 import Data.Ord
+import Text.Printf
 
 import GenericGame
 import MinimalNN
-import NeuralNets(parseNetFromFile)
+import NeuralNets(parseNetFromFile, doubleToEvalInt)
+
+import Data.Packed.Vector as Vector
+import qualified Data.Tree.Game_tree.Negascout as GTreeAlgo
+import Data.Tree.Game_tree.Game_tree as GTree
 
 -- | agent for Game2 games
 class Agent2 a where
@@ -23,6 +28,8 @@ class Agent2 a where
     mkAgent :: AgentParams a -> IO a
     -- | apply agent decision generating new game state playing as specified player.
     applyAgent :: (Game2 g, Repr (GameRepr g)) => a -> g -> Player2 -> IO g
+    -- | get agent name
+    agentName :: a -> String
 
 -- | agent that picks a random move from all available moves
 data AgentRandom = AgentRandom GenIO
@@ -30,67 +37,94 @@ data AgentRandom = AgentRandom GenIO
 -- | agent that picks a random move from all available *best* moves, where move fitness is determined by neural network evaluation
 data AgentSimple = AgentSimple TNetwork GenIO
 
--- | same as agent simple but with two networks. 
---   fixme: merge with AgentSimple by merging the networks
-data AgentSimpleLL = AgentSimpleLL TNetwork TNetwork GenIO
+-- -- | same as agent simple but with two networks. 
+-- --   fixme: merge with AgentSimple by merging the networks
+-- data AgentSimpleLL = AgentSimpleLL TNetwork TNetwork GenIO
 
 -- | agent based on monte carlo tree search: evaluate moves counting how many times following that move and playing randomly till the end yields victory.
 data AgentMCTS = AgentMCTS Int   -- how many games to evaluate for each possible move
                            AgentRandom -- cached AgentRandom for random game walks
                            GenIO 
 
--- import qualified Data.Tree.Game_tree.Negascout as GTreeAlgo
--- import Data.Tree.Game_tree.Game_tree as GTree
--- data AgentGameTree = AgentGameTree    deriving (Eq, Ord, Show)
--- -- | datatype useful for various game-tree-search based agents
--- data GameStateGen g = GameStateGen g { gsgGame :: g
---                                      , gsgEvalSelf :: GameState -> Int
---                                      , gsgPlayerBase :: Player2 -- ^ player that initialized tree search
---                                      , gsgPlayerNow :: Player2  -- ^ player which makes the move now
---                                      } 
---  
--- instance GTree.Game_tree GameState where
---     is_terminal gst = Board.isFinished (unwrap $ gtBoard gst)
---     node_value gst = (gtEvalSelf gst) gst
---     children (GameState (BBoard brd0) eval colB colN) | isFinished brd0 = []
---                                                       | otherwise = [ GameState (mkBBoard colN brd) eval colB (Board.negColor $ colN) | brd <- Board.getMoves colN brd0 ]
+-- | wrapping agent: wraps another agent and reports time it takes for generating moves.
+data AgentWrapTiming a = AgentWrapTiming a
 
--- instance Agent2 AgentGameTree where
---     mkAgent = return AgentGameTree
---  
---     applyAgent agent g p = do
---       mv <- moves g p
---       case mv of
---         [] -> do
---           fail "AgentRandom: Stuck, cant do anything."
---         _ -> do
---           pick <- uniformR (0, length mv - 1) (gen agent)
---           let chosen = (mv !! pick)
---           return chosen
+-- | the usual alpha-beta etc. based agent.
+data AgentGameTree = AgentGameTree TNetwork 
+                                   Int      -- search depth
+
+-- | datatype useful for various game-tree-search based agents
+data GameStateGen g = GameStateGen { gsgGame :: g
+                                   , gsgEvalSelf :: (GameStateGen g) -> Int
+                                   , gsgPlayerBase :: Player2 -- ^ player that initialized tree search
+                                   , gsgPlayerNow :: Player2  -- ^ player which makes the move now
+                                   } 
+ 
+instance (Game2 g) => GTree.Game_tree (GameStateGen g) where
+    is_terminal gs = winner (gsgGame gs) /= Nothing
+    node_value gs = (gsgEvalSelf gs) gs
+    children gs | is_terminal gs = []
+                | otherwise = [ GameStateGen g (gsgEvalSelf gs) (gsgPlayerBase gs) (nextPlayer $ gsgPlayerNow gs) 
+                                | g <- moves (gsgGame gs) (gsgPlayerNow gs)
+                              ]
+
+nextPlayer :: Player2 -> Player2
+nextPlayer P1 = P2
+nextPlayer P2 = P1
+
+--     makeMove ag@(AgentNNSimple neuralNetwork colo) brd = do
+--       let gst = GameState brd (\ g -> doubleToEvalInt $ evalBoardNetOnePassN 1 (gtColorNow g) (unwrap $ gtBoard g) neuralNetwork)
+--                           colo colo
+--           depth = 3
+--           (princ, score) = GTreeAlgo.negascout gst depth
+--       print ("AgentNNSimple", score, (take 3 $ evaluateBoard ag brd))
+--       return (morph $ gtBoard $ head $ tail $ princ)
+
 
 -- | helper class for datatypes containing GenIO inside
 class HasGen a where gen :: a -> GenIO
 instance HasGen AgentRandom where gen (AgentRandom g) = g
 instance HasGen AgentSimple where gen (AgentSimple _ g) = g
-instance HasGen AgentSimpleLL where gen (AgentSimpleLL _ _ g) = g
 instance HasGen AgentMCTS where gen (AgentMCTS _ _ g) = g
 
 class HasTNet a where tnet :: a -> TNetwork
 instance HasTNet AgentSimple where tnet (AgentSimple t _) = t
+instance HasTNet AgentGameTree where tnet (AgentGameTree t _) = t
+
+data AgentTrace a = AgentTrace IOAct a
+data IOAct = IOAct (forall g . IO g -> IO g)
+instance (Agent2 a) => Agent2 (AgentTrace a) where
+    type AgentParams (AgentTrace a) = (IOAct, AgentParams a)
+    mkAgent (trace, params) = AgentTrace trace <$> mkAgent params
+    applyAgent (AgentTrace (IOAct trace) agent) g p = trace (applyAgent agent g p)
+    agentName (AgentTrace _ a) = agentName a
+
+--instance (Agent2 a) => Agent2 (AgentWrapTiming a) where
+--    type AgentParams AgentWrapTiming = AgentParams a
+--    mkAgent params = AgentWrapTiming <$> mkAgent params
+--    applyAgent (AgentWrapTiming agent) g p = do
+--      t0 <- getTime
+--      rep <- applyAgent agent g p 
+--      t1 <- getTime
+--      print (t1-t2)
+--      return rep
 
 instance Agent2 AgentRandom where
     type AgentParams AgentRandom = ()
     mkAgent () = AgentRandom <$> (withSystemRandom $ asGenIO $ return)
-
+    agentName _ = "AgentRandom"
     applyAgent agent g p = do
       let mv = moves g p
       when (null mv) (fail "AgentRandom: Stuck, cant do anything.")
       pickList (gen agent) mv
 
+showTn :: TNetwork -> String
+showTn tn = show $ (map Vector.dim (biases tn))
+
 instance Agent2 AgentSimple where
     type AgentParams AgentSimple = TNetwork
     mkAgent tn = AgentSimple tn <$> (withSystemRandom $ asGenIO $ return)
-
+    agentName (AgentSimple tn _) = printf "AgentSimple(|tn|=%s)" (showTn tn)
     applyAgent agent g p = do
       let mv = moves g p
           mv'evaled = zip (map (evalGameTNetwork (tnet agent)) mv) mv
@@ -99,17 +133,38 @@ instance Agent2 AgentSimple where
       when (null best'moves) (fail "AgentSimple: Stuck, no moves left.")
       pickList (gen agent) best'moves
 
-instance Agent2 AgentSimpleLL where
-    type AgentParams AgentSimpleLL = (TNetwork, TNetwork)
-    mkAgent (tn1,tn2) = AgentSimpleLL tn1 tn2 <$> (withSystemRandom $ asGenIO $ return)
+instance Agent2 AgentGameTree where
+    type AgentParams AgentGameTree = (TNetwork, Int)
+    mkAgent (tn,depth) = return $ AgentGameTree tn depth
+    agentName (AgentGameTree tn depth) = printf "AgentGameTree(d=%d, tn=%s)" depth (showTn tn)
+    applyAgent agent@(AgentGameTree _ depth) g p = do
+      let gs = GameStateGen { gsgGame = g
+                            , gsgEvalSelf = eval
+                            , gsgPlayerBase = p
+                            , gsgPlayerNow = p
+                            }
 
-    applyAgent agent@(AgentSimpleLL tn1 tn2 _) g p = do
-      let mv = moves g p
-          mv'evaled = zip (map (evalGameTNetworkLL tn1 tn2) mv) mv
-          best'moves = map snd $ head $ groupBy (\a b -> fst a == fst b) $ sortBy (comparing fst) $ mv'evaled
+          eval gameSt = fixSign (gsgPlayerNow gameSt) $ doubleToEvalInt $ evalGameTNetwork (tnet agent) $ gsgGame gameSt 
+          (princ, _score) = GTreeAlgo.negascout gs depth
+          -- fixme: make sure this is correct.
+          fixSign P1 v = v
+          fixSign P2 v = negate v
 
-      when (null best'moves) (fail "AgentSimple: Stuck, no moves left.")
-      pickList (gen agent) best'moves
+      -- print ("AgentGameTree",score)
+      return (gsgGame $ head $ tail $ princ)
+
+
+-- instance Agent2 AgentSimpleLL where
+--     type AgentParams AgentSimpleLL = (TNetwork, TNetwork)
+--     mkAgent (tn1,tn2) = AgentSimpleLL tn1 tn2 <$> (withSystemRandom $ asGenIO $ return)
+--  
+--     applyAgent agent@(AgentSimpleLL tn1 tn2 _) g p = do
+--       let mv = moves g p
+--           mv'evaled = zip (map (evalGameTNetworkLL tn1 tn2) mv) mv
+--           best'moves = map snd $ head $ groupBy (\a b -> fst a == fst b) $ sortBy (comparing fst) $ mv'evaled
+--  
+--       when (null best'moves) (fail "AgentSimple: Stuck, no moves left.")
+--       pickList (gen agent) best'moves
 
 
 mkAgentSimpleFile :: FilePath -> IO AgentSimple
@@ -120,7 +175,7 @@ mkAgentSimpleFile fp = do
 instance Agent2 AgentMCTS where
     type AgentParams AgentMCTS = Int
     mkAgent games = AgentMCTS games <$> mkAgent () <*> (withSystemRandom $ asGenIO $ return)
-
+    agentName (AgentMCTS g _ _) = printf "AgentMCTS(g=%d)" g
     applyAgent (AgentMCTS games agRnd _) g p = do
       let mv = moves g p
           myeval move = do
