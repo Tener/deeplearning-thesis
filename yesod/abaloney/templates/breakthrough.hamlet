@@ -2,9 +2,12 @@
 <tt>#{prettyPrintGame' game}
 
 <p> Best move for P1:
-<tt>#{prettyPrintGame' agMoveP1}
+<a href="@{BreakthroughR mctsRating (gameRepr agMoveP1)}">
+ <tt>#{prettyPrintGame' agMoveP1}
+
 <p> Best move for P2:
-<tt>#{prettyPrintGame' agMoveP2}
+<a href="@{BreakthroughR mctsRating (gameRepr agMoveP2)}">
+ <tt>#{prettyPrintGame' agMoveP2}
 
 
 <p> Moves for P1:

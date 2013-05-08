@@ -20,7 +20,7 @@ getBreakthroughR mctsRating reprTxt = do
       possibleMoves'P1 = moves game P1
       possibleMoves'P2 = moves game P2
 
-      gameRepr g = T.pack $ show $ toRepr $ (g :: Breakthrough)
+      gameRepr g = T.intercalate "," $ map (T.pack . show) $ toRepr $ (g :: Breakthrough)
 
       prettyPrintGame' g = preEscapedToHtml $ intercalate "<br>" (lines (prettyPrintGame g))
 
