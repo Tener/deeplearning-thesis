@@ -1,99 +1,73 @@
-{-# LANGUAGE ImplicitParams, Rank2Types, BangPatterns #-}
+{-# LANGUAGE ImplicitParams, Rank2Types, BangPatterns, OverloadedStrings #-}
 
 module Main where
 
 import Prelude hiding (putStr, putStrLn)
 
-import BreakthroughGame
-import Board
-
-import GenericGameExperiments
-import GenericGame
 import AgentGeneric
 import ConstraintsGeneric
-import MinimalNN
+import GenericGame
+import GenericGameExperiments
 import Matlab
+import MinimalNN
 import NeuralNets (parseNetFromFile)
+import LittleGolem
 import ThreadLocal
 
-import Data.IORef
-import Control.Monad
 import Control.Concurrent
 import Control.Concurrent.Async
-import Text.Printf
-import System.IO
-import System.Directory
-import System.FilePath
+import Control.Monad
 import Data.Default
+import Data.IORef
+import Data.Text (Text)
+import System.Directory
+import Text.Printf
 
 import qualified Control.Concurrent.Timeout as Timeout
 import Data.Timeout
--- import Data.Chronograph
 
+data ConstraintSource = CS_Cache | CS_Generate | CS_Gameplay
 
-someGame :: MyGame
-someGame = freshGameDefaultParams
+useCachedDBN = True
+constraintSource = CS_Gameplay
+searchTimeout = 180 # Second
+dbnGameCount = 100000
+dbnGameProb = 0.3
+dbnMatlabOpts = Just (def {dbnSizes = [750]})
 
-constraintCount, constraintDepth :: Int
-constraintCount = 500
-constraintDepth = 1000
+-- thresholds for global & local search, local search radius
+thrG = 1          
+thrL = 1          
+localSearch = 0.18
 
-constraintsCacheFilename :: FilePath
-constraintsCacheFilename = let spec :: String
-                               spec = printf "constraints-d%d-c%d-%s.txt" constraintDepth constraintCount (gameName someGame)
-                           in "tmp-data" </> "cache" </> spec
+getConstraintsPlayer :: FilePath -> Text -> ThrLocIO [(MyGame, MyGame)]
+getConstraintsPlayer fp playerName = do
+  records <- parseGameFileName fp
+  let rec0 = filter ((playerName==) . playerWhite) records
+      rec1 = filter (("1-0"==) . result) rec0
+      rec2 = map moveSequence rec1
+      constraints = concatMap (generateConstraintsGameplay P1) rec2
+  printTL (length constraints)
+  return (take 1000 constraints)
 
+gameplayConstraints'0 = ("data-good/player_game_list_breakthrough_RayGarrison.txt", "Ray Garrison")
+gameplayConstraints'1 = ("data-good/player_game_list_breakthrough_DavidScott.txt", "David Scott")
 
-genConstraints :: ThrLocIO [(MyGame, MyGame)]
-genConstraints = concat `fmap` parWorkThreads constraintCount genConstraintsCnt
+gameplayConstraints = gameplayConstraints'0
 
-
-genConstraintsCnt :: Int -> ThrLocIO [(MyGame, MyGame)]
-genConstraintsCnt conCount = do
-  cR <- newIORef []
-  let addConstraints cs = atomicModifyIORef cR (\ !old -> ((cs:old),()))
-  
-  ag <- mkAgent constraintDepth :: IO AgentMCTS
-  sampleRandomGamesCount conCount 0.01 (\ g -> do
-                                     cs <- generateConstraintsMCTS' ag (g :: MyGame)
-                                     addConstraints cs
-                                     printTL =<< length `fmap` readIORef cR
-                                  )
-  c <- readIORef cR
-  createDirectoryIfMissing True (takeDirectory constraintsCacheFilename)
-  writeFile constraintsCacheFilename (show c)
-  return c
-
-
-genConstraintsCached :: ThrLocIO [(MyGame,MyGame)]
-genConstraintsCached = do
-  b <- doesFileExist constraintsCacheFilename
-  if b then read `fmap` readFile constraintsCacheFilename
-       else genConstraints
-
+getConstraints :: ThrLocIO [(MyGame, MyGame)]
+getConstraints = case constraintSource of
+                   CS_Gameplay -> uncurry getConstraintsPlayer gameplayConstraints
+                   CS_Generate -> genConstraints
+                   CS_Cache    -> genConstraintsCached
 
 main :: IO ()
 main = runThrLocMainIO $ do
   printTL "Constraint generation"
-  let useConstraintCache = True
-  constraints <- if useConstraintCache then genConstraintsCached else genConstraints 
-
-  let fnAb = return "tmp-data/mlubiwjdnaaovrlgsqxu/dbn.txt"
-      fnBr = return "tmp-data/irlfjflptuwgzpqzejrd/dbn.txt"
-      -- fnBr = return "tmp-data/esodbghkmfiofntjxlph/dbn.txt" -- 1000, 1000
-      fnTN = sampleGamesTrainNetwork (freshGameDefaultParams :: MyGame) 100000 0.3 (Just (def {dbnSizes = [750]}))
-
-      isAbalone = toRepr someGame == toRepr (freshGameDefaultParams :: Abalone)
-      isBreakthrough = toRepr someGame == toRepr (freshGameDefaultParams :: Breakthrough)
-
-      useCachedDBN = False
+  constraints <- getConstraints
 
   printTL "DBN read/train"
-  fn <- case (isAbalone, isBreakthrough, useCachedDBN) of
-          (True, False, True) -> fnAb
-          (False, True, True) -> fnBr
-          (_, _, _) -> fnTN
-
+  fn <- getDBNCachedOrNew useCachedDBN dbnGameCount dbnGameProb dbnMatlabOpts
   printTL ("DBN FN=",fn)
 
   let searchCB ref = (\ (bnNew,bsNew,acNew) -> do
@@ -112,11 +86,7 @@ main = runThrLocMainIO $ do
   while ((==ts0) `fmap` timestamp) $ do
     threads <- getNumCapabilities
     bestRef <- newIORef (undefined, neginf)
-    let thrG = 1
-        thrL = 1
-        localSearch = 0.18
-
-        withTimeout act = do
+    let withTimeout act = do
               asyncs <- act 
               let loop = do
                     best'0 <- snd `fmap` readIORef bestRef
@@ -127,17 +97,16 @@ main = runThrLocMainIO $ do
                        printTL "UNABLE TO IMPROVE, TIMEOUT"
                        readIORef bestRef 
                      else loop
-                  delay = Timeout.threadDelay (60 # Second)
+                  delay = Timeout.threadDelay searchTimeout
               timeoutAsync <- async loop
               return (timeoutAsync:asyncs)
 
-                                      
---    (_, best) <- waitAnyCancel =<< withTimeout (mapM (\ thr -> async (singleNeuronRandomSearch (searchCB bestRef) thrG thr fn constraints)) [1..threads])
---    (_, bestLocal) <- waitAnyCancel =<< withTimeout (mapM (\ thr -> async (singleNeuronLocalSearch (searchCB bestRef) bestRef localSearch thrL thr fn constraints)) [1..threads])
     (dbn, _) <- parseNetFromFile `fmap` readFile fn 
     let constraintsPacked = map packConstraint $ concatMap (uncurry generateConstraintsSimple) constraints
         packConstraint c = fmap packGame c
         packGame game = computeTNetworkSigmoid dbn $ reprToNN $ toRepr game
+
+    printTL ("Total coinstraint count", length constraintsPacked)
 
     (_, _best) <- waitAnyCancel =<< withTimeout (mapM (\ thr -> async (singleNeuronRandomReprSearch (searchCB bestRef) thrG thr constraintsPacked)) [1..threads])
     (_, bestLocal) <- waitAnyCancel =<< withTimeout (mapM (\ thr -> async (singleNeuronLocalReprSearch (searchCB bestRef) bestRef localSearch thrL thr constraintsPacked)) [1..threads])
@@ -153,7 +122,7 @@ main = runThrLocMainIO $ do
     agTree <- mkTimed "tree" (evalNetwork, 4) :: IO (AgentTrace AgentGameTree)
     
     agRnd <- mkTimed "random" () :: IO (AgentTrace AgentRandom)
-    agMTC <- mkTimed "mcts" 5 :: IO (AgentTrace AgentMCTS)
+    agMTC <- mkTimed "mcts" 30 :: IO (AgentTrace AgentMCTS)
 
 --     let reportWin ag ag2 pl = do
 --               winRef <- newIORef (0,0)

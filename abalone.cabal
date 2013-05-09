@@ -82,13 +82,12 @@ Executable gg-exp2
 
 Executable gg-exp3
   Main-is:                src/gg-exp3.hs
-  Build-depends:          base, abalone, async, data-timeout, filepath, directory, chronograph, data-default
+  Build-depends:          base, abalone, async, data-timeout, directory, chronograph, data-default, text
   Ghc-options:            -rtsopts -threaded -Wall
 
 Executable gg-exp4
   Main-is:                src/gg-exp4.hs
   Build-depends:          base, abalone 
--- , async, data-timeout, filepath, directory, chronograph, data-default
   Ghc-options:            -rtsopts -threaded -Wall
 
 

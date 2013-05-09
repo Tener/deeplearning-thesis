@@ -81,45 +81,21 @@ instance LittleGolemMoveParser Breakthrough where
       movePairs <- many movePair
       _victory <- string "0-1" <|> string "1-0"
 
-      let g0 = freshGame (8,8)
+      let g0 = freshGame (8,8) :: Breakthrough
           mvs = concat movePairs
           applyMove' g m = case applyMove g m of
-                             Nothing -> g
+                             Nothing -> error "invalid move"
                              Just g' -> g'
           all'games = scanl (applyMove') g0 mvs
 
       return all'games
             
---      counter = "#."
---      m1 = h2-g3   -- move
---      m2 = e6xf5   -- kill
---      m3 = resign  -- resign
---      win = 0-1 / 1-0
-
-
-
-myFn :: FilePath
-myFn = "/home/tener/player_game_list_txt.txt"
-
-myFn' :: FilePath
-myFn' = "/home/tener/pshort.txt"
-
-justGo :: IO ()
-justGo = do
-  print =<< parseGameFileName myFn
-  return ()
-
-parseGameFileName :: FilePath -> IO [GameRecord Breakthrough]
+parseGameFileName :: (LittleGolemMoveParser a) => FilePath -> IO [GameRecord a]
 parseGameFileName fn = do
   res <- parseOnly parseGameFile `fmap` Data.Text.IO.readFile fn
-  -- print res
   case res of
- --   Done _left r -> print _left >> return r
- --   Partial _ -> fail "partial"
- --   Fail _ _ _ -> fail "fail"
      Left err -> print err >> return []
      Right res' -> return res'
-
 
 tagged :: Text -> Parser Text
 tagged tag = do

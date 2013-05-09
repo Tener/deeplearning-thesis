@@ -58,7 +58,16 @@ generateConstraintsMCTS' ag g0 = do
   g1 <- applyAgent ag g0 P1
   return (g0,g1)
 
+generateConstraintsGameplay :: (Game2 g) => Player2 -> [g] -> [(g,g)]
+generateConstraintsGameplay pl gameplay = let dropEven (o:_:rest) = o : dropEven rest
+                                              dropEven [] = []
+                                              dropEven [x] = [x]
 
+                                              pairs = zip gameplay (tail gameplay)
+                                          in
+                                          case pl of
+                                            P1 -> dropEven $ pairs
+                                            P2 -> dropEven $ tail pairs
 
 singleNeuronRandomReprSearch :: ((SingleNeuron, Double, IO ()) -> IO a) -- ^ callback called for new best score 
                              -> Double                                  -- ^ target value for score
@@ -87,7 +96,8 @@ singleNeuronRandomReprSearch newBest target thrnum constraints = do
           then do
             let action = do
                              putStrLnTL (printf "[%d] NEURON %s" thrnum (show neuron))
-                             putStrLnTL (printf "[%d] SCORE %f (cnum=%d)" thrnum score (length constraints))
+                             let ccount = length constraints
+                             putStrLnTL (printf "[%d] SCORE %f (cnum=%d, bad=%d)" thrnum score ccount (ceiling $ fromIntegral ccount * (1-score) :: Int))
             void (newBest (neuron,score,action))
             go (neuron,score) 
           else go (best'neuron,best'score)
@@ -125,7 +135,8 @@ singleNeuronRandomSearch newBest target thrnum filename good'moves = do
           then do
             let action = do
                              putStrLnTL (printf "[%d] NEURON %s" thrnum (show neuron))
-                             putStrLnTL (printf "[%d] SCORE %f (cnum=%d)" thrnum score (length constraints))
+                             let ccount = length constraints
+                             putStrLnTL (printf "[%d] SCORE %f (cnum=%d, bad=%d)" thrnum score ccount (ceiling $ fromIntegral ccount * (1-score) :: Int))
             void (newBest (neuron,score,action))
             go (neuron,score) 
           else go (best'neuron,best'score)

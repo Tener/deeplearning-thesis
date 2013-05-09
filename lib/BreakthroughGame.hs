@@ -47,7 +47,7 @@ instance Game2 Breakthrough where
     type GameRepr Breakthrough = [Int] -- sparse field repr.
     type GameParams Breakthrough = (Int,Int) -- board size
 
-    freshGameDefaultParams = freshGame (6,6)
+    freshGameDefaultParams = freshGame (8,8)
 
     gameName g = "Breakthrough size=" ++ show (boardSize g)
 

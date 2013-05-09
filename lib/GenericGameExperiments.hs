@@ -4,6 +4,9 @@
 module GenericGameExperiments where
 
 import AgentGeneric
+import Board
+import BreakthroughGame
+import ConstraintsGeneric
 import GenericGame
 import Matlab
 import ThreadLocal
@@ -23,14 +26,53 @@ import System.IO
 import Data.Maybe
 import Text.Printf
 
-import BreakthroughGame
-import Board
 
 import Data.Chronograph
 
 type MyGameA = Abalone
 type MyGameB = Breakthrough
 type MyGame = MyGameB
+
+
+someGame :: MyGame
+someGame = freshGameDefaultParams
+
+constraintCount, constraintDepth :: Int
+constraintCount = 500
+constraintDepth = 1000
+
+constraintsCacheFilename :: FilePath
+constraintsCacheFilename = let spec :: String
+                               spec = printf "constraints-d%d-c%d-%s.txt" constraintDepth constraintCount (gameName someGame)
+                           in "tmp-data" </> "cache" </> spec
+
+
+genConstraints :: ThrLocIO [(MyGame, MyGame)]
+genConstraints = concat `fmap` parWorkThreads constraintCount genConstraintsCnt
+
+
+genConstraintsCnt :: Int -> ThrLocIO [(MyGame, MyGame)]
+genConstraintsCnt conCount = do
+  cR <- newIORef []
+  let addConstraints cs = atomicModifyIORef cR (\ !old -> ((cs:old),()))
+  
+  ag <- mkAgent constraintDepth :: IO AgentMCTS
+  sampleRandomGamesCount conCount 0.01 (\ g -> do
+                                     cs <- generateConstraintsMCTS' ag (g :: MyGame)
+                                     addConstraints cs
+                                     printTL =<< length `fmap` readIORef cR
+                                  )
+  c <- readIORef cR
+  createDirectoryIfMissing True (takeDirectory constraintsCacheFilename)
+  writeFile constraintsCacheFilename (show c)
+  return c
+
+
+genConstraintsCached :: ThrLocIO [(MyGame,MyGame)]
+genConstraintsCached = do
+  b <- doesFileExist constraintsCacheFilename
+  if b then read `fmap` readFile constraintsCacheFilename
+       else genConstraints
 
 
 parWorkThreads :: Int -> (Int -> ThrLocIO a) -> ThrLocIO [a]
@@ -112,3 +154,21 @@ sampleGamesTrainNetwork game sampleCount prob mlopts = do
 --  filename'data'comp <- compressRemoveFile filename'data
   print =<< prepAndRun (fromMaybe def mlopts) outputDir filename'data
   return (outputDir </> "dbn.txt")
+
+getDBNCachedOrNew :: Bool -> Int -> Float -> Maybe MatlabOpts -> IO FilePath
+getDBNCachedOrNew useCachedDBN gameCount gameProb matlabOpts = do
+  let fnAb = return "tmp-data/mlubiwjdnaaovrlgsqxu/dbn.txt"
+      -- fnBr = return "tmp-data/irlfjflptuwgzpqzejrd/dbn.txt"
+      -- fnBr = return "tmp-data/esodbghkmfiofntjxlph/dbn.txt" -- 1000, 1000
+      fnBr = return "tmp-data/cixczsjvjhcawrnsjtpv/dbn.txt" -- (8,8), 750
+      fnTN = sampleGamesTrainNetwork (freshGameDefaultParams :: MyGame) gameCount gameProb matlabOpts
+
+      isAbalone = toRepr someGame == toRepr (freshGameDefaultParams :: Abalone)
+      isBreakthrough = toRepr someGame == toRepr (freshGameDefaultParams :: Breakthrough)
+
+  fn <- case (isAbalone, isBreakthrough, useCachedDBN) of
+          (True, False, True) -> fnAb
+          (False, True, True) -> fnBr
+          (_, _, _) -> fnTN
+
+  return fn
