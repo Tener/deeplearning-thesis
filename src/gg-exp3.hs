@@ -111,7 +111,7 @@ main = runThrLocMainIO $ do
     (_, _best) <- waitAnyCancel =<< withTimeout (mapM (\ thr -> async (singleNeuronRandomReprSearch (searchCB bestRef) thrG thr constraintsPacked)) [1..threads])
     (_, bestLocal) <- waitAnyCancel =<< withTimeout (mapM (\ thr -> async (singleNeuronLocalReprSearch (searchCB bestRef) bestRef localSearch thrL thr constraintsPacked)) [1..threads])
 
-    putStrLnTL $ printf "FINAL SCORE %s" (show bestLocal)
+    putStrLnTL $ printf "FINAL SCORE %s" (show $ snd bestLocal)
 
     printTL "BEGIN EVALUATE"
 
