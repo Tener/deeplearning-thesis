@@ -28,17 +28,17 @@ import Data.Timeout
 
 data ConstraintSource = CS_Cache | CS_Generate | CS_Gameplay
 
-useCachedDBN = True
+useCachedDBN = False
 constraintSource = CS_Gameplay
-searchTimeout = 180 # Second
+searchTimeout = 5 # Minute
 dbnGameCount = 100000
 dbnGameProb = 0.3
-dbnMatlabOpts = Just (def {dbnSizes = [750]})
+dbnMatlabOpts = Just (def {dbnSizes = [250, 500]})
 
 -- thresholds for global & local search, local search radius
 thrG = 1          
 thrL = 1          
-localSearch = 0.18
+localSearch = 0.002
 
 getConstraintsPlayer :: FilePath -> Text -> ThrLocIO [(MyGame, MyGame)]
 getConstraintsPlayer fp playerName = do
