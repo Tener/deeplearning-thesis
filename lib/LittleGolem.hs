@@ -79,7 +79,7 @@ instance LittleGolemMoveParser Breakthrough where
 
 
       movePairs <- many movePair
-      _victory <- string "0-1" <|> string "1-0"
+      _victory <- string "0-1" <|> string "1-0" <|> string "*"
 
       let g0 = freshGame (8,8) :: Breakthrough
           mvs = concat movePairs
