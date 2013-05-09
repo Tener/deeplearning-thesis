@@ -1,7 +1,7 @@
 module Agent where
 
 import Board
-import CairoRender
+-- import CairoRender
 import CommonDatatypes
 
 import Control.Monad (when)
@@ -38,7 +38,8 @@ instance Agent AgentRandom where
       case moves of
         [] -> do
           print "Stuck, cant do anything."
-          saveBoard (unwrap brd) "board-stuck.svg"
+          print (unwrap brd)
+          -- saveBoard (unwrap brd) "board-stuck.svg"
           return (morph brd :: WBoard)
         _ -> do
           pick <- uniformR (0, length moves - 1) (gen agent)
@@ -55,7 +56,8 @@ instance Agent AgentSimple where
       case moves of
         [] -> do
           print "Stuck, cant do anything."
-          saveBoard (unwrap brd) "board-stuck.svg"
+          print (unwrap brd)
+          -- saveBoard (unwrap brd) "board-stuck.svg"
           return (morph brd)
         _ -> do
           let maxdepth = 2

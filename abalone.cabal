@@ -10,13 +10,13 @@ Category:            Game
 Build-type:          Simple
 Cabal-version:       >=1.8
 
-Flag cairo
-  description: Enable Cairo-based svg functionality
-  default: True
+-- Flag cairo
+--   description: Enable Cairo-based svg functionality
+--   default: True
 
 Library
   Hs-source-dirs:         lib
-  Exposed-modules:        Board, Agent, CairoRender, Simulation, 
+  Exposed-modules:        Board, Agent, Simulation, 
                           MonteCarloTS, CommonDatatypes, NeuralNets,
                           Tournament, Utils, MinimalNN, Constraints,
                           Config, Matlab,
@@ -27,7 +27,7 @@ Library
 --                        hashable == 1.2.0.2.20121217, -- with removed hashable instance for pair...
                           hashable, 
 --                        hnn == 0.2.0.0.20121218, 
-                          vector, hmatrix, io-memoize, cairo, data-default, async,
+                          vector, hmatrix, io-memoize, data-default, async,
                           global-config, filepath, directory, transformers, global-variables, Interpolation,
                           bytestring, Histogram, gnuplot, zlib, chronograph, attoparsec, text
 --  if flag(cairo)
