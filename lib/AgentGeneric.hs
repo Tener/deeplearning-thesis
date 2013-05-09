@@ -1,4 +1,4 @@
-{-# LANGUAGE BangPatterns, FlexibleContexts, TypeFamilies, RankNTypes #-}
+{-# LANGUAGE BangPatterns, FlexibleContexts, TypeFamilies, Rank2Types #-}
 
 -- | few agents for generic games as defined in 'GenericGame'
 module AgentGeneric where
@@ -37,17 +37,10 @@ data AgentRandom = AgentRandom GenIO
 -- | agent that picks a random move from all available *best* moves, where move fitness is determined by neural network evaluation
 data AgentSimple = AgentSimple TNetwork GenIO
 
--- -- | same as agent simple but with two networks. 
--- --   fixme: merge with AgentSimple by merging the networks
--- data AgentSimpleLL = AgentSimpleLL TNetwork TNetwork GenIO
-
 -- | agent based on monte carlo tree search: evaluate moves counting how many times following that move and playing randomly till the end yields victory.
 data AgentMCTS = AgentMCTS Int   -- how many games to evaluate for each possible move
                            AgentRandom -- cached AgentRandom for random game walks
                            GenIO 
-
--- | wrapping agent: wraps another agent and reports time it takes for generating moves.
-data AgentWrapTiming a = AgentWrapTiming a
 
 -- | the usual alpha-beta etc. based agent.
 data AgentGameTree = AgentGameTree TNetwork 
@@ -72,15 +65,6 @@ nextPlayer :: Player2 -> Player2
 nextPlayer P1 = P2
 nextPlayer P2 = P1
 
---     makeMove ag@(AgentNNSimple neuralNetwork colo) brd = do
---       let gst = GameState brd (\ g -> doubleToEvalInt $ evalBoardNetOnePassN 1 (gtColorNow g) (unwrap $ gtBoard g) neuralNetwork)
---                           colo colo
---           depth = 3
---           (princ, score) = GTreeAlgo.negascout gst depth
---       print ("AgentNNSimple", score, (take 3 $ evaluateBoard ag brd))
---       return (morph $ gtBoard $ head $ tail $ princ)
-
-
 -- | helper class for datatypes containing GenIO inside
 class HasGen a where gen :: a -> GenIO
 instance HasGen AgentRandom where gen (AgentRandom g) = g
@@ -98,16 +82,6 @@ instance (Agent2 a) => Agent2 (AgentTrace a) where
     mkAgent (trace, params) = AgentTrace trace <$> mkAgent params
     applyAgent (AgentTrace (IOAct trace) agent) g p = trace (applyAgent agent g p)
     agentName (AgentTrace _ a) = agentName a
-
---instance (Agent2 a) => Agent2 (AgentWrapTiming a) where
---    type AgentParams AgentWrapTiming = AgentParams a
---    mkAgent params = AgentWrapTiming <$> mkAgent params
---    applyAgent (AgentWrapTiming agent) g p = do
---      t0 <- getTime
---      rep <- applyAgent agent g p 
---      t1 <- getTime
---      print (t1-t2)
---      return rep
 
 instance Agent2 AgentRandom where
     type AgentParams AgentRandom = ()
@@ -150,22 +124,7 @@ instance Agent2 AgentGameTree where
           fixSign P1 v = v
           fixSign P2 v = negate v
 
-      -- print ("AgentGameTree",score)
       return (gsgGame $ head $ tail $ princ)
-
-
--- instance Agent2 AgentSimpleLL where
---     type AgentParams AgentSimpleLL = (TNetwork, TNetwork)
---     mkAgent (tn1,tn2) = AgentSimpleLL tn1 tn2 <$> (withSystemRandom $ asGenIO $ return)
---  
---     applyAgent agent@(AgentSimpleLL tn1 tn2 _) g p = do
---       let mv = moves g p
---           mv'evaled = zip (map (evalGameTNetworkLL tn1 tn2) mv) mv
---           best'moves = map snd $ head $ groupBy (\a b -> fst a == fst b) $ sortBy (comparing fst) $ mv'evaled
---  
---       when (null best'moves) (fail "AgentSimple: Stuck, no moves left.")
---       pickList (gen agent) best'moves
-
 
 mkAgentSimpleFile :: FilePath -> IO AgentSimple
 mkAgentSimpleFile fp = do
@@ -199,8 +158,8 @@ pickList rgen xs = do
 evalGameTNetwork :: (Game2 g, Repr (GameRepr g)) => TNetwork -> g -> Double
 evalGameTNetwork tn g = sumElements $ computeTNetworkSigmoid tn (reprToNN (toRepr g))
 
-evalGameTNetworkLL :: (Game2 g, Repr (GameRepr g)) => TNetwork -> TNetwork -> g -> Double
-evalGameTNetworkLL tn1 tn2 g = sumElements $ computeTNetworkSigmoid tn2 $ computeTNetworkSigmoid tn1 $ (reprToNN (toRepr g))
+-- evalGameTNetworkLL :: (Game2 g, Repr (GameRepr g)) => TNetwork -> TNetwork -> g -> Double
+-- evalGameTNetworkLL tn1 tn2 g = sumElements $ computeTNetworkSigmoid tn2 $ computeTNetworkSigmoid tn1 $ (reprToNN (toRepr g))
 
 -- | data structure with callbacks for any occasion
 data GameDriverCallback g = GameDriverCallback 
