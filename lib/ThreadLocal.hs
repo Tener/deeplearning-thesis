@@ -5,6 +5,7 @@ module ThreadLocal where
 import Control.Concurrent
 import Text.Printf
 import System.IO
+import Data.Time.LocalTime
 
 type ThrLocIO a = (?thrLoc :: ThreadLocal) => IO a
 data ThreadLocal = ThreadLocal { tl_stdout :: MVar Handle
@@ -20,9 +21,13 @@ runThrLocMainIO main = do
 runThrLocIO :: ThreadLocal -> ThrLocIO a -> IO a
 runThrLocIO tl ma = let ?thrLoc = tl in ma
 
+fmtTimeNow :: IO String
+fmtTimeNow = formatTime defaultTimeLocale "%F %T" `fmap` getZonedTime
+
 putStrLnTL :: String -> ThrLocIO ()
 putStrLnTL val = do
-  let msg = (printf "[THR=%s] %s" (tl_ident ?thrLoc) (val :: String))
+  now <- fmtTimeNow
+  let msg = (printf "[%s] [THR=%s] %s" now (tl_ident ?thrLoc) (val :: String))
   msg `seq` modifyMVar_ (tl_stdout ?thrLoc) (\ handle -> do
                                                hPutStrLn handle msg
                                                return handle)
