@@ -119,19 +119,15 @@ main = runThrLocMainIO $ do
         evalNetwork = appendNetwork dbn llNetwork
         
     agSmpl <- mkTimed "simple" evalNetwork :: IO (AgentTrace AgentSimple)
-    agTree <- mkTimed "tree" (evalNetwork, 4) :: IO (AgentTrace AgentGameTree)
+    agTree <- mkTimed "tree" (evalNetwork, 3) :: IO (AgentTrace AgentGameTree)
+    agMtcNet <- mkTimed "mtcNet" (1.1, 30, evalNetwork) :: IO (AgentTrace (AgentParMCTS AgentSimple))
     
     agRnd <- mkTimed "random" () :: IO (AgentTrace AgentRandom)
     agMTC <- mkTimed "mcts" 30 :: IO (AgentTrace AgentMCTS)
 
---     let reportWin ag ag2 pl = do
---               winRef <- newIORef (0,0)
---               parWorkThreads evaluateWinnersCount (\ cnt -> sampleGameDepthCount ag ag2 cnt (calculateWinnersPCT pl winRef))
---               reportWinnersPCT ag ag2 pl winRef
     putStrLnTL "======================================================================================"
-    -- reportWin agSmpl agRnd P1
     reportWin agSmpl agMTC P1
-    -- reportWin agTree agRnd P1
+    reportWin agMtcNet agMTC P1
     reportWin agTree agMTC P1
     putStrLnTL "======================================================================================"
 
