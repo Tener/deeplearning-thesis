@@ -97,7 +97,7 @@ singleNeuronRandomReprSearch newBest target thrnum constraints = do
             let action = do
                              putStrLnTL (printf "[%d] NEURON %s" thrnum (show neuron))
                              let ccount = length constraints
-                             putStrLnTL (printf "[%d] SCORE %f (cnum=%d, bad=%d)" thrnum score ccount (ceiling $ fromIntegral ccount * (1-score) :: Int))
+                             putStrLnTL (printf "[%d] SCORE %f (cnum=%d, bad=%d)" thrnum score ccount (round $ fromIntegral ccount * (1-score) :: Int))
             void (newBest (neuron,score,action))
             go (neuron,score) 
           else go (best'neuron,best'score)
@@ -136,7 +136,7 @@ singleNeuronRandomSearch newBest target thrnum filename good'moves = do
             let action = do
                              putStrLnTL (printf "[%d] NEURON %s" thrnum (show neuron))
                              let ccount = length constraints
-                             putStrLnTL (printf "[%d] SCORE %f (cnum=%d, bad=%d)" thrnum score ccount (ceiling $ fromIntegral ccount * (1-score) :: Int))
+                             putStrLnTL (printf "[%d] SCORE %f (cnum=%d, bad=%d)" thrnum score ccount (round $ fromIntegral ccount * (1-score) :: Int))
             void (newBest (neuron,score,action))
             go (neuron,score) 
           else go (best'neuron,best'score)
@@ -177,7 +177,7 @@ singleNeuronLocalReprSearch newBest bestNeuronRef localSearchRange target thrnum
             let action = do
                              putStrLnTL (printf "[%d] LOCAL NEURON %s" thrnum (show neuron))
                              let ccount = length constraints
-                             putStrLnTL (printf "[%d] LOCAL SCORE %f (cnum=%d, bad=%d)" thrnum score ccount (ceiling $ fromIntegral ccount * (1-score) :: Int) )
+                             putStrLnTL (printf "[%d] LOCAL SCORE %f (cnum=%d, bad=%d)" thrnum score ccount (round $ fromIntegral ccount * (1-score) :: Int) )
             newBest (neuron,score,action)
             go (neuron,score) 
           else go (best'neuron,best'score)
@@ -221,7 +221,7 @@ singleNeuronLocalSearch newBest bestNeuronRef localSearchRange target thrnum fil
             let action = do
                              putStrLnTL (printf "[%d] LOCAL NEURON %s" thrnum (show neuron))
                              let ccount = length constraints
-                             putStrLnTL (printf "[%d] LOCAL SCORE %f (cnum=%d, bad=%d)" thrnum score ccount (ceiling $ fromIntegral ccount * (1-score) :: Int) )
+                             putStrLnTL (printf "[%d] LOCAL SCORE %f (cnum=%d, bad=%d)" thrnum score ccount (round $ fromIntegral ccount * (1-score) :: Int) )
             newBest (neuron,score,action)
             go (neuron,score) 
           else go (best'neuron,best'score)
