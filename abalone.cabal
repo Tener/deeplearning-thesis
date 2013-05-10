@@ -29,7 +29,7 @@ Library
 --                        hnn == 0.2.0.0.20121218, 
                           vector, hmatrix, io-memoize, data-default, async,
                           global-config, filepath, directory, transformers, global-variables, Interpolation,
-                          bytestring, Histogram, gnuplot, zlib, chronograph, attoparsec, text
+                          bytestring, Histogram, gnuplot, zlib, chronograph, attoparsec, text, time, old-locale
 --  if flag(cairo)
 --     build-depends: cairo
   cpp-options: -DCAIRO
