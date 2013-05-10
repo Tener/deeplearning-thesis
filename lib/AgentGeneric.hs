@@ -5,6 +5,7 @@ module AgentGeneric where
 
 import System.Random.MWC
 import Control.Applicative
+import Control.Arrow hiding (loop)
 import Control.Monad (when, replicateM)
 import Numeric.Container (sumElements)
 import Data.Default
@@ -31,8 +32,15 @@ class Agent2 a where
     -- | get agent name
     agentName :: a -> String
 
+class Agent2Eval a where
+    evaluateGame :: (Game2 g, Repr (GameRepr g)) => a -> Player2 -> g -> Double
+
 -- | agent that picks a random move from all available moves
 data AgentRandom = AgentRandom GenIO
+
+data AgentRandomSkew agEval = AgentRandomSkew Double -- epsilon, value added to each evaluation performed by agEval 
+                                              agEval -- game evaluator
+                                              GenIO  -- cached GenIO
 
 -- | agent that picks a random move from all available *best* moves, where move fitness is determined by neural network evaluation
 data AgentSimple = AgentSimple TNetwork GenIO
@@ -41,6 +49,12 @@ data AgentSimple = AgentSimple TNetwork GenIO
 data AgentMCTS = AgentMCTS Int   -- how many games to evaluate for each possible move
                            AgentRandom -- cached AgentRandom for random game walks
                            GenIO 
+
+-- | agent based on monte carlo tree search: evaluate moves counting how many times following that move and playing randomly till the end yields victory.
+data AgentParMCTS ag = AgentParMCTS Double -- ^ epsilon, see AgentRandomSkew
+                                    Int    -- ^ how many games to evaluate for each possible move
+                                    ag     -- ^ helper agent to evaluate moves
+                                    GenIO 
 
 -- | the usual alpha-beta etc. based agent.
 data AgentGameTree = AgentGameTree TNetwork 
@@ -92,6 +106,18 @@ instance Agent2 AgentRandom where
       when (null mv) (fail "AgentRandom: Stuck, cant do anything.")
       pickList (gen agent) mv
 
+instance Agent2Eval AgentRandom where
+    evaluateGame _ _ _ = 1
+
+instance (Agent2Eval agEval) => Agent2 (AgentRandomSkew agEval) where
+    type AgentParams (AgentRandomSkew agEval) = (Double, agEval, GenIO)
+    mkAgent (epsilon,agEval,rgen) = return (AgentRandomSkew epsilon agEval rgen)
+    agentName _ = "AgentRandomSkew"
+    applyAgent (AgentRandomSkew epsilon agEval rgen) g p = do
+      let mv = map ((\g' -> epsilon + evaluateGame agEval p g') &&& id) (moves g p)
+      when (null mv) (fail "AgentRandomSkew: Stuck, cant do anything.")      
+      pickListWeighted rgen mv
+
 showTn :: TNetwork -> String
 showTn tn = show $ (map Vector.dim (biases tn))
 
@@ -101,11 +127,17 @@ instance Agent2 AgentSimple where
     agentName (AgentSimple tn _) = printf "AgentSimple(|tn|=%s)" (showTn tn)
     applyAgent agent g p = do
       let mv = moves g p
-          mv'evaled = zip (map (evalGameTNetwork (tnet agent)) mv) mv
+          mv'evaled = map ((evaluateGame agent p) &&& id) mv
           best'moves = map snd $ head $ reverse $ groupBy (\a b -> fst a == fst b) $ sortBy (comparing fst) $ mv'evaled
 
       when (null best'moves) (fail "AgentSimple: Stuck, no moves left.")
       pickList (gen agent) best'moves
+
+instance Agent2Eval AgentSimple where
+    evaluateGame agent pl game = fixPlayer pl $ evalGameTNetwork (tnet agent) game
+                                where fixPlayer P1 = id
+                                      fixPlayer P2 = negate
+
 
 instance Agent2 AgentGameTree where
     type AgentParams AgentGameTree = (TNetwork, Int)
@@ -144,16 +176,43 @@ instance Agent2 AgentMCTS where
           randomGame game = driverG2 game agRnd agRnd (GameDriverCallback (\_ -> return ()) (\_ _ -> return True))
           takeBest n some'moves = take n $ reverse $ map snd $ sortBy (comparing fst) $ some'moves
       
-      mv'evaled <- takeBest 3 `fmap` mapM myeval mv
-      best'moves <- takeBest 3 `fmap` mapM myeval mv'evaled
+      best'moves <- takeBest 1 `fmap` mapM myeval mv
 
       when (null best'moves) (fail "AgentMCTS: Stuck, no moves left.")
       return (head best'moves)
+
+instance (Agent2 a, Agent2Eval a) => Agent2 (AgentParMCTS a) where
+    type AgentParams (AgentParMCTS a) = (Double, Int, (AgentParams a))
+    mkAgent (epsilon, games, sub) = AgentParMCTS epsilon games <$> mkAgent sub <*> (withSystemRandom $ asGenIO $ return)
+    agentName (AgentParMCTS eps g _ _) = printf "AgentParMCTS(g=%d,eps=%f)" g eps
+    applyAgent (AgentParMCTS epsilon games agEval rgen) g p = do
+      agRndSkew@(AgentRandomSkew _ _ _) <- mkAgent (epsilon, agEval, rgen)
+      let mv = moves g p
+          myeval move = do
+            winners <- replicateM games (winner `fmap` randomGame move)
+            let count = length $ filter (==(Just p)) winners
+            return (count, move)
+          randomGame game = driverG2 game agRndSkew agRndSkew (GameDriverCallback (\_ -> return ()) (\_ _ -> return True))
+          takeBest n some'moves = take n $ reverse $ map snd $ sortBy (comparing fst) $ some'moves
+      
+      best'moves <- takeBest 1 `fmap` mapM myeval mv
+
+      when (null best'moves) (fail "AgentMCTS: Stuck, no moves left.")
+      return (head best'moves)
+
+
 
 pickList :: GenIO -> [a] -> IO a
 pickList rgen xs = do
           pick <- uniformR (0, (length xs) - 1) rgen
           return (xs !! pick)
+
+pickListWeighted :: GenIO -> [(Double, a)] -> IO a
+pickListWeighted rgen xs = do
+          let wSum = sum (map fst xs)
+              xsCum = scanl1 (\ (w0,_x0) (w1,x1) -> (w0+w1, x1)) xs
+          p <- uniformR (0, wSum) rgen
+          return $ snd $ head $ dropWhile (\(w,_) -> w < p) xsCum
 
 evalGameTNetwork :: (Game2 g, Repr (GameRepr g)) => TNetwork -> g -> Double
 evalGameTNetwork tn g = sumElements $ computeTNetworkSigmoid tn (reprToNN (toRepr g))
