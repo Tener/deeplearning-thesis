@@ -1,4 +1,3 @@
-
 [Event "Tournament brkthr.mc.2013.apr.1.1"] 
 [Site "www.littlegolem.net"] 
 [White "vstjrt"] 
