@@ -5,7 +5,10 @@ module ThreadLocal where
 import Control.Concurrent
 import Text.Printf
 import System.IO
+
 import Data.Time.LocalTime
+import Data.Time.Format
+import System.Locale
 
 type ThrLocIO a = (?thrLoc :: ThreadLocal) => IO a
 data ThreadLocal = ThreadLocal { tl_stdout :: MVar Handle
