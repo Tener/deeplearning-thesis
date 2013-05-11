@@ -8,6 +8,7 @@ import Data.Packed.Vector as Vector
 import Data.Packed.Matrix as Matrix 
 import Numeric.Container
 import Numeric.LinearAlgebra () -- instances
+import Data.List (foldl')
 
 import Data.Typeable
 
@@ -19,7 +20,7 @@ instance Ord (Matrix Double) where
     compare a b = compare (toLists a) (toLists b)
 
 computeTNetworkSigmoid :: TNetwork -> Vector Double -> Vector Double
-computeTNetworkSigmoid (TNetwork ws bs) inp0 = foldl (\ inp (w,b) -> cmap sigmoid ((inp `vXm` w) `add` b) ) inp0 (zip ws bs)
+computeTNetworkSigmoid (TNetwork ws bs) inp0 = foldl' (\ inp (w,b) -> cmap sigmoid ((inp `vXm` w) `add` b) ) inp0 (zip ws bs)
 {-# INLINE computeTNetworkSigmoid #-}
 
 computeTNetworkSigmoidSteps :: Int -> TNetwork -> Vector Double -> Vector Double
