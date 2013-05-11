@@ -126,6 +126,7 @@ instance Game2 Breakthrough where
         repr = [ look c p | c <- [Nothing, Just P1, Just P2], p <- pos]
      in repr
     fromRepr params repr = let
+    {-# INLINE toRepr #-}
         g0 :: Breakthrough
         g0 = freshGame params
         pos :: (Maybe Player2) -> [((Maybe Player2),Position)]

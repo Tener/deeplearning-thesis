@@ -96,11 +96,13 @@ instance Repr [Int] where
     serializeRepr repr = ByteString.intercalate "," (map (BSC8.pack . show) repr)
     deserializeRepr = error "deserializeRepr :: [Int] -> ByteString : not implemented" -- fixme
     reprToNN repr = V.fromList (map fromIntegral repr)
+    {-# INLINE reprToNN #-}
 
 instance Repr [Double] where
     serializeRepr repr = ByteString.intercalate "," (map (BSC8.pack . show) repr)
     deserializeRepr = error "deserializeRepr :: [Double] -> ByteString : not implemented" -- fixme
     reprToNN repr = V.fromList repr
+    {-# INLINE reprToNN #-}
 
 
   
