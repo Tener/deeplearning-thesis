@@ -56,9 +56,47 @@ class (Game2 a) => Game2Features a where
     default countFeatures :: ((FeatureRepr a) ~ [b]) => a -> Int
     countFeatures g = length $ encodeAllFeatures g
 
+data BrFeature = MaxPos
+               | MinPos
+               | Centroid
+               | Count
+                deriving (Eq, Ord, Read, Show, Enum, Bounded)
+
+instance Game2Features Breakthrough where
+    type Feature Breakthrough = BrFeature
+    type FeatureRepr Breakthrough = [Double] -- GameRepr Breakthrough
+
+    encodeFeature g feat =
+        case feat of
+          MaxPos -> map (scaleX . fromIntegral) [maximum (allFst P1), minimum (allFst P2)]
+          MinPos -> map (scaleX . fromIntegral) [minimum (allFst P1), maximum (allFst P2)]
+          Centroid -> concatMap (pairToLst . scaleXY . centroid) [P1,P2]
+          Count -> map scaleCnt [countP1 g, countP2 g]
+        where
+          pairToLst (x,y) = [x,y]
+          brd = board g 
+          allFst p = case map fst (getAll p brd) of
+                       [] -> [0] -- FIXME: what to do in case there is no sensible value for a feature?
+                       xs -> xs
+
+          centroid :: Player2 -> (Double,Double)
+          centroid pl = let els = getAll pl brd
+                            els'1 = fromIntegral $ sum $ map fst els
+                            els'2 = fromIntegral $ sum $ map snd els
+                            cnt = fromIntegral $ length els
+                        in (els'1/cnt, els'2/cnt)
+          
+          scale :: Double -> Double -> Double
+          scale factor arg = arg / factor
+          scaleI f = scale (fromIntegral f)
+          scaleX = scaleI (fst (boardSize g))
+          scaleY = scaleI (snd (boardSize g))
+          scaleXY (x,y) = ((scaleX x), (scaleY y))
+          scaleCnt v = scaleI (2 * (snd (boardSize g))) (fromIntegral v)
+
 instance Game2 Breakthrough where
     type MoveDesc Breakthrough = (Position,Position) -- first position, second position
-    type GameRepr Breakthrough = [Int] -- sparse field repr.
+    type GameRepr Breakthrough = [Double] -- sparse field repr.
     type GameParams Breakthrough = (Int,Int) -- board size
 
     freshGameDefaultParams = freshGame (8,8)
@@ -138,9 +176,12 @@ instance Game2 Breakthrough where
         pos = allPos (boardSize g)
         look c p = if HashMap.lookup p (board g) == c then one else zero
         repr = [ look c p | c <- [Nothing, Just P1, Just P2], p <- pos]
-     in repr
-    fromRepr params repr = let
+     in encodeAllFeatures g ++ repr
     {-# INLINE toRepr #-}
+
+    fromRepr params repr'with'features = let
+        repr = drop (countFeatures g0) repr'with'features
+
         g0 :: Breakthrough
         g0 = freshGame params
         pos :: (Maybe Player2) -> [((Maybe Player2),Position)]
