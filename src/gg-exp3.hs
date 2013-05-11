@@ -16,6 +16,7 @@ import ThreadLocal
 
 import Control.Concurrent
 import Control.Concurrent.Async
+import Control.Arrow
 import Control.Monad
 import Data.Default
 import Data.IORef
@@ -30,16 +31,16 @@ data ConstraintSource = CS_Cache | CS_Generate | CS_Gameplay
 
 useCachedDBN = False
 constraintSource = CS_Gameplay
-searchTimeout = 5 # Minute
+searchTimeout = 30 # Second
 dbnGameCount = 100000
-dbnGameProb = 0.3
-dbnMatlabOpts = Just (def {dbnSizes = [250, 500]})
+dbnGameProb = 0.1
+dbnMatlabOpts = Just (def {dbnSizes = [100]})
 playerUseCoinstraints = 300
 
 -- thresholds for global & local search, local search radius
 thrG = 1          
 thrL = 1          
-localSearch = 0.002
+localSearch = 0.0001
 
 getConstraintsPlayer :: FilePath -> Text -> ThrLocIO [(MyGame, MyGame)]
 getConstraintsPlayer fp playerName = do
@@ -48,7 +49,8 @@ getConstraintsPlayer fp playerName = do
       rec1 = filter (("1-0"==) . result) rec0
       rec2 = map moveSequence rec1
       constraints = concatMap (generateConstraintsGameplay P1) rec2
-  printTL (length constraints)
+  -- mapM_ printTL (map (toRepr *** toRepr) constraints)
+  printTL ("Total constraints pairs read",length constraints)
   return (take playerUseCoinstraints constraints)
 
 gameplayConstraints'0 = ("data-good/player_game_list_breakthrough_RayGarrison.txt", "Ray Garrison")
@@ -121,14 +123,14 @@ main = runThrLocMainIO $ do
         
     agSmpl <- mkTimed "simple" evalNetwork :: IO (AgentTrace AgentSimple)
     agTree <- mkTimed "tree" (evalNetwork, 3) :: IO (AgentTrace AgentGameTree)
-    agMtcNet <- mkTimed "mtcNet" (1.1, 30, evalNetwork) :: IO (AgentTrace (AgentParMCTS AgentSimple))
+    agMtcNet <- mkTimed "mtcNet" (1.1, 5, evalNetwork) :: IO (AgentTrace (AgentParMCTS AgentSimple))
     
     agRnd <- mkTimed "random" () :: IO (AgentTrace AgentRandom)
     agMTC <- mkTimed "mcts" 30 :: IO (AgentTrace AgentMCTS)
 
     putStrLnTL "======================================================================================"
+    --reportWin agMtcNet agMTC P1
     reportWin agSmpl agMTC P1
-    reportWin agMtcNet agMTC P1
     reportWin agTree agMTC P1
     putStrLnTL "======================================================================================"
 
