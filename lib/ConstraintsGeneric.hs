@@ -19,8 +19,8 @@ import Data.IORef
 import System.Random.MWC
 import Text.Printf
 
-data Constraint g = CBetter g g -- ^ first state is better than the other. assumes this is P1 turn.
-                  | CBetterAll g [g] -- ^ first state is better then ALL the others. assumes this is P1 turn.
+data Constraint g = CBetter !g !g -- ^ first state is better than the other. assumes this is P1 turn.
+                  | CBetterAll !g ![g] -- ^ first state is better then ALL the others. assumes this is P1 turn.
 
 instance Functor Constraint where
     fmap f (CBetter g1 g2) = CBetter (f g1) (f g2)
