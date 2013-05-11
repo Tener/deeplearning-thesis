@@ -42,6 +42,20 @@ instance GameTxtRender Breakthrough where
 --                         bareBoard
 --                         ++ [ll])
 
+
+class (Game2 a) => Game2Features a where
+    type Feature a :: *
+    type FeatureRepr a :: *
+
+    encodeAllFeatures :: a -> (FeatureRepr a)
+    default encodeAllFeatures :: (Enum (Feature a), Bounded (Feature a), (FeatureRepr a) ~ [b]) => a -> (FeatureRepr a)
+    encodeAllFeatures g = concatMap (encodeFeature g) [minBound..maxBound]
+
+    encodeFeature :: a -> (Feature a) -> (FeatureRepr a)
+    countFeatures :: a -> Int
+    default countFeatures :: ((FeatureRepr a) ~ [b]) => a -> Int
+    countFeatures g = length $ encodeAllFeatures g
+
 instance Game2 Breakthrough where
     type MoveDesc Breakthrough = (Position,Position) -- first position, second position
     type GameRepr Breakthrough = [Int] -- sparse field repr.
