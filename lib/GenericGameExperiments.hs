@@ -113,7 +113,7 @@ reportWin ag1 ag2 pl = do
                     let pct = 100 * (fromIntegral wins) / (fromIntegral (played :: Int)) :: Double
                         progress = 100 * (fromIntegral played) / (fromIntegral evaluateWinnersCount) :: Double
                         latest = case winner g of
-                                   Nothing -> "UNDECIDED"
+                                   Nothing -> "UNDECIDED" :: String
                                    Just plW -> if plW == pl then "WIN" else "LOSE"
                     putStrLnTL (printf "WINS: %d/%d (%0.2f%%), latest: %s, progress %0.2f%%" wins played pct latest progress)
                     
@@ -125,7 +125,7 @@ reportWin ag1 ag2 pl = do
                   depthAVG = (fromIntegral depths) / (fromIntegral evaluateWinnersCount) :: Double
                   n1 = if pl == P1 then agentName ag1 else agentName ag2
                   n2 = if pl == P2 then agentName ag1 else agentName ag2
-              putStrLnTL (printf "%s[%s] won vs [%s] in %d matches, win percentage: %f%%, avg depth=%f" (show pl) n1 n2 (winCount :: Int) winPCT depthAVG :: String)
+              putStrLnTL (printf "%s[%s] won vs [%s] in %d matches, win percentage: %0.2f%%, avg depth=%0.2f" (show pl) n1 n2 (winCount :: Int) winPCT depthAVG :: String)
 
 getRandomFileName :: IO String
 getRandomFileName = (map toEnum) `fmap` replicateM 20 (withSystemRandom $ asGenIO $ uniformR (fromEnum 'a',fromEnum 'z'))
