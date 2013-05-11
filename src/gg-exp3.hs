@@ -34,6 +34,7 @@ searchTimeout = 5 # Minute
 dbnGameCount = 100000
 dbnGameProb = 0.3
 dbnMatlabOpts = Just (def {dbnSizes = [250, 500]})
+playerUseCoinstraints = 300
 
 -- thresholds for global & local search, local search radius
 thrG = 1          
@@ -48,7 +49,7 @@ getConstraintsPlayer fp playerName = do
       rec2 = map moveSequence rec1
       constraints = concatMap (generateConstraintsGameplay P1) rec2
   printTL (length constraints)
-  return (take 1000 constraints)
+  return (take playerUseCoinstraints constraints)
 
 gameplayConstraints'0 = ("data-good/player_game_list_breakthrough_RayGarrison.txt", "Ray Garrison")
 gameplayConstraints'1 = ("data-good/player_game_list_breakthrough_DavidScott.txt", "David Scott")
