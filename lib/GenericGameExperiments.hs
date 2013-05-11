@@ -133,7 +133,7 @@ compressRemoveFile file'orig = do
   return file'out
 
 -- | train DBN on randomly sampled @sampleCount@ games of type @game@. Returns filepath with DBN.
-sampleGamesTrainNetwork :: (Repr (GameRepr g), Game2 g) => g -> Int -> Float -> Maybe MatlabOpts -> IO FilePath
+sampleGamesTrainNetwork :: (Repr (GameRepr g), Game2 g) => g -> Int -> Float -> Maybe MatlabOpts -> ThrLocIO FilePath
 sampleGamesTrainNetwork game sampleCount prob mlopts = do
   outputDir <- ("tmp-data" </>) `fmap` getRandomFileName
   createDirectoryIfMissing True outputDir
@@ -155,7 +155,7 @@ sampleGamesTrainNetwork game sampleCount prob mlopts = do
   print =<< prepAndRun (fromMaybe def mlopts) outputDir filename'data
   return (outputDir </> "dbn.txt")
 
-getDBNCachedOrNew :: Bool -> Int -> Float -> Maybe MatlabOpts -> IO FilePath
+getDBNCachedOrNew :: Bool -> Int -> Float -> Maybe MatlabOpts -> ThrLocIO FilePath
 getDBNCachedOrNew useCachedDBN gameCount gameProb matlabOpts = do
   let fnAb = return "tmp-data/mlubiwjdnaaovrlgsqxu/dbn.txt"
       -- fnBr = return "tmp-data/irlfjflptuwgzpqzejrd/dbn.txt"

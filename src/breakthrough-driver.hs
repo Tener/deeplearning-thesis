@@ -5,6 +5,7 @@ import AgentGeneric
 
 import BreakthroughGame
 import Board
+import ThreadLocal
 
 import Data.Default
 import Data.IORef
@@ -16,7 +17,7 @@ import Control.Concurrent
 import Control.Concurrent.Async
 
 
-main = do
+main = runThrLocMainIO $ do
   tCount <- getNumCapabilities
   let gCount = 1000
       gtCount = gCount `div` tCount
@@ -41,7 +42,7 @@ main = do
 
   return ()
 
-oneGame :: (Agent2 a1, Agent2 a2) => a1 -> a2 -> IO (Maybe Player2)
+oneGame :: (Agent2 a1, Agent2 a2) => a1 -> a2 -> ThrLocIO (Maybe Player2)
 oneGame a1 a2 = do
   ref <- newIORef Nothing
 

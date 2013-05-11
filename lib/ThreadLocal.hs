@@ -30,7 +30,7 @@ fmtTimeNow = formatTime defaultTimeLocale "%F %T" `fmap` getZonedTime
 putStrLnTL :: String -> ThrLocIO ()
 putStrLnTL val = do
   now <- fmtTimeNow
-  let msg = (printf "[%s] [THR=%s] %s" now (tl_ident ?thrLoc) (val :: String))
+  let msg = (printf "[%s] [THR=%s] %s" now (tl_ident ?thrLoc) (val :: String)) :: String
   msg `seq` modifyMVar_ (tl_stdout ?thrLoc) (\ handle -> do
                                                hPutStrLn handle msg
                                                return handle)

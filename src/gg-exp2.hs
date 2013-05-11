@@ -7,11 +7,9 @@ import Board
 import GenericGameExperiments
 import GenericGame
 import AgentGeneric
+import ThreadLocal
 
-someGame :: MyGame
-someGame = freshGameDefaultParams
-
-main = do
+main = runThrLocMainIO $ do
   fn <- sampleGamesTrainNetwork (freshGameDefaultParams :: MyGame) 100000 1 Nothing
   agSmp <- mkAgentSimpleFile fn
   agRnd <- mkAgent () :: IO AgentRandom

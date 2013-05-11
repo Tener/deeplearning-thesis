@@ -16,6 +16,7 @@ import Text.Printf
 
 import GenericGame
 import MinimalNN
+import ThreadLocal
 import NeuralNets(parseNetFromFile, doubleToEvalInt)
 
 import Data.Packed.Vector as Vector
@@ -26,9 +27,9 @@ import Data.Tree.Game_tree.Game_tree as GTree
 class Agent2 a where
     type AgentParams a :: *
     -- | make new agent out of thin air using supplied neural network for evaluation
-    mkAgent :: AgentParams a -> IO a
+    mkAgent :: AgentParams a -> ThrLocIO a
     -- | apply agent decision generating new game state playing as specified player.
-    applyAgent :: (Game2 g, Repr (GameRepr g)) => a -> g -> Player2 -> IO g
+    applyAgent :: (Game2 g, Repr (GameRepr g)) => a -> g -> Player2 -> ThrLocIO g
     -- | get agent name
     agentName :: a -> String
 
@@ -158,7 +159,7 @@ instance Agent2 AgentGameTree where
 
       return (gsgGame $ head $ tail $ princ)
 
-mkAgentSimpleFile :: FilePath -> IO AgentSimple
+mkAgentSimpleFile :: FilePath -> ThrLocIO AgentSimple
 mkAgentSimpleFile fp = do
   (net,_) <- parseNetFromFile `fmap` readFile fp
   mkAgent net
@@ -233,7 +234,7 @@ instance (Game2 g, Show g) => Default (GameDriverCallback g) where
                              (\_ _ -> return True)
 
 -- | a 'driver' for Game2 games. passed appropriate callback structure drives the game from given state to the end.
-driverG2 :: (Game2 g, Repr (GameRepr g), Agent2 a1, Agent2 a2) => g -> a1 -> a2 -> (GameDriverCallback g) -> IO g
+driverG2 :: (Game2 g, Repr (GameRepr g), Agent2 a1, Agent2 a2) => g -> a1 -> a2 -> (GameDriverCallback g) -> ThrLocIO g
 driverG2 g0 a1 a2 cb = do 
   let allSteps = cycle [((applyAgent a1),P1),((applyAgent a2),P2)]
       end g = gameFinished cb g >> return g
@@ -257,10 +258,10 @@ sampleRandomGames :: (Repr (GameRepr g), Game2 g)
                   => (IO Bool) -- ^ should we exit now?
                   -> Float -- ^ probability to call a callback on any generated game state
                   -> (g -> IO ()) -- ^ callback
-                  -> IO ()
+                  -> ThrLocIO ()
 sampleRandomGames canContinue prob cbChosen = do
   mygen <- withSystemRandom $ asGenIO $ return  
-  agRnd <- mkAgent () :: IO AgentRandom
+  agRnd <- mkAgent () :: ThrLocIO AgentRandom
 
   let cb = GameDriverCallback (callbackOut)
                               (\g _ -> callbackOut g >> canContinue)
@@ -275,7 +276,7 @@ sampleRandomGamesCount :: (Repr (GameRepr g), Game2 g)
                        => Int -- ^ callback call @count@
                        -> Float -- ^ probability to call a callback on any generated game state
                        -> (g -> IO ()) -- ^ callback
-                       -> IO ()
+                       -> ThrLocIO ()
 sampleRandomGamesCount count prob cbChosen = do
   countRef <- newIORef 0
   let canContinue = (<count) `fmap` readIORef countRef
@@ -287,9 +288,9 @@ sampleRandomGamesCount count prob cbChosen = do
 sampleRandomGameDepth :: (Repr (GameRepr g), Game2 g) 
                          => (IO Bool) -- ^ should we exit now?
                          -> (g -> Int -> IO ()) -- ^ callback
-                         -> IO ()
+                         -> ThrLocIO ()
 sampleRandomGameDepth canContinue cbFinished = do
-  agRnd <- mkAgent () :: IO AgentRandom
+  agRnd <- mkAgent () :: ThrLocIO AgentRandom
   sampleGameDepth agRnd agRnd canContinue cbFinished 
 
 -- | generate a stream of games between given agents, extracted via callback. exits after calling callback given number of times.
@@ -298,7 +299,7 @@ sampleGameDepthCount :: (Repr (GameRepr g), Game2 g, Agent2 a1, Agent2 a2)
                          -> a2
                          -> Int -- ^ callback call count
                          -> (g -> Int -> IO ()) -- ^ callback
-                         -> IO ()
+                         -> ThrLocIO ()
 sampleGameDepthCount ag1 ag2 count cbFinished = do
   countRef <- newIORef 0
   let canContinue = (<count) `fmap` readIORef countRef
@@ -312,7 +313,7 @@ sampleGameDepth :: (Repr (GameRepr g), Game2 g, Agent2 a1, Agent2 a2)
                          -> a2
                          -> (IO Bool) -- ^ should we exit now?
                          -> (g -> Int -> IO ()) -- ^ callback
-                         -> IO ()
+                         -> ThrLocIO ()
 sampleGameDepth ag1 ag2 canContinue cbFinished = do
   ref <- newIORef 0
   let cb = GameDriverCallback (\_ -> return ()) (\_ _ -> do

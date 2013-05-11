@@ -5,5 +5,7 @@ import Board
 
 import GenericGameExperiments
 import GenericGame
+import ThreadLocal
 
-main = print =<< sampleGamesTrainNetwork (freshGameDefaultParams :: Breakthrough) 1000000 10.01 Nothing
+main = runThrLocMainIO $ do
+         print =<< sampleGamesTrainNetwork (freshGameDefaultParams :: Breakthrough) 1000000 10.01 Nothing

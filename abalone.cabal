@@ -34,6 +34,9 @@ Library
 --     build-depends: cairo
   cpp-options: -DCAIRO
   Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -rtsopts -threaded -Werror
+  extensions:             NoMonomorphismRestriction, 
+                          Rank2Types 
+
 
 Executable abalone
   Main-is:                src/abalone.hs

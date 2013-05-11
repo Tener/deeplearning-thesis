@@ -47,13 +47,13 @@ generateConstraintsSimple g'base g'good = if g'good `elem` moves g'base P1
                                                else error "generateConstraintsSimple: best move not possible"
 
 -- | generate constraints with `generateConstraintsSimple` and `AgentMCTS`
-generateConstraintsMCTS :: (Repr (GameRepr g), Game2 g) => Int -> g -> IO (g,g)
+generateConstraintsMCTS :: (Repr (GameRepr g), Game2 g) => Int -> g -> ThrLocIO (g,g)
 generateConstraintsMCTS mcts'gameCoutn g0 = do
-  ag <- mkAgent mcts'gameCoutn :: IO AgentMCTS
+  ag <- mkAgent mcts'gameCoutn :: ThrLocIO AgentMCTS
   generateConstraintsMCTS' ag g0
 
 -- | generate constraints with `generateConstraintsSimple` and `AgentMCTS`
-generateConstraintsMCTS' :: (Repr (GameRepr g), Game2 g) => AgentMCTS -> g -> IO (g,g)
+generateConstraintsMCTS' :: (Repr (GameRepr g), Game2 g) => AgentMCTS -> g -> ThrLocIO (g,g)
 generateConstraintsMCTS' ag g0 = do
   g1 <- applyAgent ag g0 P1
   return (g0,g1)

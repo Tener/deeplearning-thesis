@@ -5,6 +5,7 @@ module HistogramGeneric where
 
 import GenericGame
 import AgentGeneric
+import ThreadLocal
 
 import Graphics.Histogram
 import Data.IORef
@@ -18,7 +19,7 @@ histogramRandomGameDepth :: (Repr (GameRepr g), Game2 g)
                             => g -- ^ type argument for fixing game type. might be used (i.e. dont pass undefined)
                             -> FilePath -- ^ where to store the plot or empty for in-memory display
                             -> Int -- ^ how many games to play
-                            -> IO ()
+                            -> ThrLocIO ()
 histogramRandomGameDepth g plotPath countGames = do
   let ofType :: a -> a -> b -> b
       ofType _ _ b = b
