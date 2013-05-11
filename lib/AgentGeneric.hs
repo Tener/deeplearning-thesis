@@ -218,10 +218,7 @@ pickListWeighted rgen xs = do
           return $ snd $ head $ dropWhile (\(w,_) -> w < p) xsCum
 
 evalGameTNetwork :: (Game2 g, Repr (GameRepr g)) => TNetwork -> g -> Double
-evalGameTNetwork tn g = sumElements $ computeTNetworkSigmoid tn (reprToNN (toRepr g))
-
--- evalGameTNetworkLL :: (Game2 g, Repr (GameRepr g)) => TNetwork -> TNetwork -> g -> Double
--- evalGameTNetworkLL tn1 tn2 g = sumElements $ computeTNetworkSigmoid tn2 $ computeTNetworkSigmoid tn1 $ (reprToNN (toRepr g))
+evalGameTNetwork tn g = sumElements $ computeTNetworkSigmoid tn (toReprNN g)
 
 -- | data structure with callbacks for any occasion
 data GameDriverCallback g = GameDriverCallback 

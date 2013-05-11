@@ -241,7 +241,7 @@ evalNeuronGame :: (Repr (GameRepr g), Game2 g) => SingleNeuron -> TNetwork -> g 
 evalNeuronGame neuron dbn game = 
     let final = Vector.toList $ computeTNetworkSigmoid neuronTNet 
                               $ computeTNetworkSigmoid dbn 
-                              $ reprToNN $ toRepr game
+                              $ toReprNN game
         neuronTNet :: TNetwork
         neuronTNet = uncurry mkTNetwork neuron
        in

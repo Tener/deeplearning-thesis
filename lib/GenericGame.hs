@@ -57,6 +57,10 @@ class Game2 a where
 
     -- | for neural network training. does not have to preserve game parameters.
     toRepr :: a -> GameRepr a
+    -- | for neural network training. does not have to preserve game parameters. provided for possibility of more efficient implementation.
+    toReprNN :: a -> V.Vector Double
+    default toReprNN :: (Repr (GameRepr a)) => a -> V.Vector Double
+    toReprNN = reprToNN . toRepr
     -- | load from game representation and game parameters
     fromRepr :: GameParams a -> GameRepr a -> a
 
