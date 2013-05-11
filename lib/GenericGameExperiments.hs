@@ -169,8 +169,8 @@ getDBNCachedOrNew useCachedDBN gameCount gameProb matlabOpts = do
       fnBr = return "tmp-data/cixczsjvjhcawrnsjtpv/dbn.txt" -- (8,8), 750
       fnTN = sampleGamesTrainNetwork (freshGameDefaultParams :: MyGame) gameCount gameProb matlabOpts
 
-      isAbalone = toRepr someGame == toRepr (freshGameDefaultParams :: Abalone)
-      isBreakthrough = toRepr someGame == toRepr (freshGameDefaultParams :: Breakthrough)
+      isAbalone = (serializeRepr $ toRepr someGame) == (serializeRepr $ toRepr (freshGameDefaultParams :: Abalone))
+      isBreakthrough = (serializeRepr $ toRepr someGame) == (serializeRepr $ toRepr (freshGameDefaultParams :: Breakthrough))
 
   fn <- case (isAbalone, isBreakthrough, useCachedDBN) of
           (True, False, True) -> fnAb
