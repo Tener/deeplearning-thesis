@@ -14,6 +14,7 @@ import ThreadLocal
 import Data.Default
 import System.FilePath
 import System.Directory
+import Control.Arrow
 import Control.Concurrent
 import Control.Concurrent.Async
 import qualified Data.ByteString.Char8 as BSC8
@@ -100,21 +101,26 @@ mkTimed label arg = mkAgent ((IOAct (timed label)), arg)
 
 
 evaluateWinnersCount :: Int
-evaluateWinnersCount = 100
+evaluateWinnersCount = 50
 
 reportWin :: (Agent2 a1, Agent2 a2) => a1 -> a2 -> Player2 -> ThrLocIO ()
 reportWin ag1 ag2 pl = do
-              winRef <- newIORef (0,0)
+              winRef <- newIORef (0,0,0)
 
               let calculateWinnersPCT g d = do
                     let w = if (winner (g :: MyGame) == Just pl) then 1 else 0
-                     
-                    wins <- atomicModifyIORef winRef (\ (!cnt, !dep) -> ((cnt+w, dep+d), (cnt+w)))
-                    if (w == 1) then (printTL ("WINS" :: String,wins)) else printTL ("LOSE" :: String,d)
+                    (wins, _totalDepth, played) <- atomicModifyIORef winRef (\ (!cnt, !dep, !played) -> ((id &&& id) (cnt+w, dep+d, played+1)))
+                    let pct = 100 * (fromIntegral wins) / (fromIntegral (played :: Int)) :: Double
+                        progress = 100 * (fromIntegral played) / (fromIntegral evaluateWinnersCount) :: Double
+                        latest = case winner g of
+                                   Nothing -> "UNDECIDED"
+                                   Just plW -> if plW == pl then "WIN" else "LOSE"
+                    putStrLnTL (printf "WINS: %d/%d (%0.2f%%), latest: %s, progress %0.2f%%" wins played pct latest progress)
+                    
 
               _ <- parWorkThreads evaluateWinnersCount (\ cnt -> sampleGameDepthCount ag1 ag2 cnt calculateWinnersPCT)
 
-              (winCount,depths) <- readIORef winRef
+              (winCount,depths,_played) <- readIORef winRef
               let winPCT = 100 * ((fromIntegral winCount) / (fromIntegral evaluateWinnersCount)) :: Double
                   depthAVG = (fromIntegral depths) / (fromIntegral evaluateWinnersCount) :: Double
                   n1 = if pl == P1 then agentName ag1 else agentName ag2
