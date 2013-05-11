@@ -39,6 +39,7 @@ class Agent2Eval a where
 -- | agent that picks a random move from all available moves
 data AgentRandom = AgentRandom GenIO
 
+-- | agent that picks a weighted random move from all available moves. weights are provided by game evaluator agent and ammended by epsilon
 data AgentRandomSkew agEval = AgentRandomSkew Double -- epsilon, value added to each evaluation performed by agEval 
                                               agEval -- game evaluator
                                               GenIO  -- cached GenIO
@@ -52,9 +53,9 @@ data AgentMCTS = AgentMCTS Int   -- how many games to evaluate for each possible
                            GenIO 
 
 -- | agent based on monte carlo tree search: evaluate moves counting how many times following that move and playing randomly till the end yields victory.
-data AgentParMCTS ag = AgentParMCTS Double -- ^ epsilon, see AgentRandomSkew
-                                    Int    -- ^ how many games to evaluate for each possible move
-                                    ag     -- ^ helper agent to evaluate moves
+data AgentParMCTS ag = AgentParMCTS Double -- epsilon, see AgentRandomSkew
+                                    Int    -- how many games to evaluate for each possible move
+                                    ag     -- helper agent to evaluate moves
                                     GenIO 
 
 -- | the usual alpha-beta etc. based agent.
@@ -75,7 +76,8 @@ instance (Game2 g) => GTree.Game_tree (GameStateGen g) where
                 | otherwise = [ GameStateGen g (gsgEvalSelf gs) (gsgPlayerBase gs) (nextPlayer $ gsgPlayerNow gs) 
                                 | g <- moves (gsgGame gs) (gsgPlayerNow gs)
                               ]
-
+-- | nextPlayer P1 = P2
+-- | nextPlayer P2 = P1
 nextPlayer :: Player2 -> Player2
 nextPlayer P1 = P2
 nextPlayer P2 = P1
