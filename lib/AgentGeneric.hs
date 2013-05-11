@@ -187,7 +187,7 @@ instance Agent2 AgentMCTS where
 instance (Agent2 a, Agent2Eval a) => Agent2 (AgentParMCTS a) where
     type AgentParams (AgentParMCTS a) = (Double, Int, (AgentParams a))
     mkAgent (epsilon, games, sub) = AgentParMCTS epsilon games <$> mkAgent sub <*> (withSystemRandom $ asGenIO $ return)
-    agentName (AgentParMCTS eps g _ _) = printf "AgentParMCTS(g=%d,eps=%f)" g eps
+    agentName (AgentParMCTS eps g sub _) = printf "AgentParMCTS(g=%d,eps=%f,sub=%s)" g eps (agentName sub)
     applyAgent (AgentParMCTS epsilon games agEval rgen) g p = do
       agRndSkew@(AgentRandomSkew _ _ _) <- mkAgent (epsilon, agEval, rgen)
       let mv = moves g p
@@ -197,7 +197,7 @@ instance (Agent2 a, Agent2Eval a) => Agent2 (AgentParMCTS a) where
             return (count, move)
           randomGame game = driverG2 game agRndSkew agRndSkew (GameDriverCallback (\_ -> return ()) (\_ _ -> return True))
           takeBest n some'moves = take n $ reverse $ map snd $ sortBy (comparing fst) $ some'moves
-      
+      printTL ("AgentParMCTS::moves", length mv)
       best'moves <- takeBest 1 `fmap` mapM myeval mv
 
       when (null best'moves) (fail "AgentMCTS: Stuck, no moves left.")
