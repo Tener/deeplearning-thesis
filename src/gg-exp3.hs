@@ -101,8 +101,15 @@ main = runThrLocMainIO $ do
                        readIORef bestRef 
                      else loop
                   delay = Timeout.threadDelay searchTimeout
+              handlerVar <- newEmptyMVar
+              let handler = do
+                                installUser1 (readIORef bestRef >>= putMVar handlerVar)
+                                val <- takeMVar handlerVar
+                                printTL "USR1 received, interrupting."
+                                return val
+              sigHandlerAsync <- async handler
               timeoutAsync <- async loop
-              return (timeoutAsync:asyncs)
+              return (sigHandlerAsync:timeoutAsync:asyncs)
 
     (dbn, _) <- parseNetFromFile `fmap` readFile fn 
     let constraintsPacked = map packConstraint $ concatMap (uncurry generateConstraintsSimple) constraints

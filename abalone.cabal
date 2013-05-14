@@ -27,6 +27,10 @@ Library
   Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -rtsopts -threaded -Werror
   extensions:             NoMonomorphismRestriction, 
                           Rank2Types 
+  if os(windows)
+     cpp-options:         -DWINDOWS
+  else
+     build-depends:       unix
 
 
 Executable abalone

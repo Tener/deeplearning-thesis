@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, FlexibleContexts, BangPatterns, ImplicitParams, Rank2Types, TypeFamilies #-} 
+{-# LANGUAGE OverloadedStrings, FlexibleContexts, BangPatterns, ImplicitParams, Rank2Types, TypeFamilies, CPP #-} 
 -- | various utility functions for writing near-complete experiments with generic games (@Game2@)
 
 module GenericGameExperiments where
@@ -27,6 +27,9 @@ import System.IO
 import Data.Maybe
 import Text.Printf
 
+#ifndef WINDOWS
+import System.Posix.Signals
+#endif
 
 import Data.Chronograph
 
@@ -178,3 +181,17 @@ getDBNCachedOrNew useCachedDBN gameCount gameProb matlabOpts = do
           (_, _, _) -> fnTN
 
   return fn
+
+installUser1 :: IO () -> IO ()
+#ifndef WINDOWS
+installUser1 act = installHandler sigUSR1 (CatchOnce act) Nothing >> return ()
+#else
+installUser1 _ = return ()
+#endif
+
+installUser2 :: IO () -> IO ()
+#ifndef WINDOWS
+installUser2 act = installHandler sigUSR2 (CatchOnce act) Nothing >> return ()
+#else
+installUser2 _ = return ()
+#endif
