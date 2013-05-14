@@ -10,6 +10,7 @@ import System.FilePath
 import System.Directory
 import System.Process
 import System.Exit
+import System.IO
 
 data MatlabImp = Matlab | Octave deriving (Eq, Ord, Read, Show)
 data MatlabOpts = MatlabOpts { dbnSizes :: [Int], numEpochs :: Int, implementation :: MatlabImp } deriving (Eq, Ord, Read, Show)
@@ -33,10 +34,16 @@ prepAndRun matlabOpts outputDirectory' inputDataFile' = do
   writeFile (outputDirectory </> "run_trainer.m") (run_trainer (outputDirectory </> "dbn.txt"))
   writeFile (outputDirectory </> "run_trainer_ll.m") (run_trainer_ll (outputDirectory </> "dbn-ll.txt"))
 
-  procHandle <- case implementation matlabOpts of
-                  Octave -> runProcess "octave" (words "run_main.m") (Just outputDirectory) Nothing Nothing Nothing Nothing 
-                  Matlab -> runProcess "matlab" (words "-nosplash -nodisplay -r run_main") (Just outputDirectory) Nothing Nothing Nothing Nothing 
-  exitCode <- waitForProcess procHandle
+  let logFile = outputDirectory </> "run_log.txt"
+  tailHandle <- runProcess "tail" (words "--retry --follow=name" ++ [logFile]) (Just outputDirectory) Nothing Nothing Nothing Nothing
+
+  exitCode <- withFile logFile WriteMode (\ log'han -> do
+                         procHandle <- case implementation matlabOpts of
+                           Octave -> runProcess "octave" (words "run_main.m") (Just outputDirectory) Nothing Nothing (Just log'han) Nothing 
+                           Matlab -> runProcess "matlab" (words "-nosplash -nodisplay -r run_main") (Just outputDirectory) Nothing Nothing (Just log'han) Nothing
+                         waitForProcess procHandle)
+  print =<< readFile logFile
+  terminateProcess tailHandle
   return exitCode
 
 -- zapisuje wszystkie warstwy, łącznie z ostatnią
