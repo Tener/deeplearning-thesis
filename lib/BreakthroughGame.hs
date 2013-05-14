@@ -26,9 +26,9 @@ instance GameTxtRender Breakthrough where
     prettyPrintGame g = let -- ll = "---------------------------" 
                             rl = fst (boardSize g)
                             charPos pos = case HashMap.lookup pos (board g) of
-                                            Nothing -> '.'
-                                            Just P1 -> '1'
-                                            Just P2 -> '2'
+                                            Nothing -> '☐'
+                                            Just P1 -> '♙' 
+                                            Just P2 -> '♟'
                             pprow n = "| " ++ map charPos (row n rl) ++ " |"
 
                             bareBoard = map pprow [0..(snd (boardSize g))-1]
