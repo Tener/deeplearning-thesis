@@ -29,7 +29,8 @@ import Data.Timeout
 
 data ConstraintSource = CS_Cache | CS_Generate | CS_Gameplay
 
-useCachedDBN = False
+useCachedDBN = False || nullDBN
+nullDBN = False
 constraintSource = CS_Gameplay
 searchTimeout = 30 # Second
 dbnGameCount = 100000
@@ -111,7 +112,9 @@ main = runThrLocMainIO $ do
               timeoutAsync <- async loop
               return (sigHandlerAsync:timeoutAsync:asyncs)
 
-    (dbn, _) <- parseNetFromFile `fmap` readFile fn 
+    let getDBNFile = (fst . parseNetFromFile) `fmap` readFile fn
+        getDBNNull = return (mkTNetwork [] [])
+    dbn <- if nullDBN then getDBNNull else getDBNFile
     let constraintsPacked = map packConstraint $ concatMap (uncurry generateConstraintsSimple) constraints
         packConstraint c = fmap packGame c
         packGame game = computeTNetworkSigmoid dbn $ reprToNN $ toRepr game
