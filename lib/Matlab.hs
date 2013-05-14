@@ -140,11 +140,13 @@ function run_trainer_ll(train_x, train_y)
     
 end; |]
 
-run_trainer :: (IsString a, Monoid a, ?dbnSizes :: [Int]) => String -> a
-run_trainer outputFilepath = let dbnSizes' = ?dbnSizes in [str|
+run_trainer :: (IsString a, Monoid a, ?numEpochs :: Int, ?dbnSizes :: [Int]) => String -> a
+run_trainer outputFilepath = let dbnSizes' = ?dbnSizes 
+                                 numepochs = ?numEpochs :: Int
+                             in [str|
 function dbn = run_trainer(train_x)
     dbn.sizes = $:dbnSizes'$;
-    opts.numepochs =   5;
+    opts.numepochs = [$:numepochs$];
     opts.batchsize = 100;
     opts.momentum  =   0;
     opts.alpha     =   1;
@@ -152,6 +154,7 @@ function dbn = run_trainer(train_x)
     dbn = dbntrain(dbn, train_x, opts);
     nn = dbnunfoldtonn(dbn, 10);
     nnsave_to_file(nn, '$fromString outputFilepath$');
+
 
 end
 |]
