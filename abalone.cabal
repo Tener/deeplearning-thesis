@@ -10,6 +10,7 @@ Category:            Game
 Build-type:          Simple
 Cabal-version:       >=1.8
 
+
 Library
   Hs-source-dirs:         lib
   Exposed-modules:        Board, Agent, Simulation, 
@@ -18,12 +19,13 @@ Library
                           Config, Matlab,
                           GenericGame, AgentGeneric, BreakthroughGame, HistogramGeneric,
                           GenericGameExperiments, ConstraintsGeneric, ThreadLocal,
-                          LittleGolem
+                          LittleGolem, ConstraintsGA
   Build-depends:          base, mwc-random, grid == 2.0, process, containers, hashmap, game-tree, split, 
                           hashable, 
                           vector, hmatrix, io-memoize, data-default, async,
                           global-config, filepath, directory, transformers, global-variables, Interpolation,
-                          bytestring, Histogram, gnuplot, zlib, chronograph, attoparsec, text, time, old-locale
+                          bytestring, Histogram, gnuplot, zlib, chronograph, attoparsec, text, time, old-locale, 
+                          GA, random
   Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -rtsopts -threaded -Werror
   extensions:             NoMonomorphismRestriction, 
                           Rank2Types 
