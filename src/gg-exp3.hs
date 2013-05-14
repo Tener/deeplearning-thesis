@@ -13,6 +13,7 @@ import MinimalNN
 import NeuralNets (parseNetFromFile)
 import LittleGolem
 import ThreadLocal
+import ConstraintsGA
 
 import Control.Concurrent
 import Control.Concurrent.Async
@@ -121,14 +122,15 @@ main = runThrLocMainIO $ do
 
     printTL ("Total coinstraint count", length constraintsPacked)
 
+    (_, _best2) <- waitAnyCancel =<< withTimeout (mapM (\ thr -> async (singleNeuronGAReprSearch (searchCB bestRef) thr thrL constraintsPacked)) [1..threads])
     (_, _best) <- waitAnyCancel =<< withTimeout (mapM (\ thr -> async (singleNeuronRandomReprSearch (searchCB bestRef) thrG thr constraintsPacked)) [1..threads])
-    (_, bestLocal) <- waitAnyCancel =<< withTimeout (mapM (\ thr -> async (singleNeuronLocalReprSearch (searchCB bestRef) bestRef localSearch thrL thr constraintsPacked)) [1..threads])
+    (_, bestFinal) <- waitAnyCancel =<< withTimeout (mapM (\ thr -> async (singleNeuronLocalReprSearch (searchCB bestRef) bestRef localSearch thrL (thr*2) constraintsPacked)) [1..threads])
 
-    putStrLnTL $ printf "FINAL SCORE %s" (show $ snd bestLocal)
+    putStrLnTL $ printf "FINAL SCORE %s" (show $ snd bestFinal)
 
     printTL "BEGIN EVALUATE"
 
-    let llNetwork = uncurry mkTNetwork (fst bestLocal)
+    let llNetwork = uncurry mkTNetwork (fst bestFinal)
         evalNetwork = appendNetwork dbn llNetwork
         
     agSmpl <- mkTimed "simple" evalNetwork :: IO (AgentTrace AgentSimple)
