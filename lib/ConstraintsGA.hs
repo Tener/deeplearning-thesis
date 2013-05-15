@@ -24,9 +24,9 @@ import System.Random
 import Text.Printf
 import Data.List (sortBy)
 import Data.Ord (comparing)
+import GA (Entity, GAConfig(..))
+import qualified GA
 
-import GA (Entity(..), GAConfig(..), 
-           evolveVerbose)
 
 -- | newtype representing sigle NN neuron without bias
 newtype NN1 = NN1 { getNeuron :: SingleNeuron } deriving (Eq, Ord, Read, Show)
@@ -48,9 +48,9 @@ singleNeuronGAReprSearch callback thrNum targetScore constraints = do
       pickBest arch = head $ filter (\ (ms, _) -> ms /= Nothing) $ sortBy (comparing (fst)) arch
 
       config = GAConfig 
-                    100 -- population size
-                    25 -- archive size (best entities to keep track of)
-                    10 -- maximum number of generations
+                    40 -- population size
+                    5  -- archive size (best entities to keep track of)
+                    200 -- maximum number of generations
                     0.8 -- crossover rate (% of entities by crossover)
                     0.2 -- mutation rate (% of entities by mutation)
                     0.0 -- parameter for crossover (not used here)
@@ -58,9 +58,9 @@ singleNeuronGAReprSearch callback thrNum targetScore constraints = do
                     False -- whether or not to use checkpointing
                     False -- don't rescore archive in each generation
 
-  stdgen <- newStdGen
   let loop = do
-        archive <- evolveVerbose stdgen config (lastLayerSize, mutRange) constraints
+        stdgen <- newStdGen
+        archive <- GA.evolve stdgen config (lastLayerSize, mutRange) constraints
         let best = pickBest archive
             ((Just sc),ent) = best
             nscore = negate sc
@@ -70,7 +70,7 @@ singleNeuronGAReprSearch callback thrNum targetScore constraints = do
                   let ccount = length constraints
                   putStrLnTL (printf "[%d] GASCORE %f (cnum=%d, bad=%d)" thrNum nscore ccount (round $ fromIntegral ccount * (1-nscore) :: Int))
         _ <- callback (neuron, nscore, cb)
-        if (nscore < targetScore) then return (neuron,nscore) else loop
+        if (nscore < targetScore) then loop else return (neuron,nscore)
 
   loop
 
