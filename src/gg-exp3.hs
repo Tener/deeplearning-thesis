@@ -75,7 +75,9 @@ main = runThrLocMainIO $ do
   fn <- getDBNCachedOrNew useCachedDBN dbnGameCount dbnGameProb dbnMatlabOpts
   printTL ("DBN FN=",fn)
 
-  let searchCB ref = (\ (bnNew,bsNew,acNew) -> do
+  
+
+  let searchCB ref = (\ (!bnNew,!bsNew,!acNew) -> do
                         let newTrim = (bnNew, bsNew)
                         updated <- atomicModifyIORef 
                                     ref (\ old@(_bnOld, !bsOld) -> do
@@ -101,7 +103,9 @@ main = runThrLocMainIO $ do
                      then do
                        printTL "UNABLE TO IMPROVE, TIMEOUT"
                        readIORef bestRef 
-                     else loop
+                     else do
+                       printTL "Improvement found, timeout postponed"
+                       loop
                   delay = Timeout.threadDelay searchTimeout
               handlerVar <- newEmptyMVar
               let handler = do
@@ -120,11 +124,17 @@ main = runThrLocMainIO $ do
         packConstraint c = fmap packGame c
         packGame game = computeTNetworkSigmoid dbn $ reprToNN $ toRepr game
 
-    printTL ("Total coinstraint count", length constraintsPacked)
+        asyncTL thr as = let old = ?thrLoc in
+                         let ?thrLoc = old { tl_ident = show thr } in
+                         async as
 
-    (_, _best2) <- waitAnyCancel =<< withTimeout (mapM (\ thr -> async (singleNeuronGAReprSearch (searchCB bestRef) thr thrL constraintsPacked)) [1..threads])
-    (_, _best) <- waitAnyCancel =<< withTimeout (mapM (\ thr -> async (singleNeuronRandomReprSearch (searchCB bestRef) thrG thr constraintsPacked)) [1..threads])
-    (_, bestFinal) <- waitAnyCancel =<< withTimeout (mapM (\ thr -> async (singleNeuronLocalReprSearch (searchCB bestRef) bestRef localSearch thrL (thr*2) constraintsPacked)) [1..threads])
+    printTL ("Total coinstraint count", length constraintsPacked)
+    
+
+    (_, _best2) <- waitAnyCancel =<< withTimeout (mapM (\ thr -> asyncTL thr (singleNeuronMinimalGAReprSearch (searchCB bestRef) thr thrL constraintsPacked)) [1..threads])
+    printTL "some async singleNeuronMinimalGAReprSearch finished"
+    (_, _best) <- waitAnyCancel =<< withTimeout (mapM (\ thr -> asyncTL thr (singleNeuronRandomReprSearch (searchCB bestRef) thrG thr constraintsPacked)) [1..threads])
+    (_, bestFinal) <- waitAnyCancel =<< withTimeout (mapM (\ thr -> asyncTL thr (singleNeuronLocalReprSearch (searchCB bestRef) bestRef localSearch thrL (thr*2) constraintsPacked)) [1..threads])
 
     putStrLnTL $ printf "FINAL SCORE %s" (show $ snd bestFinal)
 
