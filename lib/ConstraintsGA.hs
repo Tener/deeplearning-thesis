@@ -1,16 +1,12 @@
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeSynonymInstances #-}
-{-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE FlexibleInstances, TypeFamilies, MultiParamTypeClasses, TypeSynonymInstances, BangPatterns #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module ConstraintsGA where
 
 import Prelude hiding (putStr, putStrLn)
 
--- import GenericGame
--- import AgentGeneric
 import MinimalNN hiding (weights)
--- import NeuralNets (parseNetFromFile)
+import MinimalGA 
 import ConstraintsGeneric
 import ThreadLocal
 
@@ -18,12 +14,14 @@ import Numeric.Container (sumElements)
 import Data.Packed.Vector (Vector)
 import qualified Data.Packed.Vector as Vector
 
--- import Control.Monad
--- import Data.IORef
+import Control.Monad
 import System.Random
+import System.Random.MWC
 import Text.Printf
 import Data.List (sortBy)
 import Data.Ord (comparing)
+import Data.Tuple (swap)
+
 import GA (Entity, GAConfig(..))
 import qualified GA
 
@@ -74,6 +72,49 @@ singleNeuronGAReprSearch callback thrNum targetScore constraints = do
 
   loop
 
+singleNeuronMinimalGAReprSearch :: ((SingleNeuron, Double, IO ()) -> IO a) -- ^ callback
+                                -> Int                                     -- ^ thread number (modifies mutation strength)
+                                -> Double                                  -- ^ target score (higher better)
+                                -> [Constraint (Vector Double)]            -- ^ constraint list
+                                -> ThrLocIO (SingleNeuron, Double)         -- ^ @(best'neuron, best'score)@ pair
+singleNeuronMinimalGAReprSearch callback thrNum targetScore constraints = do
+  let lastLayerSize :: Int
+      lastLayerSize = case head constraints of
+                        CBetter c _ -> length (Vector.toList c)
+                        CBetterAll c _ -> length (Vector.toList c)
+
+      mutRange = let r = 1 + fromIntegral thrNum :: Double in ((negate r), r)
+
+      config = EvolveConfig
+                    50 -- population size
+                    10 -- archive size (best entities to keep track of)
+                    200 -- maximum number of generations
+                    0.2 -- mutation rate (% of entities by mutation)
+                    0.8 -- crossover rate (% of entities by crossover)
+                    0.2 -- parameter for mutation (% of replaced weights)
+                    cbEvo
+      cbEvo esp = cbNew (esBest esp)
+
+      unwrapResult (sc,ent) = (negate sc, getNeuron ent)
+
+      cbNew best = do
+        let (nscore,neuron) = unwrapResult best
+            cbMaster = do
+                  putStrLnTL (printf "[%d] NEURON %s" thrNum (show neuron))
+                  let ccount = length constraints
+                  putStrLnTL (printf "[%d] GASCORE %f (cnum=%d, bad=%d)" thrNum nscore ccount (round $ fromIntegral ccount * (1-nscore) :: Int))
+        _ <- callback (neuron, nscore, cbMaster)
+        return (nscore < targetScore)
+            
+      loop = do
+        rgen <- mkGen
+        (best:_) <- MinimalGA.evolve config lastLayerSize (rgen, lastLayerSize, mutRange) constraints
+        printTL "singleNeuronMinimalGAReprSearch: MinimalGA.evolve finished"
+        continue <- cbNew best
+        if continue then loop else return $ swap $ unwrapResult best
+
+  loop
+
 mkSingleNeuron :: [Double] -> NN1
 mkSingleNeuron weights = NN1 ([[weights]], [[0]])
 
@@ -107,3 +148,29 @@ instance Entity NN1    -- entity
   score' constraints ent = Just $ negate $ scoreConstraints (sumElements . computeTNetworkSigmoid (uncurry mkTNetwork (getNeuron ent))) constraints
 
   isPerfect (_,s) = s == 0.0
+
+instance MinimalGA NN1 where
+    type Score NN1 = Double
+    type ScoreDataset NN1 = [Constraint (Vector Double)]
+    -- | size
+    type EntityParams NN1 = Int
+    -- | random gen, size again
+    type WorkParams NN1 = (GenIO, Int, (Double,Double))
+
+    newEntity (rgen,_,_) size = mkSingleNeuron `fmap` replicateM size (uniformR (-1,1) rgen)
+    {-# INLINE newEntity #-}
+    crossover (rgen,size,_) ent1 ent2 = do
+       bools <- replicateM size (uniform rgen)
+       let e1'w = getSingleNeuronWeights ent1
+           e2'w = getSingleNeuronWeights ent2
+           e3'w = zipWith3 (\ !b !x !y -> if b then x else y) bools e1'w e2'w
+       return $ mkSingleNeuron e3'w
+    {-# INLINE crossover #-}
+    mutation (rgen,size,mutRange) mutForce ent = do
+       bools <- map (<mutForce) `fmap` (replicateM size (uniformR mutRange rgen))
+       values <- replicateM size (uniform rgen)
+       let entNew'w = zipWith3 (\ !b !x !y -> if b then x else x*y) bools (getSingleNeuronWeights ent) values
+       return $ mkSingleNeuron entNew'w
+    {-# INLINE mutation #-}
+    scoreEntity constraints ent = negate $ scoreConstraints (sumElements . computeTNetworkSigmoid (uncurry mkTNetwork (getNeuron ent))) constraints
+    {-# INLINE scoreEntity #-}
