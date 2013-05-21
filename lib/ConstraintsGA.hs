@@ -9,21 +9,28 @@ import MinimalNN hiding (weights)
 import MinimalGA 
 import ConstraintsGeneric
 import ThreadLocal
+import GenericGameExperiments
 
 import Numeric.Container (sumElements)
 import Data.Packed.Vector (Vector)
 import qualified Data.Packed.Vector as Vector
 
+import Control.Concurrent.Async
 import Control.Monad
 import System.Random
 import System.Random.MWC
 import Text.Printf
-import Data.List (sortBy)
+import Data.List (sortBy, partition)
 import Data.Ord (comparing)
 import Data.Tuple (swap)
+import Data.Maybe
+import Data.IORef
 
 import GA (Entity, GAConfig(..))
 import qualified GA
+
+import Data.Timeout
+-- import qualified Control.Concurrent.Timeout as Timeout
 
 
 -- | newtype representing sigle NN neuron without bias
@@ -72,12 +79,43 @@ singleNeuronGAReprSearch callback thrNum targetScore constraints = do
 
   loop
 
-singleNeuronMinimalGAReprSearch :: ((SingleNeuron, Double, IO ()) -> IO a) -- ^ callback
+multiNeuronMinimalGAReprSearch :: Int                                     -- ^ thread count
+                               -> Timeout                                 -- ^ search timeout
+                               -> Double                                  -- ^ target score (higher better)
+                               -> [Constraint (Vector Double)]            -- ^ constraint list
+                               -> ThrLocIO [(SingleNeuron, Double)]       -- ^ @(best'neuron, best'score)@ pair
+multiNeuronMinimalGAReprSearch threads searchTimeout singleNeuronTarget constraints = do
+  let loop acc [] = do
+        return acc
+      loop acc constraintsRemaining = do
+        bestRef <- newIORef (undefined, neginf)
+
+        let mconfig = Just (EvolveConfig 50 3 750 0.2 0.8 0.2)
+            callback args@(_neuron, score, logger) = do
+                    let continue = score < singleNeuronTarget
+                    _ <- searchCB bestRef args
+                    unless continue (do
+                                      logger
+                                      printTL ("multiNeuronMinimalGAReprSearch::callback", continue))
+                    return continue
+            
+            wt thr'act = waitAnyCancel =<< withTimeout bestRef searchTimeout (mapM thr'act [1..threads])
+
+        (_,(neuron, score)) <- wt (\ thr -> async $ singleNeuronMinimalGAReprSearch callback thr singleNeuronTarget constraintsRemaining mconfig)
+        let predicate constraint = checkConstraint (sumElements . computeTNetworkSigmoid (uncurry mkTNetwork neuron)) constraint
+            (constGood, constBad) = partition predicate constraintsRemaining
+            result = (neuron, score)
+        printTL ("multiNeuronMinimalGAReprSearch::loop step", score, length constBad, length constGood)
+        loop (result:acc) constBad
+  loop [] constraints
+
+singleNeuronMinimalGAReprSearch :: ((SingleNeuron, Double, IO ()) -> IO Bool) -- ^ callback, return True means continue search
                                 -> Int                                     -- ^ thread number (modifies mutation strength)
                                 -> Double                                  -- ^ target score (higher better)
                                 -> [Constraint (Vector Double)]            -- ^ constraint list
+                                -> (Maybe (AlmostEvolveConfig NN1))        -- ^ maybe almost config
                                 -> ThrLocIO (SingleNeuron, Double)         -- ^ @(best'neuron, best'score)@ pair
-singleNeuronMinimalGAReprSearch callback thrNum targetScore constraints = do
+singleNeuronMinimalGAReprSearch callback thrNum targetScore constraints mConfig = do
   let lastLayerSize :: Int
       lastLayerSize = case head constraints of
                         CBetter c _ -> length (Vector.toList c)
@@ -85,35 +123,41 @@ singleNeuronMinimalGAReprSearch callback thrNum targetScore constraints = do
 
       mutRange = let r = 1 + fromIntegral thrNum :: Double in ((negate r), r)
 
-      config = EvolveConfig
-                    50 -- population size
-                    10 -- archive size (best entities to keep track of)
-                    200 -- maximum number of generations
-                    0.2 -- mutation rate (% of entities by mutation)
-                    0.8 -- crossover rate (% of entities by crossover)
-                    0.2 -- parameter for mutation (% of replaced weights)
-                    cbEvo
-      cbEvo esp = cbNew (esBest esp)
+      config' = (fromMaybe (EvolveConfig
+                            40 -- population size
+                            10 -- archive size (best entities to keep track of)
+                            2000 -- maximum number of generations
+                            0.2 -- mutation rate (% of entities by mutation)
+                            0.8 -- crossover rate (% of entities by crossover)
+                            0.2 -- parameter for mutation (% of replaced weights))
+                           ) mConfig) 
+
+      config = config' (cbNew . esBest)
 
       unwrapResult (sc,ent) = (negate sc, getNeuron ent)
 
+      cbNew :: (Double, NN1) -> ThrLocIO Bool
       cbNew best = do
         let (nscore,neuron) = unwrapResult best
             cbMaster = do
                   putStrLnTL (printf "[%d] NEURON %s" thrNum (show neuron))
                   let ccount = length constraints
                   putStrLnTL (printf "[%d] GASCORE %f (cnum=%d, bad=%d)" thrNum nscore ccount (round $ fromIntegral ccount * (1-nscore) :: Int))
-        _ <- callback (neuron, nscore, cbMaster)
-        return (nscore < targetScore)
+        continue <- callback (neuron, nscore, cbMaster)
+        return ((nscore < targetScore) && continue)
             
       loop = do
         rgen <- mkGen
         (best:_) <- MinimalGA.evolve config lastLayerSize (rgen, lastLayerSize, mutRange) constraints
         printTL "singleNeuronMinimalGAReprSearch: MinimalGA.evolve finished"
         continue <- cbNew best
+        printTL ("singleNeuronMinimalGAReprSearch: continue", continue)
         if continue then loop else return $ swap $ unwrapResult best
 
-  loop
+  val <- loop
+  printTL "singleNeuronMinimalGAReprSearch: loop finished"
+  return val
+
 
 mkSingleNeuron :: [Double] -> NN1
 mkSingleNeuron weights = NN1 ([[weights]], [[0]])
@@ -174,3 +218,4 @@ instance MinimalGA NN1 where
     {-# INLINE mutation #-}
     scoreEntity constraints ent = negate $ scoreConstraints (sumElements . computeTNetworkSigmoid (uncurry mkTNetwork (getNeuron ent))) constraints
     {-# INLINE scoreEntity #-}
+

@@ -39,6 +39,8 @@ data EvolveConfig ent = EvolveConfig { ecPopulationSize :: Int -- ^ population s
                                      , ecCallbackNewStep :: EvolveStepParams ent -> ThrLocIO Bool -- ^ callback called after each evolution step, returned False means "stop evolution"
                                      }
 
+type AlmostEvolveConfig ent = (EvolveStepParams ent -> ThrLocIO Bool) -> EvolveConfig ent
+
 instance Default (EvolveConfig ent) where
     def = EvolveConfig { ecPopulationSize = 300
                        , ecArchiveSize = 50

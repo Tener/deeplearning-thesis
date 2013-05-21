@@ -20,7 +20,10 @@ run:
 	cabal-dev install -j -funsafe && cabal-dev/bin/abalone +RTS -sstderr -N | tee -a abalone.log.txt
 
 run-g3:
-	cabal-dev/bin/gg-exp3 +RTS -A8m -sstderr -N4 | tee -a g3.txt
+	cabal-dev/bin/gg-exp3 +RTS -A8m -sstderr -N3 | tee -a g3.txt
+
+run-g5:
+	cabal-dev/bin/gg-exp5 +RTS -A8m -sstderr -N3 | tee -a g5.txt
 
 tournament:
 	cabal-dev install -j -funsafe && cabal-dev/bin/tournament +RTS -sstderr -N | tee -a tournament.log.txt
