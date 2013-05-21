@@ -25,7 +25,7 @@ Library
                           vector, hmatrix, io-memoize, data-default, async,
                           global-config, filepath, directory, transformers, global-variables, Interpolation,
                           bytestring, Histogram, gnuplot, zlib, chronograph, attoparsec, text, time, old-locale, 
-                          GA, random, array
+                          GA, random, array, deepseq, data-timeout
   Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -rtsopts -threaded -Werror
   extensions:             NoMonomorphismRestriction, 
                           Rank2Types 
@@ -82,7 +82,7 @@ Executable gg-exp2
 
 Executable gg-exp3
   Main-is:                src/gg-exp3.hs
-  Build-depends:          base, abalone, async, data-timeout, directory, chronograph, data-default, text
+  Build-depends:          base, abalone, async, data-timeout, directory, chronograph, data-default, text, deepseq, parallel, uglymemo
   Ghc-options:            -rtsopts -threaded -Wall
 
 Executable gg-exp4

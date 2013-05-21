@@ -76,11 +76,6 @@ instance (Game2 g) => GTree.Game_tree (GameStateGen g) where
                 | otherwise = [ GameStateGen g (gsgEvalSelf gs) (gsgPlayerBase gs) (nextPlayer $ gsgPlayerNow gs) 
                                 | g <- moves (gsgGame gs) (gsgPlayerNow gs)
                               ]
--- | nextPlayer P1 = P2
--- | nextPlayer P2 = P1
-nextPlayer :: Player2 -> Player2
-nextPlayer P1 = P2
-nextPlayer P2 = P1
 
 -- | helper class for datatypes containing GenIO inside
 class HasGen a where gen :: a -> GenIO
@@ -137,10 +132,8 @@ instance Agent2 AgentSimple where
       pickList (gen agent) best'moves
 
 instance Agent2Eval AgentSimple where
-    evaluateGame agent pl game = fixPlayer pl $ evalGameTNetwork (tnet agent) game
-                                where fixPlayer P1 = id
-                                      fixPlayer P2 = negate
-
+    evaluateGame agent P1 game = evalGameTNetwork (tnet agent) game
+    evaluateGame agent P2 game = evaluateGame agent P1 (invertGame game)
 
 instance Agent2 AgentGameTree where
     type AgentParams AgentGameTree = (TNetwork, Int)
@@ -153,11 +146,18 @@ instance Agent2 AgentGameTree where
                             , gsgPlayerNow = p
                             }
 
-          eval gameSt = fixSign (gsgPlayerNow gameSt) $ doubleToEvalInt $ evalGameTNetwork (tnet agent) $ gsgGame gameSt 
+          eval gameSt = fixSign (gsgPlayerNow gameSt) 
+                        $ doubleToEvalInt
+                        $ evalGameTNetwork (tnet agent)
+                        $ fixGame (gsgPlayerBase gameSt)
+                        $ gsgGame gameSt 
           (princ, _score) = GTreeAlgo.negascout gs depth
           -- fixme: make sure this is correct.
           fixSign P1 v = v
           fixSign P2 v = negate v
+
+          fixGame P1 gm = gm
+          fixGame P2 gm = invertGame gm
 
       return (gsgGame $ head $ tail $ princ)
 

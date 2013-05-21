@@ -8,13 +8,16 @@ import Board
 import BreakthroughGame
 import ConstraintsGeneric
 import GenericGame
+import LittleGolem
 import Matlab
+import MinimalNN
+import NeuralNets (parseNetFromFile)
 import ThreadLocal
 
 import Data.Default
 import System.FilePath
 import System.Directory
-import Control.Arrow
+import Control.Arrow ((&&&))
 import Control.Concurrent
 import Control.Concurrent.Async
 import qualified Data.ByteString.Char8 as BSC8
@@ -25,13 +28,17 @@ import Control.Monad
 import System.Random.MWC
 import System.IO
 import Data.Maybe
+import Data.Text (Text)
 import Text.Printf
+import Data.Packed.Vector (Vector)
 
 #ifndef WINDOWS
 import System.Posix.Signals
 #endif
 
-import Data.Chronograph
+import Data.Chronograph hiding (val)
+import qualified Control.Concurrent.Timeout as Timeout
+import Data.Timeout
 
 type MyGameA = Abalone
 type MyGameB = Breakthrough
@@ -99,7 +106,7 @@ timed s a = do
   printTL (s,t)
   return r
 
-mkTimed :: (Show label, Agent2 a, AgentParams a ~ (IOAct, arg)) => label -> arg -> ThrLocIO a
+mkTimed :: (Agent2 a, AgentParams a ~ (IOAct, arg)) => String -> arg -> ThrLocIO a
 mkTimed label arg = mkAgent ((IOAct (timed label)), arg)
 
 
@@ -182,6 +189,30 @@ getDBNCachedOrNew useCachedDBN gameCount gameProb matlabOpts = do
 
   return fn
 
+getConstraintsPlayer :: Int -> FilePath -> Text -> ThrLocIO [(MyGame, MyGame)]
+getConstraintsPlayer playerUseCoinstraints fp playerName = do
+  records <- parseGameFileName fp
+  let rec0 = filter ((playerName==) . playerWhite) records
+      rec1 = filter (("1-0"==) . result) rec0
+      rec2 = map moveSequence rec1
+      constraints = concatMap (generateConstraintsGameplay P1) rec2
+  printTL ("Total constraints pairs read"::String,length constraints)
+  return (take playerUseCoinstraints constraints)
+
+gameplayConstraints, gameplayConstraints'0, gameplayConstraints'1 :: (FilePath, Text)
+
+gameplayConstraints'0 = ("data-good/player_game_list_breakthrough_RayGarrison.txt", "Ray Garrison")
+gameplayConstraints'1 = ("data-good/player_game_list_breakthrough_DavidScott.txt", "David Scott")
+gameplayConstraints = gameplayConstraints'1
+
+data ConstraintSource = CS_Cache | CS_Generate | CS_Gameplay Int
+
+getConstraints :: ConstraintSource -> ThrLocIO [(MyGame, MyGame)]
+getConstraints constraintSource = case constraintSource of
+                   CS_Gameplay playerUseCoinstraints -> uncurry (getConstraintsPlayer playerUseCoinstraints) gameplayConstraints
+                   CS_Generate -> genConstraints
+                   CS_Cache    -> genConstraintsCached
+
 installUser1 :: IO () -> IO ()
 #ifndef WINDOWS
 installUser1 act = installHandler sigUSR1 (CatchOnce act) Nothing >> return ()
@@ -195,3 +226,86 @@ installUser2 act = installHandler sigUSR2 (CatchOnce act) Nothing >> return ()
 #else
 installUser2 _ = return ()
 #endif
+
+getDBNFile :: FilePath -> IO TNetwork
+getDBNFile fn = (fst . parseNetFromFile) `fmap` readFile fn
+
+foreverUntilFileChanged :: FilePath -> ThrLocIO () -> ThrLocIO ()
+foreverUntilFileChanged filename action = do
+  let timestamp = getModificationTime filename -- "src/gg-exp3.hs"
+  ts0 <- timestamp
+  while ((==ts0) `fmap` timestamp) action
+  printTL ("Source file changed, exiting" :: String)
+
+packConstraint :: (Functor f, Game2 a) =>
+                  TNetwork -> f a -> f (Vector Double)
+packConstraint dbn cons = fmap (packGame dbn) cons
+
+packGame :: Game2 a =>
+            TNetwork -> a -> Vector Double
+packGame dbn game = computeTNetworkSigmoid dbn $ toReprNN game
+
+withTimeout :: (Eq a1) =>
+               IORef (a, a1)
+                   -> Timeout -> ThrLocIO [Async (a, a1)] -> ThrLocIO [Async (a, a1)]
+withTimeout bestRef searchTimeout act = do
+              asyncs <- act 
+              let loop = do
+                    best'0 <- snd `fmap` readIORef bestRef
+                    delay
+                    best'1 <- snd `fmap` readIORef bestRef
+                    if best'0 == best'1 
+                     then do
+                       printTL ("Unable to improve, timeout" :: String, searchTimeout)
+                       readIORef bestRef 
+                     else do
+                       printTL ("Improvement found, timeout postponed" :: String, searchTimeout)
+                       loop
+                  delay = Timeout.threadDelay searchTimeout
+              handlerVar <- newEmptyMVar
+              let handler = do
+                                installUser1 (readIORef bestRef >>= putMVar handlerVar)
+                                val <- takeMVar handlerVar
+                                printTL ("USR1 received, interrupting." :: String)
+                                return val
+              sigHandlerAsync <- async handler
+              timeoutAsync <- async loop
+              return (sigHandlerAsync:timeoutAsync:asyncs)
+
+
+searchCB :: (Ord a, Show t, Show a) =>
+            IORef (t, a) -> (t, a, IO ()) -> ThrLocIO Bool
+searchCB ref = (\ (!bnNew,!bsNew,!acNew) -> do
+                        let newTrim = (bnNew, bsNew)
+                        updated <- atomicModifyIORef 
+                                    ref (\ old@(_bnOld, !bsOld) -> do
+                                                       if bsOld < bsNew
+                                                        then (newTrim, True)
+                                                        else (old,False))
+                        when updated (printTL newTrim >> acNew)
+                        return True
+                     )
+
+
+
+evaluateLL :: (Show b) => TNetwork -> (([[[Double]]], [[Double]]), b) -> ThrLocIO ()
+evaluateLL dbn bestFinal = do
+    putStrLnTL $ printf "FINAL SCORE %s" (show $ snd bestFinal)
+
+    printTL ("BEGIN EVALUATE" :: String)
+
+    let llNetwork = uncurry mkTNetwork (fst bestFinal)
+        evalNetwork = appendNetwork dbn llNetwork
+        
+    agSmpl <- mkTimed "simple" evalNetwork :: IO (AgentTrace AgentSimple)
+    agTree <- mkTimed "tree" (evalNetwork, 3) :: IO (AgentTrace AgentGameTree)
+    -- agMtcNet <- mkTimed "mtcNet" (2, 5, evalNetwork) :: IO (AgentTrace (AgentParMCTS AgentSimple))
+    
+    -- agRnd <- mkTimed "random" () :: IO (AgentTrace AgentRandom)
+    agMTC <- mkTimed "mcts" 50 :: IO (AgentTrace AgentMCTS)
+
+    putStrLnTL "======================================================================================"
+    reportWin agSmpl agMTC P1
+    reportWin agTree agMTC P1
+    -- reportWin agMtcNet agMTC P1
+    putStrLnTL "======================================================================================"

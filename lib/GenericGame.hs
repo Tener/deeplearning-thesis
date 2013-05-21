@@ -12,6 +12,12 @@ data Player2 = P1 -- ^ player 1
              | P2 -- ^ player 2
                deriving (Eq,Enum,Show,Ord,Read,Bounded)
 
+-- | nextPlayer P1 = P2
+-- | nextPlayer P2 = P1
+nextPlayer :: Player2 -> Player2
+nextPlayer P1 = P2
+nextPlayer P2 = P1
+
 class GameTxtRender g where
     prettyPrintGame :: g -> String
 
@@ -26,6 +32,10 @@ class Game2 a where
 
     -- | return game name
     gameName :: a -> String
+
+    -- | reflect the game so that pieces etc. for P1 and P2 are inverted. throw error if this isn't possible.
+    invertGame :: a -> a
+    invertGame _ = error "invertGame: Not supported"
 
     -- | initiate new game
     freshGame :: GameParams a -> a

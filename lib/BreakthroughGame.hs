@@ -20,7 +20,7 @@ data Breakthrough = Breakthrough { board :: BoardMap -- ^ map from position to P
                                  , winningP2 :: Set Position -- ^ fixed set of winning positions for P2
                                  , countP1 :: !Int -- ^ how many pieces P1 have
                                  , countP2 :: !Int -- ^ how many pieces P2 have
-                                 } deriving (Show, Eq, Read)
+                                 } deriving (Show, Eq, Read, Ord)
 
 instance GameTxtRender Breakthrough where
     prettyPrintGame g = let -- ll = "---------------------------" 
@@ -203,6 +203,15 @@ instance Game2 Breakthrough where
                 , countP2 = count P2 b1
                 }
      in g1
+
+    invertGame br = br { countP1 = (countP2 br)
+                       , countP2 = (countP1 br)
+                       , board = (HashMap.fromList . map swapSides . HashMap.toList . board $ br)
+                       }
+        where
+          h = snd (boardSize br)
+          invertPos (x,y) = (x,h-y)
+          swapSides (pos, pl) = (invertPos pos, nextPlayer pl)
 
 illegalPos :: Position -> Breakthrough -> Bool
 illegalPos _pos@(x,y) g 

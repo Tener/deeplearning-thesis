@@ -15,12 +15,18 @@ import Data.Packed.Vector (Vector)
 import qualified Data.Packed.Vector as Vector
 
 import Control.Monad
+import Control.DeepSeq
 import Data.IORef
 import System.Random.MWC
 import Text.Printf
 
 data Constraint g = CBetter !g !g -- ^ first state is better than the other. assumes this is P1 turn.
                   | CBetterAll !g ![g] -- ^ first state is better then ALL the others. assumes this is P1 turn.
+                    deriving Show
+
+instance (NFData g) => NFData (Constraint g) where
+    rnf (CBetter f1 f2) = f1 `seq` f2 `seq` ()
+    rnf (CBetterAll f fs) = f `seq` fs `deepseq` ()
 
 instance Functor Constraint where
     fmap f (CBetter g1 g2) = CBetter (f g1) (f g2)
@@ -45,6 +51,12 @@ generateConstraintsSimple :: (Game2 g, Eq g) => g -> g -> [Constraint g]
 generateConstraintsSimple g'base g'good = if g'good `elem` moves g'base P1
                                                then [CBetter g'good g | g <- moves g'base P1, g /= g'good]
                                                else error "generateConstraintsSimple: best move not possible"
+
+-- | generate constraints using base game state and a best choice following that state
+generateConstraintsSimpleAll :: (Game2 g, Eq g) => g -> g -> [Constraint g]
+generateConstraintsSimpleAll g'base g'good = if g'good `elem` moves g'base P1
+                                               then [CBetterAll g'good [g | g <- moves g'base P1, g /= g'good]]
+                                               else error "generateConstraintsSimpleAll: best move not possible"
 
 -- | generate constraints with `generateConstraintsSimple` and `AgentMCTS`
 generateConstraintsMCTS :: (Repr (GameRepr g), Game2 g) => Int -> g -> ThrLocIO (g,g)
@@ -144,7 +156,7 @@ singleNeuronRandomSearch newBest target thrnum filename good'moves = do
   go (undefined,neginf)
 
 -- | simplified and possibly faster version of singleNeuronLocalSearch. constraints need to have preapplied game and toRepr functions as well as response from DBN.
-singleNeuronLocalReprSearch :: ((SingleNeuron, Double, IO ()) -> IO ()) -- ^ callback called for new best neuron
+singleNeuronLocalReprSearch :: ((SingleNeuron, Double, IO ()) -> IO a)  -- ^ callback called for new best neuron
                             -> IORef (SingleNeuron,Double)              -- ^ best neuron IORef. **WARNING**: make sure to update this IORef with values passed to callback.
                             -> Double                                   -- ^ base local search range
                             -> Double                                   -- ^ target value
@@ -178,7 +190,7 @@ singleNeuronLocalReprSearch newBest bestNeuronRef localSearchRange target thrnum
                              putStrLnTL (printf "[%d] LOCAL NEURON %s" thrnum (show neuron))
                              let ccount = length constraints
                              putStrLnTL (printf "[%d] LOCAL SCORE %f (cnum=%d, bad=%d)" thrnum score ccount (round $ fromIntegral ccount * (1-score) :: Int) )
-            newBest (neuron,score,action)
+            _ <- newBest (neuron,score,action)
             go (neuron,score) 
           else go (best'neuron,best'score)
          
