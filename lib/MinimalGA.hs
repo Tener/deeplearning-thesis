@@ -129,8 +129,8 @@ chainEvolveSteps initialParams = do
       loop pars = do
         newPars <- evolveStep pars
         continue <- (ecCallbackNewStep (esConfig newPars)) newPars
-        when (evoFinished pars) (printTL ("chainEvolveSteps, evoFinished"))
+        when (evoFinished newPars) (printTL ("chainEvolveSteps, evoFinished"))
         when (not continue) (printTL ("chainEvolveSteps, callbackContinue = False", continue))
-        if (evoFinished pars) || not continue then return (esArchive pars) else loop newPars
+        if (evoFinished newPars) || not continue then return (esArchive newPars) else loop newPars
 
   loop initialParams
