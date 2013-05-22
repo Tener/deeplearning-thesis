@@ -20,7 +20,7 @@ import Control.Monad
 import System.Random
 import System.Random.MWC
 import Text.Printf
-import Data.List (sortBy, partition)
+import Data.List (sortBy, partition, tails)
 import Data.Ord (comparing)
 import Data.Tuple (swap)
 import Data.Maybe
@@ -79,6 +79,13 @@ singleNeuronGAReprSearch callback thrNum targetScore constraints = do
 
   loop
 
+
+mkBypass :: Int -> [SingleNeuron]
+mkBypass size = let base = take size (1 : (cycle [0]))
+                    ws = map (\w -> [[w]]) $ take size $ map (take size) $ tails $ cycle base
+                in zip ws (cycle [ [[0]] ])
+
+
 multiNeuronMinimalGAReprSearch :: Int                                     -- ^ thread count
                                -> Int                                     -- ^ allowed bad count
                                -> Timeout                                 -- ^ search timeout
@@ -108,6 +115,11 @@ multiNeuronMinimalGAReprSearch threads allowedBad searchTimeout singleNeuronTarg
         printTL ("multiNeuronMinimalGAReprSearch::loop step", score, length constBad, length constGood)
         loop (result:acc) constBad
   loop [] constraints
+
+-- getLastLayerSize cons = case cons of
+--                           CBetter c _ -> length (Vector.toList c)
+--                           CBetterAll c _ -> length (Vector.toList c)
+
 
 singleNeuronMinimalGAReprSearch :: ((SingleNeuron, Double, IO ()) -> IO Bool) -- ^ callback, return True means continue search
                                 -> Int                                     -- ^ thread number (modifies mutation strength)
