@@ -80,17 +80,17 @@ singleNeuronGAReprSearch callback thrNum targetScore constraints = do
   loop
 
 multiNeuronMinimalGAReprSearch :: Int                                     -- ^ thread count
+                               -> Int                                     -- ^ allowed bad count
                                -> Timeout                                 -- ^ search timeout
                                -> Double                                  -- ^ target score (higher better)
                                -> [Constraint (Vector Double)]            -- ^ constraint list
                                -> ThrLocIO [(SingleNeuron, Double)]       -- ^ @(best'neuron, best'score)@ pair
-multiNeuronMinimalGAReprSearch threads searchTimeout singleNeuronTarget constraints = do
-  let loop acc [] = do
-        return acc
-      loop acc constraintsRemaining = do
+multiNeuronMinimalGAReprSearch threads allowedBad searchTimeout singleNeuronTarget constraints = do
+  let loop acc constraintsRemaining | length constraintsRemaining <= allowedBad = return acc
+                                    | otherwise = do
         bestRef <- newIORef (undefined, neginf)
 
-        let mconfig = Just (EvolveConfig 50 3 750 0.2 0.8 0.2)
+        let mconfig = Nothing -- Just (EvolveConfig 50 3 750 0.2 0.8 0.2)
             callback args@(_neuron, score, logger) = do
                     let continue = score < singleNeuronTarget
                     _ <- searchCB bestRef args
