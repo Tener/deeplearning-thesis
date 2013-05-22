@@ -1,4 +1,4 @@
-{-# LANGUAGE ImplicitParams, Rank2Types, BangPatterns, OverloadedStrings #-}
+{-# LANGUAGE Rank2Types, OverloadedStrings #-}
 
 module Main where
 
@@ -21,14 +21,14 @@ import Data.IORef
 import Data.Timeout
 
 useCachedDBN = False
-constraintSource = CS_Gameplay playerUseCoinstraints
-searchTimeout = 2 # Minute
-searchTimeoutMulti = 2 # Minute
-dbnGameCount = 250000
-dbnGameProb = 0.1
-dbnMatlabOpts = Just (def {dbnSizes = [750], numEpochs = 5, implementation = Matlab})
-playerUseCoinstraints = 1500
-allowedBad = round $ 0.001 * (fromIntegral playerUseCoinstraints)
+constraintSource = CS_Gameplay playerUseCoinstraints gameplayConstraints'0
+searchTimeout = 1 # Minute
+searchTimeoutMulti = 1 # Minute
+dbnGameCount = 25000
+dbnGameProb = 0.01
+dbnMatlabOpts = Just (def {dbnSizes = [250], numEpochs = 5, implementation = Matlab})
+playerUseCoinstraints = 1000
+allowedBad = round $ 0.1 * fromIntegral playerUseCoinstraints
 
 singleNeuronTarget = 1.0
 localSearch = 0.003
@@ -50,9 +50,9 @@ main = runThrLocMainIO $ do
   constraints <- getConstraints constraintSource
   let constraintsPacked = map (packConstraint dbn) $ concatMap (uncurry generateConstraintsSimple) constraints
   printTL ("Total coinstraint count", length constraintsPacked)
-  printTL ("Evaluating packed constraints...")
+  printTL "Evaluating packed constraints..."
   print $ head constraintsPacked
-  (constraintsPacked `using` parList rdeepseq) `deepseq` printTL ("Done.")
+  (constraintsPacked `using` parList rdeepseq) `deepseq` printTL "Done."
 
   printTL "forever train last layer network & evaluate"
 --  forM_ [1..5] $ \ _attempt -> do
@@ -70,6 +70,6 @@ main = runThrLocMainIO $ do
     bestRef <- newIORef (undefined, neginf)
     let wt thr'act = waitAnyCancel =<< withTimeout bestRef searchTimeout (mapM thr'act [1..threads])
     (_, bestGA) <- wt (\ thr -> async (singleNeuronMinimalGAReprSearch (searchCB bestRef) thr 1 constraintsPackedBigger Nothing))
-    (_, bestFinal) <- wt (\ thr -> async (singleNeuronLocalReprSearch (searchCB bestRef) bestRef localSearch 1 (thr*2) constraintsPackedBigger))
+    (_, bestFinal) <- wt (\ thr -> async (singleNeuronLocalReprSearch (searchCB bestRef) bestRef localSearch 1 thr constraintsPackedBigger))
     evaluateLL dbnBigger bestFinal
 

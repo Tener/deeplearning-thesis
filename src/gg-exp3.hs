@@ -1,4 +1,4 @@
-{-# LANGUAGE ImplicitParams, Rank2Types, BangPatterns, OverloadedStrings #-}
+{-# LANGUAGE ImplicitParams, Rank2Types, OverloadedStrings #-}
 
 module Main where
 
@@ -21,9 +21,9 @@ import Data.Timeout
 
 useCachedDBN = False || nullDBN
 nullDBN = False
-constraintSource = CS_Gameplay playerUseCoinstraints
+constraintSource = CS_Gameplay playerUseCoinstraints gameplayConstraints'0
 searchTimeout = 5 # Minute
-dbnGameCount = 1500000
+dbnGameCount = 150000
 dbnGameProb = 0.1
 dbnMatlabOpts = Just (def {dbnSizes = [750], numEpochs = 5, implementation = Matlab})
 playerUseCoinstraints = 1500
@@ -53,9 +53,9 @@ main = runThrLocMainIO $ do
                          async as
 
     printTL ("Total coinstraint count", length constraintsPacked)
-    printTL ("Evaluating packed constraints...")
+    printTL "Evaluating packed constraints..."
     print $ head constraintsPacked
-    (constraintsPacked `using` parList rdeepseq) `deepseq` printTL ("Done.")
+    (constraintsPacked `using` parList rdeepseq) `deepseq` printTL "Done."
     let wt thr'act = waitAnyCancel =<< withTimeout bestRef searchTimeout (mapM thr'act [1..threads])
 
     (_, _best2) <- wt (\ thr -> asyncTL thr (singleNeuronMinimalGAReprSearch (searchCB bestRef) thr thrL constraintsPacked Nothing))

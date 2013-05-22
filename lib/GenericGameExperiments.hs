@@ -94,8 +94,7 @@ parWorkThreads c fun = do
       cnt 1 = oneThr+re
       cnt _ = oneThr
   let mvar'stdout = tl_stdout ?thrLoc
-  ccs <- mapConcurrently (\ thr -> do
-                            runThrLocIO (ThreadLocal mvar'stdout (show thr)) (fun (cnt thr)))
+  ccs <- mapConcurrently (\ thr -> runThrLocIO (ThreadLocal mvar'stdout (show thr)) (fun (cnt thr)))
                          [1..threads] 
   return ccs
 
@@ -203,13 +202,13 @@ gameplayConstraints, gameplayConstraints'0, gameplayConstraints'1 :: (FilePath, 
 
 gameplayConstraints'0 = ("data-good/player_game_list_breakthrough_RayGarrison.txt", "Ray Garrison")
 gameplayConstraints'1 = ("data-good/player_game_list_breakthrough_DavidScott.txt", "David Scott")
-gameplayConstraints = gameplayConstraints'1
+gameplayConstraints = gameplayConstraints'0
 
-data ConstraintSource = CS_Cache | CS_Generate | CS_Gameplay Int
+data ConstraintSource = CS_Cache | CS_Generate | CS_Gameplay Int (FilePath, Text)
 
 getConstraints :: ConstraintSource -> ThrLocIO [(MyGame, MyGame)]
 getConstraints constraintSource = case constraintSource of
-                   CS_Gameplay playerUseCoinstraints -> uncurry (getConstraintsPlayer playerUseCoinstraints) gameplayConstraints
+                   CS_Gameplay playerUseCoinstraints (filepath,playerName) -> getConstraintsPlayer playerUseCoinstraints filepath playerName 
                    CS_Generate -> genConstraints
                    CS_Cache    -> genConstraintsCached
 
