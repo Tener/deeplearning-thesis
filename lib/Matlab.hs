@@ -110,7 +110,7 @@ run_main inputdata = [str|
 
 % clear all; close all; clc;
 
-addpath(genpath('/home/tener/dokumenty/ii/magisterka/magisterka-deeplearning/DeepLearnToolbox'));
+addpath(genpath('../../DeepLearnToolbox'));
 
 games = dlmread('$fromString inputdata$');
 games_cnt = floor(size(games,1)/100)*100;
