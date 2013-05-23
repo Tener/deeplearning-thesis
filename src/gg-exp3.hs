@@ -11,6 +11,7 @@ import Matlab
 import MinimalNN
 import ThreadLocal
 
+import Control.Monad
 import Control.Concurrent
 import Control.Concurrent.Async
 import Control.DeepSeq
@@ -62,4 +63,4 @@ main = runThrLocMainIO $ do
     (_, _best) <- wt (\ thr -> asyncTL thr (singleNeuronRandomReprSearch (searchCB bestRef) thrG thr constraintsPacked))
     (_, bestFinal) <- wt (\ thr -> asyncTL thr (singleNeuronLocalReprSearch (searchCB bestRef) bestRef localSearch thrL (thr*2) constraintsPacked))
 
-    evaluateLL dbn bestFinal
+    void $ evaluateLL dbn bestFinal
