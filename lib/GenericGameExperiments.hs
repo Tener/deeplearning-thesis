@@ -112,7 +112,18 @@ mkTimed label arg = mkAgent ((IOAct (timed label)), arg)
 evaluateWinnersCount :: Int
 evaluateWinnersCount = 50
 
-reportWin :: (Agent2 a1, Agent2 a2) => a1 -> a2 -> Player2 -> ThrLocIO ()
+interruptible :: ThrLocIO () -> ThrLocIO ()
+interruptible act = do
+  a1 <- async act
+  a2 <- async $ do
+          handlerVar <- newEmptyMVar 
+          installUser1 (putMVar handlerVar ())
+          takeMVar handlerVar
+          printTL ("USR1 received, interrupting." :: String)
+  _ <- waitAnyCancel [a1,a2]
+  return ()
+
+reportWin :: (Agent2 a1, Agent2 a2) => a1 -> a2 -> Player2 -> ThrLocIO Double
 reportWin ag1 ag2 pl = do
               winRef <- newIORef (0,0,0)
 
@@ -126,15 +137,16 @@ reportWin ag1 ag2 pl = do
                                    Just plW -> if plW == pl then "WIN" else "LOSE"
                     putStrLnTL (printf "WINS: %d/%d (%0.2f%%), latest: %s, progress %0.2f%%" wins played pct latest progress)
                     
+              interruptible $ void $ parWorkThreads evaluateWinnersCount (\ cnt -> sampleGameDepthCount ag1 ag2 cnt calculateWinnersPCT)
 
-              _ <- parWorkThreads evaluateWinnersCount (\ cnt -> sampleGameDepthCount ag1 ag2 cnt calculateWinnersPCT)
-
-              (winCount,depths,_played) <- readIORef winRef
-              let winPCT = 100 * ((fromIntegral winCount) / (fromIntegral evaluateWinnersCount)) :: Double
-                  depthAVG = (fromIntegral depths) / (fromIntegral evaluateWinnersCount) :: Double
+              (winCount,depths,played) <- readIORef winRef
+              let winPCT = 100 * ((fromIntegral winCount) / (fromIntegral played)) :: Double
+                  depthAVG = (fromIntegral depths) / (fromIntegral played) :: Double
                   n1 = if pl == P1 then agentName ag1 else agentName ag2
                   n2 = if pl == P2 then agentName ag1 else agentName ag2
               putStrLnTL (printf "%s[%s] won vs [%s] in %d matches, win percentage: %0.2f%%, avg depth=%0.2f" (show pl) n1 n2 (winCount :: Int) winPCT depthAVG :: String)
+
+              return winPCT
 
 getRandomFileName :: IO String
 getRandomFileName = (map toEnum) `fmap` replicateM 20 (withSystemRandom $ asGenIO $ uniformR (fromEnum 'a',fromEnum 'z'))
