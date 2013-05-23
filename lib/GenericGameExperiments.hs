@@ -299,7 +299,7 @@ searchCB ref = (\ (!bnNew,!bsNew,!acNew) -> do
 
 
 
-evaluateLL :: (Show b) => TNetwork -> (([[[Double]]], [[Double]]), b) -> ThrLocIO ()
+evaluateLL :: (Show b) => TNetwork -> (([[[Double]]], [[Double]]), b) -> ThrLocIO [Double]
 evaluateLL dbn bestFinal = do
     putStrLnTL $ printf "FINAL SCORE %s" (show $ snd bestFinal)
 
@@ -316,7 +316,9 @@ evaluateLL dbn bestFinal = do
     agMTC <- mkTimed "mcts" 50 :: IO (AgentTrace AgentMCTS)
 
     putStrLnTL "======================================================================================"
-    reportWin agSmpl agMTC P1
-    reportWin agTree agMTC P1
+    w1 <- reportWin agSmpl agMTC P1
+    w2 <- reportWin agTree agMTC P1
     -- reportWin agMtcNet agMTC P1
     putStrLnTL "======================================================================================"
+
+    return [w1, w2]
