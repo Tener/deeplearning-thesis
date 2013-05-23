@@ -92,7 +92,7 @@ Executable gg-exp4
 
 Executable gg-exp5
   Main-is:                src/gg-exp5.hs
-  Build-depends:          base, abalone, data-timeout, data-default, parallel, deepseq, async
+  Build-depends:          base, abalone, data-timeout, data-default, parallel, deepseq, async, filepath, directory
   Ghc-options:            -rtsopts -threaded -Wall
 
 -- Executable repr-benchmark

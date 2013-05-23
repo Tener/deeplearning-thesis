@@ -216,7 +216,7 @@ gameplayConstraints'0 = ("data-good/player_game_list_breakthrough_RayGarrison.tx
 gameplayConstraints'1 = ("data-good/player_game_list_breakthrough_DavidScott.txt", "David Scott")
 gameplayConstraints = gameplayConstraints'0
 
-data ConstraintSource = CS_Cache | CS_Generate | CS_Gameplay Int (FilePath, Text)
+data ConstraintSource = CS_Cache | CS_Generate | CS_Gameplay Int (FilePath, Text) deriving Show
 
 getConstraints :: ConstraintSource -> ThrLocIO [(MyGame, MyGame)]
 getConstraints constraintSource = case constraintSource of

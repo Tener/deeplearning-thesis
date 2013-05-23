@@ -19,18 +19,20 @@ import Control.Parallel.Strategies
 import Data.Default
 import Data.IORef
 import Data.Timeout
+import System.Directory
+import System.FilePath
 
 useCachedDBN = False
-constraintSource = CS_Gameplay playerUseCoinstraints gameplayConstraints'0
 searchTimeout = 5 # Minute
 searchTimeoutMulti = 30 # Second
 dbnGameCount = 250000
-dbnGameProb = 0.01
-dbnMatlabOpts = Just (def {dbnSizes = [750], numEpochs = 5, implementation = Matlab})
+dbnGameProb = 0.07
+dbnMatlabOpts = Just (def {dbnSizes = [1000], numEpochs = 5, implementation = Matlab})
+constraintSource = CS_Gameplay playerUseCoinstraints gameplayConstraints'0
 playerUseCoinstraints = 1500
 allowedBad = round $ 0.1 * fromIntegral playerUseCoinstraints
-
-singleNeuronTarget = 1.0
+workSetSize = 1000
+singleNeuronTarget = 0.7
 localSearch = 0.003
 
 mkLayer :: [SingleNeuron] -> TNetwork
@@ -74,5 +76,25 @@ main = runThrLocMainIO $ do
     let wt thr'act = waitAnyCancel =<< withTimeout bestRef searchTimeout (mapM thr'act [1..threads])
     (_, _bestGA) <- wt (\ thr -> async (singleNeuronMinimalGAReprSearch (searchCB bestRef) thr 1 constraintsPackedBigger Nothing))
     (_, bestFinal) <- wt (\ thr -> async (singleNeuronLocalReprSearch (searchCB bestRef) bestRef localSearch 1 thr constraintsPackedBigger))
-    evaluateLL dbnBigger bestFinal
 
+    let finalNetwork = appendNetwork dbn (uncurry mkTNetwork (fst bestFinal))
+        baseDir = takeDirectory fn
+
+    rndStr <- getRandomFileName
+    writeFile (baseDir </> "dbn-final-data-ggexp5-"++rndStr++".txt") $ show $ finalNetwork
+    wins <- evaluateLL dbnBigger bestFinal
+    writeFile (baseDir </> "dbn-final-info-ggexp5-"++rndStr++".txt") $ show $ (showExperimentConfig, ("wins",wins), ("bestFinal",bestFinal))
+
+showExperimentConfig = show $
+        (("useCachedDBN         ", useCachedDBN         ) 
+        ,("searchTimeout        ", searchTimeout        ) 
+        ,("searchTimeoutMulti   ", searchTimeoutMulti   ) 
+        ,("dbnGameCount         ", dbnGameCount         ) 
+        ,("dbnGameProb          ", dbnGameProb          ) 
+        ,("dbnMatlabOpts        ", dbnMatlabOpts        ) 
+        ,("constraintSource     ", constraintSource     ) 
+        ,("playerUseCoinstraints", playerUseCoinstraints) 
+        ,("allowedBad           ", allowedBad           ) 
+        ,("workSetSize          ", workSetSize          ) 
+        ,("singleNeuronTarget   ", singleNeuronTarget   ) 
+        ,("localSearch          ", localSearch          ))
