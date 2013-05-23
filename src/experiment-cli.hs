@@ -32,9 +32,11 @@ createSession exp = do
 
   -- putStrLn $ "Session launched: " ++ sessionName exp ++ " | tmux attach -t " ++ sessionName exp
 
-ggExp5 = Experiment "main" [("won games", "tail -n 10000 -f g5.txt | grep --color=always \"won \"")
-                           ,("scores", "tail -n 10000 -f g5.txt | grep --color=always SCORE")
+ggExp5 = Experiment "main" [("won games", "tail -n 1000000 -f g5.txt | grep --color=always \"won \"")
+                           ,("scores", "tail -n 1000000 -f g5.txt | grep --color=always SCORE")
+                           ,("wins", "tail -n 1000000 -f g5.txt | grep --color=always WINS")
                            ,("killall", "zsh")
+                           ,("console", "zsh")
                            ]
                     [";", "send-keys", "-t", "killall", ": killall -USR1 gg-exp5\n",
                      ";", "send-keys", "-t", "main", "zsh\nwhile (true) { make && make run-g5 }\n"]
