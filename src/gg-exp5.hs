@@ -61,7 +61,7 @@ main = runThrLocMainIO $ do
   forM_ [1..2] $ \ _attempt -> do
 --  foreverUntilFileChanged "src/gg-exp5.hs" $ do
     threads <- getNumCapabilities
-    scoredNeurons <- multiNeuronMinimalGAReprSearch threads allowedBad searchTimeoutMulti singleNeuronTarget constraintsPacked
+    scoredNeurons <- multiNeuronMinimalGAReprSearch threads allowedBad workSetSize searchTimeoutMulti singleNeuronTarget constraintsPacked
     let neurons = map fst scoredNeurons
         newLayer = mkLayer (neurons ++ mkBypass (getNeuronSize (head neurons)))
         dbnBigger = appendNetwork dbn newLayer

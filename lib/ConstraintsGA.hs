@@ -88,12 +88,15 @@ mkBypass size = let base = take size (1 : (cycle [0]))
 
 multiNeuronMinimalGAReprSearch :: Int                                     -- ^ thread count
                                -> Int                                     -- ^ allowed bad count
+                               -> Int                                     -- ^ working set size
                                -> Timeout                                 -- ^ search timeout
                                -> Double                                  -- ^ target score (higher better)
                                -> [Constraint (Vector Double)]            -- ^ constraint list
                                -> ThrLocIO [(SingleNeuron, Double)]       -- ^ @(best'neuron, best'score)@ pair
-multiNeuronMinimalGAReprSearch threads allowedBad searchTimeout singleNeuronTarget constraints = do
-  let loop acc constraintsRemaining | length constraintsRemaining <= allowedBad = return acc
+multiNeuronMinimalGAReprSearch threads allowedBad workSetSize searchTimeout singleNeuronTarget constraints = do
+  let loop acc constraintsRemaining | length constraintsRemaining <= allowedBad = do
+        printTL ("multiNeuronMinimalGAReprSearch::finished", length constraintsRemaining, allowedBad)
+        return acc
                                     | otherwise = do
         bestRef <- newIORef (undefined, neginf)
 
@@ -101,14 +104,14 @@ multiNeuronMinimalGAReprSearch threads allowedBad searchTimeout singleNeuronTarg
             callback args@(_neuron, score, logger) = do
                     let continue = score < singleNeuronTarget
                     _ <- searchCB bestRef args
-                    unless continue (do
-                                      logger
-                                      printTL ("multiNeuronMinimalGAReprSearch::callback", continue))
+                    unless continue logger
                     return continue
             
             wt thr'act = waitAnyCancel =<< withTimeout bestRef searchTimeout (mapM thr'act [1..threads])
 
-        (_,(neuron, score)) <- wt (\ thr -> async $ singleNeuronMinimalGAReprSearch callback thr singleNeuronTarget constraintsRemaining mconfig)
+        let constraintsWorkingSet = take workSetSize constraintsRemaining
+
+        (_,(neuron, score)) <- wt (\ thr -> async $ singleNeuronMinimalGAReprSearch callback thr singleNeuronTarget constraintsWorkingSet mconfig)
         let predicate constraint = checkConstraint (sumElements . computeTNetworkSigmoid (uncurry mkTNetwork neuron)) constraint
             (constGood, constBad) = partition predicate constraintsRemaining
             result = (neuron, score)
