@@ -12,19 +12,19 @@ import Data.List (foldl')
 
 import Data.Typeable
 
-data TNetwork = TNetwork { weights :: [Matrix Double] 
-                         , biases :: [Vector Double]
+data TNetwork = TNetwork { weights :: ![Matrix Double] 
+                         , biases :: ![Vector Double]
                          } deriving (Show, Ord, Eq, Typeable)
 
 instance Ord (Matrix Double) where
     compare a b = compare (toLists a) (toLists b)
 
 computeTNetworkSigmoid :: TNetwork -> Vector Double -> Vector Double
-computeTNetworkSigmoid (TNetwork ws bs) inp0 = foldl' (\ inp (w,b) -> cmap sigmoid ((inp `vXm` w) `add` b) ) inp0 (zip ws bs)
+computeTNetworkSigmoid (TNetwork ws bs) inp0 = foldl' (\ inp (!w,!b) -> cmap sigmoid ((inp `vXm` w) `add` b) ) inp0 (zip ws bs)
 {-# INLINE computeTNetworkSigmoid #-}
 
 computeTNetworkSigmoidSteps :: Int -> TNetwork -> Vector Double -> Vector Double
-computeTNetworkSigmoidSteps steps (TNetwork ws bs) inp0 = foldl (\ inp (w,b) -> cmap sigmoid ((inp `vXm` w) `add` b) ) inp0 (take steps $ zip ws bs)
+computeTNetworkSigmoidSteps steps (TNetwork ws bs) inp0 = foldl' (\ inp (w,b) -> cmap sigmoid ((inp `vXm` w) `add` b) ) inp0 (take steps $ zip ws bs)
 
 
 mkTNetwork :: [[[Double]]] -> [[Double]] -> TNetwork
@@ -49,3 +49,4 @@ lastLayerTN tn = zip b w
 sigmoid :: Floating a => a -> a
 sigmoid !x = 1 / (1 + exp (-x))
 {-# INLINE sigmoid #-}
+{-# SPECIALIZE sigmoid :: Double -> Double #-}

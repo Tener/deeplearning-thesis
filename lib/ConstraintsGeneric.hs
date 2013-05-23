@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleContexts #-}
+{-# OPTIONS_GHC -funbox-strict-fields #-}
 
 module ConstraintsGeneric where
 

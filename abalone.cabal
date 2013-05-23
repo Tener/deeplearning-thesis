@@ -26,7 +26,7 @@ Library
                           global-config, filepath, directory, transformers, global-variables, Interpolation,
                           bytestring, Histogram, gnuplot, zlib, chronograph, attoparsec, text, time, old-locale, 
                           GA, random, array, deepseq, data-timeout
-  Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -rtsopts -threaded -Werror
+  Ghc-options:            -Werror -Wall -O2 -fexcess-precision -fexpose-all-unfoldings -funfolding-creation-threshold=400 -funfolding-use-threshold=40
   extensions:             NoMonomorphismRestriction, 
                           Rank2Types 
   if os(windows)
