@@ -46,8 +46,8 @@ getNeuronSize ([[w]],_) = length w
 main :: IO ()
 main = runThrLocMainIO $ do
   printTL "DBN read/train"
-  -- fn <- getDBNCachedOrNew useCachedDBN dbnGameCount dbnGameProb dbnMatlabOpts
-  let fn = "tmp-data/iybjioktvbdgmjocdtow/dbn.txt"
+  fn <- getDBNCachedOrNew useCachedDBN dbnGameCount dbnGameProb dbnMatlabOpts
+  -- let fn = "tmp-data/iybjioktvbdgmjocdtow/dbn.txt"
   printTL ("DBN FN=",fn)
   dbn <- getDBNFile fn
 
