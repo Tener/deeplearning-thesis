@@ -117,6 +117,7 @@ multiNeuronMinimalGAReprSearch threads allowedBad workSetSize searchTimeout sing
             result = (neuron, score)
         printTL ("multiNeuronMinimalGAReprSearch::loop step", score, length constBad, length constGood)
         loop (result:acc) constBad
+  printTL ("multiNeuronMinimalGAReprSearch::begin", threads, allowedBad, workSetSize, searchTimeout, singleNeuronTarget, length constraints)
   loop [] constraints
 
 -- getLastLayerSize cons = case cons of
