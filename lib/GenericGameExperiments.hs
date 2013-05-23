@@ -256,23 +256,17 @@ packGame :: Game2 a =>
             TNetwork -> a -> Vector Double
 packGame dbn game = computeTNetworkSigmoid dbn $ toReprNN game
 
-withTimeout :: (Eq a1) =>
-               IORef (a, a1)
-                   -> Timeout -> ThrLocIO [Async (a, a1)] -> ThrLocIO [Async (a, a1)]
+withTimeout :: IORef (a, Double) -> Timeout -> ThrLocIO [Async (a, Double)] -> ThrLocIO [Async (a, Double)]
 withTimeout bestRef searchTimeout act = do
               asyncs <- act 
               let loop = do
                     best'0 <- snd `fmap` readIORef bestRef
-                    delay
+                    Timeout.threadDelay searchTimeout
                     best'1 <- snd `fmap` readIORef bestRef
-                    if best'0 == best'1 
-                     then do
-                       printTL ("Unable to improve, timeout" :: String, searchTimeout)
-                       readIORef bestRef 
-                     else do
-                       printTL ("Improvement found, timeout postponed" :: String, searchTimeout)
-                       loop
-                  delay = Timeout.threadDelay searchTimeout
+                    case ((best'1 == neginf),(best'0 == best'1)) of
+                      (True,_) -> printTL ("Still waiting for first improvement (score=neginf)..." :: String, searchTimeout) >> loop
+                      (False, True) -> printTL ("Unable to improve, timeout" :: String, searchTimeout) >> readIORef bestRef 
+                      (False, False) -> printTL ("Improvement found, timeout postponed" :: String, searchTimeout) >> loop
               handlerVar <- newEmptyMVar
               let handler = do
                                 installUser1 (readIORef bestRef >>= putMVar handlerVar)
@@ -309,16 +303,18 @@ evaluateLL dbn bestFinal = do
         evalNetwork = appendNetwork dbn llNetwork
         
     agSmpl <- mkTimed "simple" evalNetwork :: IO (AgentTrace AgentSimple)
-    agTree <- mkTimed "tree" (evalNetwork, 3) :: IO (AgentTrace AgentGameTree)
+    -- agTree <- mkTimed "tree" (evalNetwork, 3) :: IO (AgentTrace AgentGameTree)
     -- agMtcNet <- mkTimed "mtcNet" (2, 5, evalNetwork) :: IO (AgentTrace (AgentParMCTS AgentSimple))
     
-    -- agRnd <- mkTimed "random" () :: IO (AgentTrace AgentRandom)
+    agRnd <- mkTimed "random" () :: IO (AgentTrace AgentRandom)
     agMTC <- mkTimed "mcts" 50 :: IO (AgentTrace AgentMCTS)
 
     putStrLnTL "======================================================================================"
     w1 <- reportWin agSmpl agMTC P1
-    w2 <- reportWin agTree agMTC P1
-    -- reportWin agMtcNet agMTC P1
+    w2 <- reportWin agSmpl agRnd P1
+    w3 <- reportWin agRnd agSmpl P2
+    -- w2 <- reportWin agTree agMTC P1
+    --  reportWin agMtcNet agMTC P1
     putStrLnTL "======================================================================================"
 
-    return [w1, w2]
+    return [w1,w2,w3]
