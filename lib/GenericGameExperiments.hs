@@ -306,15 +306,15 @@ evaluateLL dbn bestFinal = do
     -- agTree <- mkTimed "tree" (evalNetwork, 3) :: IO (AgentTrace AgentGameTree)
     -- agMtcNet <- mkTimed "mtcNet" (2, 5, evalNetwork) :: IO (AgentTrace (AgentParMCTS AgentSimple))
     
-    agRnd <- mkTimed "random" () :: IO (AgentTrace AgentRandom)
+    -- agRnd <- mkTimed "random" () :: IO (AgentTrace AgentRandom)
     agMTC <- mkTimed "mcts" 50 :: IO (AgentTrace AgentMCTS)
 
     putStrLnTL "======================================================================================"
     w1 <- reportWin agSmpl agMTC P1
-    w2 <- reportWin agSmpl agRnd P1
-    w3 <- reportWin agRnd agSmpl P2
+    -- w2 <- reportWin agSmpl agRnd P1
+    -- w3 <- reportWin agRnd agSmpl P2
     -- w2 <- reportWin agTree agMTC P1
     --  reportWin agMtcNet agMTC P1
     putStrLnTL "======================================================================================"
 
-    return [w1,w2,w3]
+    return [w1]
