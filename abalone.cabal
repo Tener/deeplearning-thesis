@@ -95,6 +95,10 @@ Executable gg-exp5
   Build-depends:          base, abalone, data-timeout, data-default, parallel, deepseq, async, filepath, directory
   Ghc-options:            -rtsopts -threaded -Wall
 
+Executable experiment-progress-email-reporter.hs
+  Main-is:                src/experiment-progress-email-reporter.hs
+  Build-depends:          base, blaze-html, mime-mail, filepath, directory, process, text
+
 -- Executable repr-benchmark
 --   Main-is:                src/repr-nn-benchmark.hs
 --   Build-depends:          base, abalone, filepath, criterion, hmatrix, hashmap
