@@ -19,21 +19,22 @@ import Control.Parallel.Strategies
 import Data.Default
 import Data.IORef
 import Data.Timeout
-import System.Directory
 import System.FilePath
 
 useCachedDBN = False
-searchTimeout = 5 # Minute
+searchTimeout = 3 # Minute
 searchTimeoutMulti = 30 # Second
 dbnGameCount = 250000
 dbnGameProb = 0.07
 dbnMatlabOpts = Just (def {dbnSizes = [1000], numEpochs = 5, implementation = Matlab})
 constraintSource = CS_Gameplay playerUseCoinstraints gameplayConstraints'0
-playerUseCoinstraints = 1500
-allowedBad = round $ 0.1 * fromIntegral playerUseCoinstraints
+playerUseCoinstraints = 40000
+constraintsStage2Count = 1500
+allowedBad = round $ 0.05 * fromIntegral workSetSize
 workSetSize = 1000
 singleNeuronTarget = 0.7
 localSearch = 0.003
+attemptsCount = 4
 
 mkLayer :: [SingleNeuron] -> TNetwork
 mkLayer neurons = let ws = [map ((\ [[w]] -> w ) . fst) neurons]
@@ -46,28 +47,30 @@ getNeuronSize ([[w]],_) = length w
 main :: IO ()
 main = runThrLocMainIO $ do
   printTL "DBN read/train"
-  -- fn <- getDBNCachedOrNew useCachedDBN dbnGameCount dbnGameProb dbnMatlabOpts
-  let fn = "tmp-data/iybjioktvbdgmjocdtow/dbn.txt"
+  fn <- getDBNCachedOrNew useCachedDBN dbnGameCount dbnGameProb dbnMatlabOpts
+  -- let fn = "tmp-data/iybjioktvbdgmjocdtow/dbn.txt"
+  -- let fn = "tmp-data/iwssqgpqsryvajvoerqi/dbn.txt"
   printTL ("DBN FN=",fn)
   dbn <- getDBNFile fn
 
   printTL "Constraint generation"
   constraints <- getConstraints constraintSource
-  let constraintsPacked = map (packConstraint dbn) $ concatMap (uncurry generateConstraintsSimple) constraints
+  let constraintsPacked = map (packConstraint dbn) $ concatMap (uncurry generateConstraintsSimpleAll) constraints
   printTL ("Total coinstraint count", length constraintsPacked)
   printTL "Evaluating packed constraints..."
   print $ head constraintsPacked
   (constraintsPacked `using` parList rdeepseq) `deepseq` printTL "Done."
+  printTL "Perform multiNeuronMinimalGAReprSearch"
+  threads <- getNumCapabilities
+  scoredNeurons <- multiNeuronMinimalGAReprSearch threads allowedBad workSetSize searchTimeoutMulti singleNeuronTarget constraintsPacked
 
-  printTL "forever train last layer network & evaluate"
-  forM_ [1..2] $ \ _attempt -> do
---  foreverUntilFileChanged "src/gg-exp5.hs" $ do
-    threads <- getNumCapabilities
-    scoredNeurons <- multiNeuronMinimalGAReprSearch threads allowedBad workSetSize searchTimeoutMulti singleNeuronTarget constraintsPacked
+  printTL "Do few times: train last layer network & evaluate"
+  forM_ [1..attemptsCount] $ \ attempt -> do
     let neurons = map fst scoredNeurons
         newLayer = mkLayer (neurons ++ mkBypass (getNeuronSize (head neurons)))
         dbnBigger = appendNetwork dbn newLayer
-        constraintsPackedBigger = map (packConstraint dbnBigger) $ concatMap (uncurry generateConstraintsSimpleAll) constraints
+        constraintsPackedBigger = take constraintsStage2Count $ drop (attempt * constraintsStage2Count) $ cycle $ 
+                                  map (packConstraint dbnBigger) $ concatMap (uncurry generateConstraintsSimpleAll) constraints
 
     printTL ("dbnBigger", dbnBigger)
     printTL ("newLayer", newLayer, length neurons)
