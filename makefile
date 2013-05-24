@@ -37,3 +37,6 @@ clean:
 
 doc:
 	firefox cabal-dev/share/doc/abalone-0.1/html/index.html &
+
+cli:
+	runhaskell src/experiment-cli.hs
