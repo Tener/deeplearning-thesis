@@ -40,3 +40,6 @@ doc:
 
 cli:
 	runhaskell src/experiment-cli.hs
+
+report:
+	cabal-dev/bin/experiment-progress-email-reporter ${USER} ${USER} ${USER} ${USER}

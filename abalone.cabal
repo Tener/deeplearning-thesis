@@ -95,7 +95,7 @@ Executable gg-exp5
   Build-depends:          base, abalone, data-timeout, data-default, parallel, deepseq, async, filepath, directory
   Ghc-options:            -rtsopts -threaded -Wall
 
-Executable experiment-progress-email-reporter.hs
+Executable experiment-progress-email-reporter
   Main-is:                src/experiment-progress-email-reporter.hs
   Build-depends:          base, blaze-html, mime-mail, filepath, directory, process, text
 
