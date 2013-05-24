@@ -35,6 +35,7 @@ createSession exp = do
 ggExp5 = Experiment "main" [("won games", "tail -n 1000000 -f g5.txt | grep --color=always \"won \"")
                            ,("scores", "tail -n 1000000 -f g5.txt | grep --color=always SCORE")
                            ,("wins", "tail -n 1000000 -f g5.txt | grep --color=always WINS")
+                           ,("multi", "tail -n 1000000 -f g5.txt | grep --color=always multiNeuron")
                            ,("killall", "zsh")
                            ,("console", "zsh")
                            ]
