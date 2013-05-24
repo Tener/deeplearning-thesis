@@ -3,6 +3,7 @@
 module ThreadLocal where
 
 import Control.Concurrent
+import Control.Exception (mask_)
 import Text.Printf
 import System.IO
 
@@ -31,7 +32,8 @@ putStrLnTL :: String -> ThrLocIO ()
 putStrLnTL val = do
   now <- fmtTimeNow
   let msg = (printf "[%s] [THR=%s] %s" now (tl_ident ?thrLoc) (val :: String)) :: String
-  val `seq` msg `seq` modifyMVar_ (tl_stdout ?thrLoc) (\ handle -> do
+      myseq = sum (map fromEnum msg)
+  myseq `seq` modifyMVar_ (tl_stdout ?thrLoc) (\ handle -> mask_ $ do
                                                hPutStrLn handle msg
                                                hFlush handle
                                                return handle)
