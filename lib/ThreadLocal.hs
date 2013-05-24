@@ -31,9 +31,10 @@ putStrLnTL :: String -> ThrLocIO ()
 putStrLnTL val = do
   now <- fmtTimeNow
   let msg = (printf "[%s] [THR=%s] %s" now (tl_ident ?thrLoc) (val :: String)) :: String
-  msg `seq` modifyMVar_ (tl_stdout ?thrLoc) (\ handle -> do
+  val `seq` msg `seq` modifyMVar_ (tl_stdout ?thrLoc) (\ handle -> do
                                                hPutStrLn handle msg
+                                               hFlush handle
                                                return handle)
 
 printTL :: (Show a) => a -> ThrLocIO ()
-printTL val = putStrLnTL (show val)
+printTL val = putStrLnTL $ show val
