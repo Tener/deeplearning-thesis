@@ -1,0 +1,17 @@
+name:                breakthrough-gui
+version:             0.1.0.0
+synopsis:            GUI for Breakthrough game
+homepage:            https://github.com/Tener/deeplearning-thesis
+license:             BSD3
+license-file:        LICENSE
+author:              Krzysztof Skrzętnicki
+maintainer:          gtener@gmail.com
+category:            Game
+build-type:          Simple
+cabal-version:       >=1.8
+
+executable breakthrough-gui
+  main-is:             breakthrough-gui.hs
+  other-modules:       
+  build-depends:       base, blank-canvas, array
+  ghc-options:            -rtsopts -threaded -Wall
