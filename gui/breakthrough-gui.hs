@@ -82,8 +82,8 @@ maxTiles = 8
 offset = 20
       
 
-drawBoard :: [Fill] -> Canvas ()
-drawBoard boardFills = do
+drawFills :: [Fill] -> Canvas ()
+drawFills boardFills = do
   let pos = zip (zip boardFills (cycle [True,False,False]))
             [ (((offset + x*side),(offset + y*side)),bg) 
                   | y <- [0..maxTiles-1], x <- [0..maxTiles-1] | bg <- boardBackgrounds ]
@@ -99,11 +99,20 @@ newBoard = DrawingBoard $ array ((0,0), ((maxTiles-1),(maxTiles-1)))
                                              | f <- cycle [FillEmpty, FillP1, FillP2, FillP2, FillP1]
                           ]
 
+drawBoard maybeHighlightPos (DrawingBoard arr) = mapM_ (\ (pos,field) -> drawField (fi pos) (hl pos) field) (assocs arr) 
+    where
+      hl p = Just p == maybeHighlightPos 
+      fi (x,y) = (offset+side*(fromIntegral x), offset+side*(fromIntegral y))
+
 main :: IO ()
 main = blankCanvas 3000 $ \ context -> do
-         -- ref <- newIORef newBoard
+         var <- newMVar (newBoard,Nothing)
+         let drawMove mPos = modifyMVar_ var $ \ (brd,prevPos) -> do
+               when (mPos /= prevPos) (send context (drawBoard mPos brd))
+               return (brd,mPos)
+             drawClick _ = return ()
 
-         send context (drawBoard (cycle [FillEmpty, FillP1, FillP2, FillP2, FillP1]))
+         send context (drawFills (cycle [FillEmpty, FillP1, FillP2, FillP2, FillP1]))
          moveQ <- events context MouseMove
          downQ <- events context MouseDown
          
@@ -111,14 +120,12 @@ main = blankCanvas 3000 $ \ context -> do
            evnt <- readEventQueue moveQ
            case jsMouse evnt of
              Nothing -> return ()
-             Just xy -> print (evnt, positionToIndex xy)
-           send context (drawPointEv evnt)
+             Just xy -> drawMove (positionToIndex xy)
 
          forkIO $ forever $ do
            evnt <- readEventQueue downQ
            case jsMouse evnt of
              Nothing -> return ()
-             Just xy -> print (evnt, positionToIndex xy)
-           send context (drawPointEv evnt)
+             Just xy -> drawClick (positionToIndex xy)
 
          return ()
