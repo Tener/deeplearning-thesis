@@ -225,14 +225,14 @@ main = do
                                                            | otherwise -> clickSelect sndPos cgs
 
 
-         moveQ <- events context MouseMove
+--         moveQ <- events context MouseMove
          downQ <- events context MouseDown
          
-         forkIO $ forever $ do
-           evnt <- readEventQueue moveQ
-           case jsMouse evnt of
-             Nothing -> return ()
-             Just xy -> drawMove (positionToIndex xy)
+--         forkIO $ forever $ do
+--           evnt <- readEventQueue moveQ
+--           case jsMouse evnt of
+--             Nothing -> return ()
+--             Just xy -> drawMove (positionToIndex xy)
 
          forkIO $ forever $ do
            evnt <- readEventQueue downQ
