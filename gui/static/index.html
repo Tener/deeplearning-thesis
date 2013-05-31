@@ -1,0 +1,55 @@
+<html>
+    <head>
+        <title>Blank Canvas</title>
+        <script type="text/javascript" src="jquery.js"></script>
+        <script type="text/javascript" src="jquery-json.js"></script>
+    </head>
+    <body style="padding: 0px; margin: 0px; border:0px">
+        <div id="canvas"></div>
+        <script type="text/javascript">
+            var session = 0; // global session number
+            function getContext() {
+                    var canvas = document.getElementById("canvas");
+                    if (canvas.getContext) {
+                        return canvas.getContext("2d");
+                    }
+                    alert("no canvas");
+            }
+            function register(name,mysession) {
+                $(document).bind(name,function (e){
+                        $.ajax({ url: "/event/" + mysession,
+                         type: "POST",
+                         data: $.toJSON([name,e.which,e.pageX, e.pageY]),
+                         contentType: "application/json; charset=utf-8",
+                         dataType: "json"});
+                });
+            }  
+            function redraw() {
+                $.ajax({ url: "/canvas/" + session,
+                         type: "GET",
+                         dataType: "script",
+                         success: function success() {
+                                 redraw();
+                         }
+                         }); 
+             }
+             
+            $(document).ready(function() {
+                // Make the canvas the size of the window
+                var w = $(window).width();
+                var h = $(window).height();
+
+                $("#canvas").replaceWith(
+                            '<canvas id="canvas" width="' + w + '" height="' + h +
+                            '" style="border: blue solid 0px; padding: 0px; margin: 0px"></canvas>');
+
+                 // start the server-side
+                $.ajax({ url: "/start",
+                         type: "POST",
+                         contentType: "application/json; charset=utf-8",
+                         data: $.toJSON([w,h]),
+                         dataType: "script"}); 
+            });
+        </script>
+    </body>
+</html>
