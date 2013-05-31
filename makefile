@@ -34,7 +34,6 @@ tournament-ii:
 clean:
 	cabal-dev clean
 
-
 doc:
 	firefox cabal-dev/share/doc/abalone-0.1/html/index.html &
 
@@ -43,3 +42,6 @@ cli:
 
 report:
 	cabal-dev/bin/experiment-progress-email-reporter ${USER} ${USER} ${USER} ${USER}
+
+webui:
+	runhaskell -package-conf=cabal-dev/packages-`ghc --numeric-version`.conf gui/breakthrough-gui.hs
