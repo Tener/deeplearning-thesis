@@ -183,7 +183,8 @@ main = do
   let port = case args of
                [x] -> read x
                _ -> 3000
-  blankCanvas port $ \ context -> do
+  let bC act = blankCanvasParams port act "." False Nothing
+  bC $ \ context -> do
          let initial = makeCGS br P1
              br = freshGame (maxTiles,maxTiles) :: Breakthrough
              drawCGS' cgs = drawUpdateCGS context cgs
