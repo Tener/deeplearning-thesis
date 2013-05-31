@@ -90,7 +90,7 @@ positionToIndex (px,py) = do
 maxTiles, offset, side :: (Num a) => a
 side = 50
 maxTiles = 8
-offset = 20
+offset = 50
       
 
 drawFills :: [Fill] -> Canvas ()
@@ -133,19 +133,57 @@ data CanvasGameState = CanvasGameState { boardDrawn :: DrawingBoard
                                        , lastHighlight :: (Maybe Position)
                                        , boardState :: Breakthrough
                                        , playerNow :: Player2
+                                       , allFinished :: Bool
                                        }
 
-makeCGS b p = CanvasGameState (drawBreakthroughGame b) Nothing b p
+makeCGS b p = CanvasGameState (drawBreakthroughGame b) Nothing b p False
+drawUpdateCGS ctx cgs = send ctx $ do
+   drawBoard (lastHighlight cgs) (boardDrawn cgs)
+   drawCurrentPlayer (playerNow cgs)
+   let win = winner (boardState cgs)
+   case win of
+     Nothing -> return ()
+     Just w -> drawWinner w
+   return (cgs { allFinished = (win /= Nothing) })
+
+p2Txt P1 = "Player 1"
+p2Txt P2 = "Player 2"
+
+drawWinner w = do
+  let txt = p2Txt w ++ " wins the game!"
+      tpx = offset + (maxTiles * side / 2)
+      tpy = offset + (maxTiles * side / 2)
+      
+      rpx = offset
+      rpy = offset
+      rdimx = maxTiles * side
+      rdimy = maxTiles * side
+
+  globalAlpha 0.75
+  fillStyle "gray"
+  fillRect (rpx,rpy,rdimx,rdimy)
+  globalAlpha 1
+  textBaseline "middle"
+  textAlign "center"
+  font "bold 20pt Sans"
+  strokeStyle (if w == P1 then "darkred" else "darkgreen")
+  strokeText (txt, tpx, tpy)
+  
+drawCurrentPlayer pl = do
+  let txt = "Current move: " ++ p2Txt pl
+  font "15pt Sans"
+  clearRect (0,0,500,offset)
+  fillStyle "black"
+  fillText (txt, offset, offset/2)
 
 main :: IO ()
 main = blankCanvas 3000 $ \ context -> do
-         let initial = makeCGS br P1 -- CanvasGameState drawn Nothing br P1
+         let initial = makeCGS br P1
              br = freshGame (maxTiles,maxTiles) :: Breakthrough
-             drawCGS cgs = send context (drawBoard (lastHighlight cgs) (boardDrawn cgs))
-         var <- newMVar initial
-         drawCGS initial
+             drawCGS' cgs = drawUpdateCGS context cgs
+         var <- newMVar =<< drawCGS' initial
 
-         let drawMove mPos = modifyMVar_ var $ \ cgs -> do
+         let drawMove mPos = modifyMVar_ var $ \ cgs -> if allFinished cgs then return cgs else do
                let prevPos = lastHighlight cgs
                when (mPos /= prevPos) (send context (drawBoard mPos (boardDrawn cgs)))
                return (cgs { lastHighlight = mPos })
@@ -169,15 +207,14 @@ main = blankCanvas 3000 $ \ context -> do
                return (cgs { boardDrawn = DrawingBoard brd' })
 
              drawClick Nothing = return ()
-             drawClick mPos@(Just sndPos@(x,y)) = modifyMVar_ var $ \ cgs -> do
+             drawClick mPos@(Just sndPos@(x,y)) = modifyMVar_ var $ \ cgs -> if allFinished cgs then return cgs else do
                let valid state = state `elem` moves (boardState cgs) (playerNow cgs)
                case lastSelect cgs of
                  Nothing -> clickSelect sndPos cgs 
                  Just fstPos | fstPos == sndPos -> clickClear cgs
                              | otherwise -> case applyMove (boardState cgs) (fstPos,sndPos) of
                                              Nothing -> clickSelect sndPos cgs
-                                             Just newState | valid newState -> let newCGS = makeCGS newState (nextPlayer (playerNow cgs)) in
-                                                                               drawCGS newCGS >> return newCGS
+                                             Just newState | valid newState -> drawCGS' (makeCGS newState (nextPlayer (playerNow cgs)))
                                                            | otherwise -> clickSelect sndPos cgs
 
 
