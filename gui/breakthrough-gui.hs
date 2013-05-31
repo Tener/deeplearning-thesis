@@ -8,6 +8,7 @@ import Control.Monad
 import Data.Array
 import Data.Maybe
 import Data.Tuple
+import System.Environment
 
 import BreakthroughGame
 import GenericGame
@@ -177,7 +178,12 @@ drawCurrentPlayer pl = do
   fillText (txt, offset, offset/2)
 
 main :: IO ()
-main = blankCanvas 3000 $ \ context -> do
+main = do
+  args <- getArgs
+  let port = case args of
+               [x] -> read x
+               _ -> 3000
+  blankCanvas port $ \ context -> do
          let initial = makeCGS br P1
              br = freshGame (maxTiles,maxTiles) :: Breakthrough
              drawCGS' cgs = drawUpdateCGS context cgs
