@@ -21,4 +21,5 @@ hnn//tournament.log.txt
 /tmp-data/
 cabal-dev/
 dist/
+gui/heroku.*
 *.txt
