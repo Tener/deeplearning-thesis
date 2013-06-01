@@ -173,7 +173,7 @@ drawWinner w = do
 drawCurrentPlayer pl = do
   let txt = "Current move: " ++ p2Txt pl
   font "15pt Sans"
-  clearRect (0,0,500,offset)
+  clearRect (0,0,500,offset-5) -- fix for damaging board border
   fillStyle "black"
   fillText (txt, offset, offset/2)
 
