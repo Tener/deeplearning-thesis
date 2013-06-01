@@ -1,1 +1,1 @@
-web: ./breakthrough-gui $PORT
+web: LD_LIBRARY_PATH=$HOME/debs-extra/usr/lib ./dist/build/breakthrough-gui/breakthrough-gui $PORT
