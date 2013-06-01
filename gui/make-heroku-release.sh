@@ -6,7 +6,7 @@ set -eo pipefail
 HEROKU_APP=deeplearning-breakthrough
 
 TMP=$(mktemp -d heroku.XXXX)
-trap "rm -rf $TMP" EXIT
+trap "rm -rf $TMP" EXIT INT TERM
 
 BASE=$(pwd)
 echo TMP=$TMP
