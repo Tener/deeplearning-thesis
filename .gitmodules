@@ -1,3 +1,9 @@
 [submodule "DeepLearnToolbox"]
 	path = DeepLearnToolbox
 	url = git@github.com:Tener/DeepLearnToolbox.git
+[submodule "haskell-heroku-build-artifacts"]
+	path = gui/artifacts-heroku
+	url = git@github.com:Tener/haskell-heroku-build-artifacts.git
+[submodule "heroku-buildpack-haskell"]
+	path = gui/heroku-buildpack-haskell
+	url = git@github.com:Tener/heroku-buildpack-haskell.git
