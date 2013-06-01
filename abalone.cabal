@@ -1,7 +1,5 @@
 Name:                abalone
 Version:             0.1
--- Synopsis:            
--- Description:         
 License:             BSD3
 License-file:        LICENSE
 Author:              Krzysztof Skrzętnicki
@@ -10,23 +8,34 @@ Category:            Game
 Build-type:          Simple
 Cabal-version:       >=1.8
 
+Flag matlab
+  description:  expose Matlab/Octave based functionality
+  default:      False
+
+Flag build-experiments
+  description:  build various executables
+  default:      False
+
+Flag build-utils
+  description:  build utility executables
+  default:      False
 
 Library
   Hs-source-dirs:         lib
   Exposed-modules:        Board, Agent, Simulation, 
                           MonteCarloTS, CommonDatatypes, NeuralNets,
                           Tournament, Utils, MinimalNN, Constraints,
-                          Config, Matlab,
+                          Config, 
                           GenericGame, AgentGeneric, BreakthroughGame, HistogramGeneric,
-                          GenericGameExperiments, ConstraintsGeneric, ThreadLocal,
-                          LittleGolem, ConstraintsGA, MinimalGA
+                          ConstraintsGeneric, ThreadLocal,
+                          LittleGolem, MinimalGA
   Build-depends:          base, mwc-random, grid == 2.0, process, containers, hashmap, game-tree, split, 
                           hashable, 
                           vector, hmatrix, io-memoize, data-default, async,
-                          global-config, filepath, directory, transformers, global-variables, Interpolation,
+                          global-config, filepath, directory, transformers, global-variables,
                           bytestring, Histogram, gnuplot, zlib, chronograph, attoparsec, text, time, old-locale, 
                           GA, random, array, deepseq, data-timeout
-  Ghc-options:            -Werror -Wall -O2 -fexcess-precision -fexpose-all-unfoldings -funfolding-creation-threshold=400 -funfolding-use-threshold=40
+  Ghc-options:            -Wall -O2 -fexcess-precision -fexpose-all-unfoldings -funfolding-creation-threshold=400 -funfolding-use-threshold=40
   extensions:             NoMonomorphismRestriction, 
                           Rank2Types 
   if os(windows)
@@ -35,117 +44,136 @@ Library
      build-depends:       unix
 
 
-Executable abalone
-  Main-is:                src/abalone.hs
-  Build-depends:          base, abalone, async, time, process
-  Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -threaded
+  if flag(matlab)
+     Build-depends:       Interpolation
+     Exposed-modules:     Matlab, GenericGameExperiments, ConstraintsGA
 
-Executable trace-games
-  Main-is:                src/trace-games.hs
-  Build-depends:          base, abalone, async, time, process
-  Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -threaded
-
-Executable tournament
-  Main-is:                src/tournament.hs
-  Build-depends:          base, abalone, data-default
-  Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -threaded
-
-Executable constraints-single-random-neuron
-  Main-is:                src/constraints-single-random-neuron.hs
-  Build-depends:          base, abalone, async
-  Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -threaded
-
-Executable dense-to-sparse
-  Main-is:                src/dense-to-sparse.hs
-  Build-depends:          base, filepath
-  Ghc-options:            -rtsopts
-
-Executable breakthrough-driver
-  Main-is:                src/breakthrough-driver.hs
-  Build-depends:          base, abalone, async, data-default
-  Ghc-options:            -rtsopts -threaded
-
-Executable histograms-printer
-  Main-is:                src/histograms-printer.hs
-  Build-depends:          base, abalone, async, data-default
-  Ghc-options:            -rtsopts
-
-Executable gg-exp1
-  Main-is:                src/gg-exp1.hs
-  Build-depends:          base, abalone, async, data-default
-  Ghc-options:            -rtsopts
-
-Executable gg-exp2
-  Main-is:                src/gg-exp2.hs
-  Build-depends:          base, abalone, async, data-default
-  Ghc-options:            -rtsopts
-
+-- Executable abalone
+--   Main-is:                src/abalone.hs
+--   Build-depends:          base, abalone, async, time, process
+--   Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -threaded
+--  
+-- Executable trace-games
+--   Main-is:                src/trace-games.hs
+--   Build-depends:          base, abalone, async, time, process
+--   Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -threaded
+--  
+-- Executable tournament
+--   Main-is:                src/tournament.hs
+--   Build-depends:          base, abalone, data-default
+--   Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -threaded
+--  
+-- Executable constraints-single-random-neuron
+--   Main-is:                src/constraints-single-random-neuron.hs
+--   Build-depends:          base, abalone, async
+--   Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -threaded
+--  
+-- Executable dense-to-sparse
+--   Main-is:                src/dense-to-sparse.hs
+--   Build-depends:          base, filepath
+--   Ghc-options:            -rtsopts
+--  
+-- Executable breakthrough-driver
+--   Main-is:                src/breakthrough-driver.hs
+--   Build-depends:          base, abalone, async, data-default
+--   Ghc-options:            -rtsopts -threaded
+--  
+-- Executable histograms-printer
+--   Main-is:                src/histograms-printer.hs
+--   Build-depends:          base, abalone, async, data-default
+--   Ghc-options:            -rtsopts
+--  
+-- Executable gg-exp1
+--   Main-is:                src/gg-exp1.hs
+--   Build-depends:          base, abalone, async, data-default
+--   Ghc-options:            -rtsopts
+--  
+-- Executable gg-exp2
+--   Main-is:                src/gg-exp2.hs
+--   Build-depends:          base, abalone, async, data-default
+--   Ghc-options:            -rtsopts
+--  
 Executable gg-exp3
   Main-is:                src/gg-exp3.hs
   Build-depends:          base, abalone, async, data-timeout, directory, chronograph, data-default, text, deepseq, parallel, uglymemo
   Ghc-options:            -rtsopts -threaded -Wall
-
-Executable gg-exp4
-  Main-is:                src/gg-exp4.hs
-  Build-depends:          base, abalone 
-  Ghc-options:            -rtsopts -threaded -Wall
+  if flag(build-experiments) && flag(matlab)
+    Buildable:            True
+  else
+    Buildable:            False
+  
+--  
+-- Executable gg-exp4
+--   Main-is:                src/gg-exp4.hs
+--   Build-depends:          base, abalone 
+--   Ghc-options:            -rtsopts -threaded -Wall
+--  
 
 Executable gg-exp5
   Main-is:                src/gg-exp5.hs
   Build-depends:          base, abalone, data-timeout, data-default, parallel, deepseq, async, filepath, directory
   Ghc-options:            -rtsopts -threaded -Wall
+  if flag(build-experiments) && flag(matlab)
+    Buildable:            True
+  else
+    Buildable:            False
 
 Executable experiment-progress-email-reporter
   Main-is:                src/experiment-progress-email-reporter.hs
   Build-depends:          base, blaze-html, mime-mail, filepath, directory, process, text
+  if flag(build-utils)
+    Buildable:            True
+  else
+    Buildable:            False
 
--- Executable repr-benchmark
---   Main-is:                src/repr-nn-benchmark.hs
---   Build-depends:          base, abalone, filepath, criterion, hmatrix, hashmap
---   Ghc-options:            -rtsopts -O2
-
-
--- Executable nn-benchmark-01
---   Main-is:                src/nn-benchmark.hs
---   Build-depends:          base, filepath, criterion, mwc-random, vector, hnn == 0.1
---   Ghc-options:            -rtsopts -O2
---   buildable:              False
---   cpp-options:            -DBENCH01
 --  
--- Executable nn-benchmark-02
---   Main-is:                src/nn-benchmark.hs
---   Build-depends:          base, filepath, criterion, mwc-random, vector, hnn == 0.2.0.0.20121218
---   Ghc-options:            -rtsopts -O2
---   buildable:              False
---   cpp-options:            -DBENCH02
-
--- Executable nn-benchmark-03
---   Main-is:                src/nn-benchmark.hs
---   Build-depends:          base, abalone, filepath, criterion == 0.6.2.0, mwc-random, vector, split, hmatrix, HaskellNN == 0.1.3, hnn == 0.2.0.0.20121218
---   Ghc-options:            -rtsopts -O2
---   buildable:              True
---   cpp-options:            -DBENCH03
-
---   if flag(bench01)
---      build-depends: hnn == 0.1
---      cpp-options: -DBENCH01
---      buildable: True
---   if flag(bench02)
---      build-depends: hnn == 0.2.0.0.20121218
---      cpp-options: -DBENCH02
---      buildable: True
---   if flag(bench03)
---      build-depends: HaskellNN
---      cpp-options: -DBENCH03
---      buildable: True
-
-Executable get-finished-games
-  Main-is:                src/get-finished-games.hs
-  Build-depends:          base, filepath, abalone
-  Ghc-options:            -rtsopts
-
-test-suite doctests
-  type:          exitcode-stdio-1.0
-  ghc-options:   -threaded
-  main-is:       src/doctests.hs
-  build-depends: base, doctest >= 0.8
+-- -- Executable repr-benchmark
+-- --   Main-is:                src/repr-nn-benchmark.hs
+-- --   Build-depends:          base, abalone, filepath, criterion, hmatrix, hashmap
+-- --   Ghc-options:            -rtsopts -O2
+--  
+--  
+-- -- Executable nn-benchmark-01
+-- --   Main-is:                src/nn-benchmark.hs
+-- --   Build-depends:          base, filepath, criterion, mwc-random, vector, hnn == 0.1
+-- --   Ghc-options:            -rtsopts -O2
+-- --   buildable:              False
+-- --   cpp-options:            -DBENCH01
+-- --  
+-- -- Executable nn-benchmark-02
+-- --   Main-is:                src/nn-benchmark.hs
+-- --   Build-depends:          base, filepath, criterion, mwc-random, vector, hnn == 0.2.0.0.20121218
+-- --   Ghc-options:            -rtsopts -O2
+-- --   buildable:              False
+-- --   cpp-options:            -DBENCH02
+--  
+-- -- Executable nn-benchmark-03
+-- --   Main-is:                src/nn-benchmark.hs
+-- --   Build-depends:          base, abalone, filepath, criterion == 0.6.2.0, mwc-random, vector, split, hmatrix, HaskellNN == 0.1.3, hnn == 0.2.0.0.20121218
+-- --   Ghc-options:            -rtsopts -O2
+-- --   buildable:              True
+-- --   cpp-options:            -DBENCH03
+--  
+-- --   if flag(bench01)
+-- --      build-depends: hnn == 0.1
+-- --      cpp-options: -DBENCH01
+-- --      buildable: True
+-- --   if flag(bench02)
+-- --      build-depends: hnn == 0.2.0.0.20121218
+-- --      cpp-options: -DBENCH02
+-- --      buildable: True
+-- --   if flag(bench03)
+-- --      build-depends: HaskellNN
+-- --      cpp-options: -DBENCH03
+-- --      buildable: True
+--  
+-- Executable get-finished-games
+--   Main-is:                src/get-finished-games.hs
+--   Build-depends:          base, filepath, abalone
+--   Ghc-options:            -rtsopts
+--  
+-- test-suite doctests
+--   type:          exitcode-stdio-1.0
+--   ghc-options:   -threaded
+--   main-is:       src/doctests.hs
+--   build-depends: base, doctest >= 0.8

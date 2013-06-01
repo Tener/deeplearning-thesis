@@ -1,9 +1,9 @@
 
 build:
-	cabal-dev install --force-reinstalls -funsafe
+	cabal-dev install -fmatlab -fbuild-experiments --force-reinstalls -funsafe
 
 build-par:
-	cabal-dev install -j -funsafe
+	cabal-dev install -fmatlab -fbuild-experiments -j -funsafe
 
 hmatrix:
 	cabal-dev install -j -funsafe hmatrix --enable-library-profiling
