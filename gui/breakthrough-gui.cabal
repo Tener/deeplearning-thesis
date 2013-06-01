@@ -13,5 +13,5 @@ cabal-version:       >=1.8
 executable breakthrough-gui
   main-is:             breakthrough-gui.hs
   other-modules:       
-  build-depends:       base, null-canvas == 0.2.4, array, abalone, hashmap, text
+  build-depends:       base, null-canvas == 0.2.4, array, deeplearning, hashmap, text
   ghc-options:            -rtsopts -threaded -Wall
