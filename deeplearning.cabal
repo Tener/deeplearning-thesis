@@ -50,22 +50,22 @@ Library
 
 -- Executable abalone
 --   Main-is:                src/abalone.hs
---   Build-depends:          base, abalone, async, time, process
+--   Build-depends:          base, deeplearning, async, time, process
 --   Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -threaded
 --  
 -- Executable trace-games
 --   Main-is:                src/trace-games.hs
---   Build-depends:          base, abalone, async, time, process
+--   Build-depends:          base, deeplearning, async, time, process
 --   Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -threaded
 --  
 -- Executable tournament
 --   Main-is:                src/tournament.hs
---   Build-depends:          base, abalone, data-default
+--   Build-depends:          base, deeplearning, data-default
 --   Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -threaded
 --  
 -- Executable constraints-single-random-neuron
 --   Main-is:                src/constraints-single-random-neuron.hs
---   Build-depends:          base, abalone, async
+--   Build-depends:          base, deeplearning, async
 --   Ghc-options:            -rtsopts -fprof-auto -fprof-auto-top -Wall -threaded
 --  
 -- Executable dense-to-sparse
@@ -75,27 +75,27 @@ Library
 --  
 -- Executable breakthrough-driver
 --   Main-is:                src/breakthrough-driver.hs
---   Build-depends:          base, abalone, async, data-default
+--   Build-depends:          base, deeplearning, async, data-default
 --   Ghc-options:            -rtsopts -threaded
 --  
 -- Executable histograms-printer
 --   Main-is:                src/histograms-printer.hs
---   Build-depends:          base, abalone, async, data-default
+--   Build-depends:          base, deeplearning, async, data-default
 --   Ghc-options:            -rtsopts
 --  
 -- Executable gg-exp1
 --   Main-is:                src/gg-exp1.hs
---   Build-depends:          base, abalone, async, data-default
+--   Build-depends:          base, deeplearning, async, data-default
 --   Ghc-options:            -rtsopts
 --  
 -- Executable gg-exp2
 --   Main-is:                src/gg-exp2.hs
---   Build-depends:          base, abalone, async, data-default
+--   Build-depends:          base, deeplearning, async, data-default
 --   Ghc-options:            -rtsopts
 --  
 Executable gg-exp3
   Main-is:                src/gg-exp3.hs
-  Build-depends:          base, abalone, async, data-timeout, directory, chronograph, data-default, text, deepseq, parallel, uglymemo
+  Build-depends:          base, deeplearning, async, data-timeout, directory, chronograph, data-default, text, deepseq, parallel, uglymemo
   Ghc-options:            -rtsopts -threaded -Wall
   if flag(build-experiments) && flag(matlab)
     Buildable:            True
@@ -105,13 +105,13 @@ Executable gg-exp3
 --  
 -- Executable gg-exp4
 --   Main-is:                src/gg-exp4.hs
---   Build-depends:          base, abalone 
+--   Build-depends:          base, deeplearning 
 --   Ghc-options:            -rtsopts -threaded -Wall
 --  
 
 Executable gg-exp5
   Main-is:                src/gg-exp5.hs
-  Build-depends:          base, abalone, data-timeout, data-default, parallel, deepseq, async, filepath, directory
+  Build-depends:          base, deeplearning, data-timeout, data-default, parallel, deepseq, async, filepath, directory
   Ghc-options:            -rtsopts -threaded -Wall
   if flag(build-experiments) && flag(matlab)
     Buildable:            True
@@ -129,7 +129,7 @@ Executable experiment-progress-email-reporter
 --  
 -- -- Executable repr-benchmark
 -- --   Main-is:                src/repr-nn-benchmark.hs
--- --   Build-depends:          base, abalone, filepath, criterion, hmatrix, hashmap
+-- --   Build-depends:          base, deeplearning, filepath, criterion, hmatrix, hashmap
 -- --   Ghc-options:            -rtsopts -O2
 --  
 --  
@@ -149,7 +149,7 @@ Executable experiment-progress-email-reporter
 --  
 -- -- Executable nn-benchmark-03
 -- --   Main-is:                src/nn-benchmark.hs
--- --   Build-depends:          base, abalone, filepath, criterion == 0.6.2.0, mwc-random, vector, split, hmatrix, HaskellNN == 0.1.3, hnn == 0.2.0.0.20121218
+-- --   Build-depends:          base, deeplearning, filepath, criterion == 0.6.2.0, mwc-random, vector, split, hmatrix, HaskellNN == 0.1.3, hnn == 0.2.0.0.20121218
 -- --   Ghc-options:            -rtsopts -O2
 -- --   buildable:              True
 -- --   cpp-options:            -DBENCH03
@@ -169,7 +169,7 @@ Executable experiment-progress-email-reporter
 --  
 -- Executable get-finished-games
 --   Main-is:                src/get-finished-games.hs
---   Build-depends:          base, filepath, abalone
+--   Build-depends:          base, filepath, deeplearning
 --   Ghc-options:            -rtsopts
 --  
 -- test-suite doctests
