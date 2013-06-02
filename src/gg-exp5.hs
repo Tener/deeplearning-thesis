@@ -9,6 +9,7 @@ import ConstraintsGeneric
 import GenericGameExperiments
 import Matlab
 import MinimalNN
+import NeuralNets
 import ThreadLocal
 
 import Control.Concurrent
