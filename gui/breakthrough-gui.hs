@@ -19,11 +19,14 @@ data Fill = FillEmpty | FillP1 | FillP2
 data BG = BGLight | BGDark | BGSelected | BGPossible deriving (Eq,Read,Show,Ord)
 data DrawingBoard = DrawingBoard { getArrDB :: (Array (Int,Int) Field) }
 
-
 data Field = Field { fFill :: Fill
                    , fBG :: BG
                    , fSuperBG :: Maybe BG
                    }
+
+-- | enable feedback on moving mouse. works poorly with big latency links.
+enableMouseMoveFeedback :: Bool
+enableMouseMoveFeedback = True
 
 drawPointEv :: Event -> Canvas ()
 drawPointEv e = do
@@ -171,11 +174,25 @@ drawWinner w = do
   strokeText (txt, tpx, tpy)
   
 drawCurrentPlayer pl = do
+  -- put text
   let txt = "Current move: " ++ p2Txt pl
   font "15pt Sans"
-  clearRect (0,0,500,offset-5) -- fix for damaging board border
+  clearRect (0,0,500,offset*0.9) -- fix for damaging board border
   fillStyle "black"
   fillText (txt, offset, offset/2)
+  -- put symbol on the left side
+  clearRect (0,0,offset*0.9,500)
+  let px = offset/2
+      py = offset + (side * pside)
+      pside = 0.5 + if pl == P1 then 0 else (maxTiles-1) 
+  save ()
+  font "bold 20pt Mono"
+  textBaseline "middle"
+  textAlign "center"
+  strokeStyle "rgb(240, 124, 50)"
+  strokeText ("+",px,py)
+  restore ()
+  
 
 main :: IO ()
 main = do
@@ -225,15 +242,15 @@ main = do
                                                            | otherwise -> clickSelect sndPos cgs
 
 
---         moveQ <- events context MouseMove
-         downQ <- events context MouseDown
-         
---         forkIO $ forever $ do
---           evnt <- readEventQueue moveQ
---           case jsMouse evnt of
---             Nothing -> return ()
---             Just xy -> drawMove (positionToIndex xy)
+         when enableMouseMoveFeedback $ do
+           moveQ <- events context MouseMove
+           void $ forkIO $ forever $ do
+             evnt <- readEventQueue moveQ
+             case jsMouse evnt of
+               Nothing -> return ()
+               Just xy -> drawMove (positionToIndex xy)
 
+         downQ <- events context MouseDown
          forkIO $ forever $ do
            evnt <- readEventQueue downQ
            case jsMouse evnt of
