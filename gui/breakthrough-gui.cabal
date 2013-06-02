@@ -16,6 +16,9 @@ extra-source-files: Procfile
                     static/jquery.js
                     static/index.html
                     prepared-sdists/deeplearning-0.2.tar.gz
+                    hooks/start.sh
+                    hooks/build.sh
+                    hooks/finish.sh
 
 executable breakthrough-gui
   main-is:             breakthrough-gui.hs
