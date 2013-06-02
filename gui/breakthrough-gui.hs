@@ -14,6 +14,7 @@ import BreakthroughGame
 import GenericGame
 import qualified Data.HashMap as HashMap
 
+import qualified Data.Text as T
 
 data Fill = FillEmpty | FillP1 | FillP2
 data BG = BGLight | BGDark | BGSelected | BGPossible deriving (Eq,Read,Show,Ord)
@@ -200,7 +201,7 @@ main = do
   let port = case args of
                [x] -> read x
                _ -> 3000
-  let bC act = blankCanvasParams port act "." False
+  let bC act = blankCanvasParams port act "./pvp" False (Just [T.pack "pvp"])
   bC $ \ context -> do
          let initial = makeCGS br P1
              br = freshGame (maxTiles,maxTiles) :: Breakthrough
