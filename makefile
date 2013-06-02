@@ -35,7 +35,7 @@ clean:
 	cabal-dev clean
 
 doc:
-	firefox cabal-dev/share/doc/abalone-0.1/html/index.html &
+	firefox cabal-dev/share/doc/deeplearning-0.2/html/index.html &
 
 cli:
 	runhaskell src/experiment-cli.hs
