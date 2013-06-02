@@ -12,6 +12,11 @@ import System.Environment
 
 import BreakthroughGame
 import GenericGame
+import ThreadLocal
+import AgentGeneric
+import NeuralNets
+import MinimalNN
+
 import qualified Data.HashMap as HashMap
 
 import qualified Data.Text as T
@@ -216,61 +221,143 @@ main = do
   let port = case args of
                [x] -> read x
                _ -> 3000
-  let bC act = blankCanvasParams port act "./pvp" False (Just [T.pack "pvp"])
-  bC $ \ context -> do
-         let initial = makeCGS br P1
-             br = freshGame (maxTiles,maxTiles) :: Breakthrough
-             drawCGS' cgs = drawUpdateCGS context cgs
-         var <- newMVar =<< drawCGS' initial
+  network <- read `fmap` (readFile "assets/dbn.txt")
+  blankCanvasParams port (pvc network) "." False Nothing
 
-         let drawMove mPos = modifyMVar_ var $ \ cgs -> if allFinished cgs then return cgs else do
-               let prevPos = lastHighlight cgs
-               when (mPos /= prevPos) (send context (drawBoard mPos (boardDrawn cgs)))
-               return (cgs { lastHighlight = mPos })
+pvc :: TNetwork -> Context -> IO ()
+pvc network context = do
+  let initial = makeCGS br P1
+      br = freshGame (maxTiles,maxTiles) :: Breakthrough
+      drawCGS' cgs = drawUpdateCGS context cgs
+  var <- newMVar =<< drawCGS' initial
+  agent'0 <- runThrLocMainIO (mkAgent network) :: IO AgentSimple
+  agent'1 <- runThrLocMainIO (mkAgent ()) :: IO AgentRandom
+  agent'2 <- runThrLocMainIO (mkAgent 100) :: IO AgentMCTS
 
-             clearSuperBG (Field f bg _) = (Field f bg Nothing)
-             lastSelect cgs = case filter (\ (pos,(Field _ _ sup)) -> sup == Just BGSelected) (assocs (getArrDB $ boardDrawn cgs)) of
-                                [(pos,_)] -> Just pos
-                                _ -> Nothing -- no matches or more than one match
+  let agent = agent'2
 
-             clickSelect ix cgs = do
-               let DrawingBoard brd = boardDrawn cgs
-                   brdClean = fmap clearSuperBG brd
-                   brd' = accum (\ (Field f bg _) sup -> (Field f bg sup)) brdClean [(ix,(Just BGSelected))] 
-               send context (drawBoard (Just ix) (DrawingBoard brd'))
-               return (cgs { boardDrawn = DrawingBoard brd' })
+  let drawMove mPos = modifyMVar_ var $ \ cgs -> if allFinished cgs then return cgs else do
+        let prevPos = lastHighlight cgs
+        when (mPos /= prevPos) (send context (drawBoard mPos (boardDrawn cgs)))
+        return (cgs { lastHighlight = mPos })
 
-             clickClear cgs = do
-               let DrawingBoard brd = boardDrawn cgs
-                   brd' = fmap clearSuperBG brd
-               send context (drawBoard (lastHighlight cgs) (DrawingBoard brd'))
-               return (cgs { boardDrawn = DrawingBoard brd' })
+      autoPlay cgs | allFinished cgs = return cgs
+                   | otherwise = do
+        let board = boardState cgs
+            player = playerNow cgs
+        newBoard <- runThrLocMainIO (applyAgent agent board player)
+        drawCGS' (makeCGS newBoard (nextPlayer player))
 
-             drawClick Nothing = return ()
-             drawClick mPos@(Just sndPos@(x,y)) = modifyMVar_ var $ \ cgs -> if allFinished cgs then return cgs else do
-               let valid state = state `elem` moves (boardState cgs) (playerNow cgs)
-               case lastSelect cgs of
-                 Nothing -> clickSelect sndPos cgs 
-                 Just fstPos | fstPos == sndPos -> clickClear cgs
-                             | otherwise -> case applyMove (boardState cgs) (fstPos,sndPos) of
-                                             Nothing -> clickSelect sndPos cgs
-                                             Just newState | valid newState -> drawCGS' (makeCGS newState (nextPlayer (playerNow cgs)))
-                                                           | otherwise -> clickSelect sndPos cgs
+      clearSuperBG (Field f bg _) = (Field f bg Nothing)
+      lastSelect cgs = case filter (\ (pos,(Field _ _ sup)) -> sup == Just BGSelected) (assocs (getArrDB $ boardDrawn cgs)) of
+                         [(pos,_)] -> Just pos
+                         _ -> Nothing -- no matches or more than one match
+
+      clickSelect ix cgs = do
+        let DrawingBoard brd = boardDrawn cgs
+            brdClean = fmap clearSuperBG brd
+            brd' = accum (\ (Field f bg _) sup -> (Field f bg sup)) brdClean [(ix,(Just BGSelected))] 
+        send context (drawBoard (Just ix) (DrawingBoard brd'))
+        return (cgs { boardDrawn = DrawingBoard brd' })
+
+      clickClear cgs = do
+        let DrawingBoard brd = boardDrawn cgs
+            brd' = fmap clearSuperBG brd
+        send context (drawBoard (lastHighlight cgs) (DrawingBoard brd'))
+        return (cgs { boardDrawn = DrawingBoard brd' })
+
+      drawClick Nothing = return ()
+      drawClick mPos@(Just sndPos@(x,y)) = modifyMVar_ var $ \ cgs -> if allFinished cgs then return cgs else do
+        let valid state = state `elem` moves (boardState cgs) (playerNow cgs)
+        case lastSelect cgs of
+          Nothing -> clickSelect sndPos cgs 
+          Just fstPos | fstPos == sndPos -> clickClear cgs
+                      | otherwise -> case applyMove (boardState cgs) (fstPos,sndPos) of
+                                      Nothing -> clickSelect sndPos cgs
+                                      Just newState | valid newState -> do
+                                                                            newCGS <- drawCGS' (makeCGS newState (nextPlayer (playerNow cgs)))
+                                                                            autoPlay newCGS
+                                                    | otherwise -> clickSelect sndPos cgs
 
 
-         when enableMouseMoveFeedback $ do
-           moveQ <- events context MouseMove
-           void $ forkIO $ forever $ do
-             evnt <- readEventQueue moveQ
-             case jsMouse evnt of
-               Nothing -> return ()
-               Just xy -> drawMove (positionToIndex xy)
+  when enableMouseMoveFeedback $ do
+    moveQ <- events context MouseMove
+    void $ forkIO $ forever $ do
+      evnt <- readEventQueue moveQ
+      case jsMouse evnt of
+        Nothing -> return ()
+        Just xy -> do
+                drawMove (positionToIndex xy)
 
-         downQ <- events context MouseDown
-         forkIO $ forever $ do
-           evnt <- readEventQueue downQ
-           case jsMouse evnt of
-             Nothing -> return ()
-             Just xy -> drawClick (positionToIndex xy)
+  downQ <- events context MouseDown
+  forkIO $ forever $ do
+    evnt <- readEventQueue downQ
+    case jsMouse evnt of
+      Nothing -> return ()
+      Just xy -> do
+                drawClick (positionToIndex xy)
+                
+ 
 
-         return ()
+  return ()
+
+
+pvp :: Context -> IO ()
+pvp context = do
+  let initial = makeCGS br P1
+      br = freshGame (maxTiles,maxTiles) :: Breakthrough
+      drawCGS' cgs = drawUpdateCGS context cgs
+  var <- newMVar =<< drawCGS' initial
+
+  let drawMove mPos = modifyMVar_ var $ \ cgs -> if allFinished cgs then return cgs else do
+        let prevPos = lastHighlight cgs
+        when (mPos /= prevPos) (send context (drawBoard mPos (boardDrawn cgs)))
+        return (cgs { lastHighlight = mPos })
+
+      clearSuperBG (Field f bg _) = (Field f bg Nothing)
+      lastSelect cgs = case filter (\ (pos,(Field _ _ sup)) -> sup == Just BGSelected) (assocs (getArrDB $ boardDrawn cgs)) of
+                         [(pos,_)] -> Just pos
+                         _ -> Nothing -- no matches or more than one match
+
+      clickSelect ix cgs = do
+        let DrawingBoard brd = boardDrawn cgs
+            brdClean = fmap clearSuperBG brd
+            brd' = accum (\ (Field f bg _) sup -> (Field f bg sup)) brdClean [(ix,(Just BGSelected))] 
+        send context (drawBoard (Just ix) (DrawingBoard brd'))
+        return (cgs { boardDrawn = DrawingBoard brd' })
+
+      clickClear cgs = do
+        let DrawingBoard brd = boardDrawn cgs
+            brd' = fmap clearSuperBG brd
+        send context (drawBoard (lastHighlight cgs) (DrawingBoard brd'))
+        return (cgs { boardDrawn = DrawingBoard brd' })
+
+      drawClick Nothing = return ()
+      drawClick mPos@(Just sndPos@(x,y)) = modifyMVar_ var $ \ cgs -> if allFinished cgs then return cgs else do
+        let valid state = state `elem` moves (boardState cgs) (playerNow cgs)
+        case lastSelect cgs of
+          Nothing -> clickSelect sndPos cgs 
+          Just fstPos | fstPos == sndPos -> clickClear cgs
+                      | otherwise -> case applyMove (boardState cgs) (fstPos,sndPos) of
+                                      Nothing -> clickSelect sndPos cgs
+                                      Just newState | valid newState -> drawCGS' (makeCGS newState (nextPlayer (playerNow cgs)))
+                                                    | otherwise -> clickSelect sndPos cgs
+
+
+  when enableMouseMoveFeedback $ do
+    moveQ <- events context MouseMove
+    void $ forkIO $ forever $ do
+      evnt <- readEventQueue moveQ
+      case jsMouse evnt of
+        Nothing -> return ()
+        Just xy -> drawMove (positionToIndex xy)
+
+  downQ <- events context MouseDown
+  forkIO $ forever $ do
+    evnt <- readEventQueue downQ
+    case jsMouse evnt of
+      Nothing -> return ()
+      Just xy -> drawClick (positionToIndex xy)
+
+  return ()
+
