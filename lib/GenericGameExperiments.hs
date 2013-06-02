@@ -238,9 +238,6 @@ installUser2 act = installHandler sigUSR2 (CatchOnce act) Nothing >> return ()
 installUser2 _ = return ()
 #endif
 
-getDBNFile :: FilePath -> IO TNetwork
-getDBNFile fn = (fst . parseNetFromFile) `fmap` readFile fn
-
 foreverUntilFileChanged :: FilePath -> ThrLocIO () -> ThrLocIO ()
 foreverUntilFileChanged filename action = do
   let timestamp = getModificationTime filename -- "src/gg-exp3.hs"

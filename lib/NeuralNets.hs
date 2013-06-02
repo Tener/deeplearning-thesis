@@ -111,6 +111,9 @@ nn'filename = do
   let if' b t f = if b then t else f
   if' sparse' (fetchConfig configNeuralNetworkSparse) (fetchConfig configNeuralNetworkDense)
 
+getDBNFile :: FilePath -> IO TNetwork
+getDBNFile fn = (fst . parseNetFromFile) `fmap` readFile fn
+
 parseNetFromFile'' :: FilePath -> IO (IO (TNetwork, [Int]))
 parseNetFromFile'' fp = ioMemo' (parseNetFromFile `fmap` readFile fp)
 

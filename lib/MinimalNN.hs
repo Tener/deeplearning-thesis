@@ -14,7 +14,7 @@ import Data.Typeable
 
 data TNetwork = TNetwork { weights :: ![Matrix Double] 
                          , biases :: ![Vector Double]
-                         } deriving (Show, Ord, Eq, Typeable)
+                         } deriving (Show, Ord, Eq, Typeable, Read)
 
 instance Ord (Matrix Double) where
     compare a b = compare (toLists a) (toLists b)
