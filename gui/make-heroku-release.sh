@@ -1,12 +1,13 @@
 #!/bin/bash
 
 # Fail fast and fail hard.
+trap "rm -rfv $TMP" EXIT INT TERM
+
 set -eo pipefail
 
 HEROKU_APP=deeplearning-breakthrough
 
-TMP=$(mktemp -d heroku.XXXX)
-trap "rm -rf $TMP" EXIT INT TERM
+TMP=$(mktemp --tmpdir=/tmp -d heroku.XXXX)
 
 BASE=$(pwd)
 echo TMP=$TMP
@@ -19,7 +20,7 @@ cd $BASE
 cp ../dist/deeplearning-*.tar.gz $BASE/prepared-sdists
 
 # prepare sdist for this package
-rm -f dist/*tar.gz
+rm -fv dist/*tar.gz
 cabal-dev sdist
 
 # unpack to TMP
@@ -33,7 +34,7 @@ git init
 git add -A
 git commit -m "automatic initial commit"
 heroku git:remote --app $HEROKU_APP
-git push -f heroku master # forced push
+time git push -f heroku master # forced push
 
 # clean up: go back to BASE, TMP removal handled by trap.
 cd $BASE
