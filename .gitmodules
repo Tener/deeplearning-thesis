@@ -7,3 +7,6 @@
 [submodule "heroku-buildpack-haskell"]
 	path = gui/heroku-buildpack-haskell
 	url = git@github.com:Tener/heroku-buildpack-haskell.git
+[submodule "null-canvas"]
+	path = gui/null-canvas
+	url = git@github.com:Tener/null-canvas.git

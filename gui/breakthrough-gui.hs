@@ -232,7 +232,7 @@ pvc network context = do
   var <- newMVar =<< drawCGS' initial
   agent'0 <- runThrLocMainIO (mkAgent network) :: IO AgentSimple
   agent'1 <- runThrLocMainIO (mkAgent ()) :: IO AgentRandom
-  agent'2 <- runThrLocMainIO (mkAgent 100) :: IO AgentMCTS
+  agent'2 <- runThrLocMainIO (mkAgent 300) :: IO AgentMCTS
 
   let agent = agent'2
 
