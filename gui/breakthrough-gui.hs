@@ -26,7 +26,7 @@ data Field = Field { fFill :: Fill
 
 -- | enable feedback on moving mouse. works poorly with big latency links.
 enableMouseMoveFeedback :: Bool
-enableMouseMoveFeedback = True
+enableMouseMoveFeedback = False
 
 drawPointEv :: Event -> Canvas ()
 drawPointEv e = do
