@@ -80,12 +80,12 @@ main = runThrLocMainIO $ do
     (_, _bestGA) <- wt (\ thr -> async (singleNeuronMinimalGAReprSearch (searchCB bestRef) thr 1 constraintsPackedBigger Nothing))
     (_, bestFinal) <- wt (\ thr -> async (singleNeuronLocalReprSearch (searchCB bestRef) bestRef localSearch 1 thr constraintsPackedBigger))
 
-    let finalNetwork = appendNetwork dbn (uncurry mkTNetwork (fst bestFinal))
+    let finalNetwork = appendNetwork dbnBigger (uncurry mkTNetwork (fst bestFinal))
         baseDir = takeDirectory fn
 
     rndStr <- getRandomFileName
     writeFile (baseDir </> "dbn-final-data-ggexp5-"++rndStr++".txt") $ show $ finalNetwork
-    wins <- evaluateLL dbnBigger bestFinal
+    wins <- evaluateLL finalNetwork bestFinal
     writeFile (baseDir </> "dbn-final-info-ggexp5-"++rndStr++".txt") $ show $ (showExperimentConfig, ("wins",wins), ("bestFinal",bestFinal))
 
 showExperimentConfig = show $
