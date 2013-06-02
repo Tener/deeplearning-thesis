@@ -15,6 +15,7 @@ import GenericGame
 import qualified Data.HashMap as HashMap
 
 import qualified Data.Text as T
+import Text.Printf
 
 data Fill = FillEmpty | FillP1 | FillP2
 data BG = BGLight | BGDark | BGSelected | BGPossible deriving (Eq,Read,Show,Ord)
@@ -61,18 +62,26 @@ drawField baseXY@(x,y) highlight field = do
   strokeStyle "rgb(10,10,10)"
   strokeRect (x,y,side,side)
   -- fill
-  let drawFill style = do
+  let drawFill style1 style2 = do
         save ()
         beginPath ()
         -- lineWidth 4
-        arc ((x+s2), (y+s2), s4, 0, (2*pi), False)
-        fillStyle style
+        let px = x+s2
+            py = y+s2
+        arc (px,py, s4, 0, (2*pi), False)
+        custom $ unlines $ [
+              printf "var grd=c.createRadialGradient(%f,%f,3,%f,%f,10); " px py px py
+             ,printf "grd.addColorStop(0,%s);                     " (show style1)
+             ,printf "grd.addColorStop(1,%s);                     " (show style2)
+             ,"c.fillStyle=grd;                                   "
+             ]
+
         fill ()
         restore ()
   case (fFill field) of
     FillEmpty -> return ()
-    FillP1 -> drawFill "rgb(250,250,250)"
-    FillP2 -> drawFill "rgb(50,50,50)"
+    FillP1 -> drawFill "rgb(250,250,250)" "rgb(240,240,240)"
+    FillP2 -> drawFill "rgb(50,50,50)" "rgb(40,40,40)"
 
   -- highlight
   when highlight $ do
@@ -185,15 +194,21 @@ drawCurrentPlayer pl = do
   clearRect (0,0,offset*0.9,500)
   let px = offset/2
       py = offset + (side * pside)
-      pside = 0.5 + if pl == P1 then 0 else (maxTiles-1) 
+      pside = 0.5 + if pl == P1 then 0 else (maxTiles-1)
+      pcol = if pl == P1 then "red" else "blue"
   save ()
   font "bold 20pt Mono"
   textBaseline "middle"
   textAlign "center"
   strokeStyle "rgb(240, 124, 50)"
+  custom $ unlines $ [
+              printf "var grd=c.createRadialGradient(%f,%f,3,%f,%f,10); " px py px py
+             ,printf "grd.addColorStop(0,%s);                           " (show pcol)
+             ,"grd.addColorStop(1,\"white\");                           "
+             ,"c.strokeStyle=grd;                                       "
+             ]
   strokeText ("+",px,py)
   restore ()
-  
 
 main :: IO ()
 main = do
