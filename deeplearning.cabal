@@ -112,7 +112,7 @@ Executable gg-exp3
 Executable gg-exp5
   Main-is:                src/gg-exp5.hs
   Build-depends:          base, deeplearning, data-timeout, data-default, parallel, deepseq, async, filepath, directory
-  Ghc-options:            -rtsopts -threaded -Wall
+  Ghc-options:            -rtsopts -threaded -Wall -O2
   if flag(build-experiments) && flag(matlab)
     Buildable:            True
   else
@@ -125,6 +125,17 @@ Executable experiment-progress-email-reporter
     Buildable:            True
   else
     Buildable:            False
+
+Executable standalone-dbn-evaluator
+  Main-is:                src/standalone-dbn-evaluator.hs
+  Build-depends:          base, deeplearning
+  Ghc-options:            -rtsopts -threaded -Wall -O2
+  if flag(build-utils) && flag(matlab)
+    Buildable:            True
+  else
+    Buildable:            False
+
+
 
 --  
 -- -- Executable repr-benchmark
