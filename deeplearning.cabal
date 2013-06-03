@@ -23,7 +23,7 @@ Flag build-utils
 Library
   Hs-source-dirs:         lib
   Exposed-modules:        Board, Agent, Simulation, 
-                          MonteCarloTS, CommonDatatypes, NeuralNets,
+                          CommonDatatypes, NeuralNets,
                           Tournament, Utils, MinimalNN, Constraints,
                           Config, 
                           GenericGame, AgentGeneric, BreakthroughGame, HistogramGeneric,
