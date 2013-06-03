@@ -36,6 +36,15 @@ class Agent2 a where
 class Agent2Eval a where
     evaluateGame :: (Game2 g, Repr (GameRepr g)) => a -> Player2 -> g -> Double
 
+-- | summing agent, adds evaluations of any players it holds
+data AgEvalPlus a1 a2 = AgEvalPlus a1 a2
+instance (Agent2Eval a1, Agent2Eval a2) => Agent2Eval (AgEvalPlus a1 a2) where
+    evaluateGame (AgEvalPlus a1 a2) pl g = (evaluateGame a1 pl g) + (evaluateGame a2 pl g)
+
+-- | constant player, everything is the same
+data AgEvalConst = AgEvalConst Double
+instance Agent2Eval AgEvalConst where evaluateGame (AgEvalConst val) _ _ = val
+
 -- | agent that picks a random move from all available moves
 data AgentRandom = AgentRandom GenIO
 
