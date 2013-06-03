@@ -24,6 +24,8 @@ evaluateDBN fn = runThrLocMainIO $ do
   agMCTS'Tree <- mkTimed "mcts'Tree" (2, 5, dbn) :: IO (AgentTrace (AgentProperMCTS'Tree AgentSimple))
 
   putStrLnTL "======================================================================================"
+  putStrLnTL ("FN=" ++ fn)
+  putStrLnTL "======================================================================================"
   w0 <- reportWin agSmpl agMCT P1
   w1 <- reportWin agTree agMCT P1
   w2 <- reportWin agMCTNet agMCT P1
