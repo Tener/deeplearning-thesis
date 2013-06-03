@@ -11,7 +11,6 @@ import GenericGame
 import LittleGolem
 import Matlab
 import MinimalNN
-import NeuralNets (parseNetFromFile)
 import ThreadLocal
 
 import Data.Default
