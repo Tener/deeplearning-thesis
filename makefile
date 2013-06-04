@@ -45,3 +45,6 @@ report:
 
 webui:
 	runhaskell -package-conf=cabal-dev/packages-`ghc --numeric-version`.conf gui/breakthrough-gui.hs
+
+dbn-converter:
+	runhaskell -package-conf=cabal-dev/packages-`ghc --numeric-version`.conf src/dbn-converter.hs gui/assets/*.txt

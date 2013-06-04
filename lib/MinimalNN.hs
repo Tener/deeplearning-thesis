@@ -1,4 +1,5 @@
 {-# LANGUAGE BangPatterns, FlexibleInstances, DeriveDataTypeable #-} 
+{-# LANGUAGE DeriveGeneric #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 -- | minimal NN implementation based on hmatrix
 
@@ -11,10 +12,14 @@ import Numeric.LinearAlgebra () -- instances
 import Data.List (foldl')
 
 import Data.Typeable
+import Data.Binary
+import GHC.Generics (Generic)
 
 data TNetwork = TNetwork { weights :: ![Matrix Double] 
                          , biases :: ![Vector Double]
-                         } deriving (Show, Ord, Eq, Typeable, Read)
+                         } deriving (Show, Ord, Eq, Typeable, Read, Generic)
+
+instance Binary TNetwork
 
 instance Ord (Matrix Double) where
     compare a b = compare (toLists a) (toLists b)

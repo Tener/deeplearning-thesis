@@ -8,6 +8,7 @@ import Control.Monad
 import Data.Array
 import Data.Maybe
 import Data.Tuple
+import Data.Binary (decodeFile)
 import System.Environment
 
 import BreakthroughGame
@@ -33,7 +34,7 @@ data Field = Field { fFill :: Fill
 
 -- | enable feedback on moving mouse. works poorly with big latency links.
 enableMouseMoveFeedback :: Bool
-enableMouseMoveFeedback = True
+enableMouseMoveFeedback = False
 
 drawPointEv :: Event -> Canvas ()
 drawPointEv e = do
@@ -222,7 +223,8 @@ main = do
   let port = case args of
                [x] -> read x
                _ -> 3000
-  network <- read `fmap` (readFile "assets/dbn.txt")
+  -- network <- read `fmap` (readFile "assets/dbn.txt")
+  network <- decodeFile "assets/dbn.bin"
   blankCanvasParams port (pvc network) "." False Nothing
 
 pvc :: TNetwork -> Context -> IO ()
@@ -231,7 +233,7 @@ pvc network context = do
   agent'1 <- runThrLocMainIO (mkAgent ()) :: IO AgentRandom
   agent'2 <- runThrLocMainIO (mkAgent 1000) :: IO AgentMCTS
   agent'3 <- runThrLocMainIO (mkAgent (network, 3)) :: IO AgentGameTree
-  let agent = agent'2
+  let agent = agent'0
 
   let initial = makeCGS br P1
       br = freshGame (maxTiles,maxTiles) :: Breakthrough
