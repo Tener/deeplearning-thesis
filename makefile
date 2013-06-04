@@ -1,17 +1,13 @@
 
 build:
-	cabal-dev install -fmatlab -fbuild-experiments --force-reinstalls -funsafe
+	cabal-dev install -fmatlab -fbuild-utils -fbuild-experiments --force-reinstalls -funsafe
 
 build-par:
-	cabal-dev install -fmatlab -fbuild-experiments -j -funsafe
+	cabal-dev install -fmatlab -fbuild-utils -fbuild-experiments -j -funsafe
 
 hmatrix:
 	cabal-dev install -j -funsafe hmatrix --enable-library-profiling
 
-add-sources:
-	cabal-dev add-source HNN-0.1/dist/hnn-0.1.2.3.4.tar.gz
-	cabal-dev add-source hnn/dist/hnn-0.2.0.0.20121218.tar.gz
-	cabal-dev add-source hashable-1.2.0.2/dist/hashable-1.2.0.2.20121217.tar.gz
 test:
 	cabal-dev install -j -funsafe --enable-tests
 prof:
