@@ -108,8 +108,8 @@ mkTimed :: (Agent2 a, AgentParams a ~ (IOAct, arg)) => String -> arg -> ThrLocIO
 mkTimed label arg = mkAgent ((IOAct (timed label)), arg)
 
 
-evaluateWinnersCount :: Int
-evaluateWinnersCount = 50
+evaluateWinnersCountDef :: Int
+evaluateWinnersCountDef = 50
 
 interruptible :: ThrLocIO () -> ThrLocIO ()
 interruptible act = do
@@ -123,7 +123,10 @@ interruptible act = do
   return ()
 
 reportWin :: (Agent2 a1, Agent2 a2) => a1 -> a2 -> Player2 -> ThrLocIO Double
-reportWin ag1 ag2 pl = do
+reportWin ag1 ag2 pl = reportWinCount evaluateWinnersCountDef ag1 ag2 pl
+
+reportWinCount :: (Agent2 a1, Agent2 a2) => Int -> a1 -> a2 -> Player2 -> ThrLocIO Double
+reportWinCount evaluateWinnersCount ag1 ag2 pl = do
               winRef <- newIORef (0,0,0)
 
               let calculateWinnersPCT g d = do
