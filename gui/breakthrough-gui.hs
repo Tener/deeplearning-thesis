@@ -68,8 +68,8 @@ drawField baseXY@(x,y) highlight field = do
   strokeRect (x,y,side,side)
   -- fill
   let drawFill style1 style2 = do
-        save ()
-        beginPath ()
+        save
+        beginPath
         -- lineWidth 4
         let px = x+s2
             py = y+s2
@@ -81,8 +81,8 @@ drawField baseXY@(x,y) highlight field = do
              ,"c.fillStyle=grd;                                   "
              ]
 
-        fill ()
-        restore ()
+        fill
+        restore
   case (fFill field) of
     FillEmpty -> return ()
     FillP1 -> drawFill "rgb(250,250,250)" "rgb(240,240,240)"
@@ -201,7 +201,7 @@ drawCurrentPlayer pl = do
       py = offset + (side * pside)
       pside = 0.5 + if pl == P1 then 0 else (maxTiles-1)
       pcol = if pl == P1 then "red" else "blue"
-  save ()
+  save
   font "bold 20pt Mono"
   textBaseline "middle"
   textAlign "center"
@@ -213,7 +213,7 @@ drawCurrentPlayer pl = do
              ,"c.strokeStyle=grd;                                       "
              ]
   strokeText ("+",px,py)
-  restore ()
+  restore
 
 main :: IO ()
 main = do

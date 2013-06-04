@@ -10,17 +10,18 @@ category:            Game
 build-type:          Simple
 cabal-version:       >=1.8
 
-extra-source-files: Procfile
-                    package.json
-                    static/jquery-json.js
-                    static/jquery.js
-                    static/index.html
-                    prepared-sdists/deeplearning-0.2.tar.gz
-                    hooks/start.sh
-                    hooks/build.sh
-                    hooks/finish.sh
+extra-source-files:  Procfile
+                     package.json
+                     static/jquery-json.js
+                     static/jquery.js
+                     static/index.html
+                     prepared-sdists/deeplearning-0.2.tar.gz
+                     hooks/start.sh
+                     hooks/build.sh
+                     hooks/finish.sh
+                     assets/dbn.txt
 
 executable breakthrough-gui
-  main-is:             breakthrough-gui.hs
-  build-depends:       base, null-canvas == 0.2.4, array, deeplearning, hashmap, text
-  ghc-options:            -rtsopts -threaded -Wall
+  main-is:           breakthrough-gui.hs
+  build-depends:     base, null-canvas == 0.2.5, array, deeplearning, hashmap, text
+  ghc-options:       -rtsopts -threaded -Wall
