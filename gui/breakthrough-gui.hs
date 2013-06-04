@@ -33,7 +33,7 @@ data Field = Field { fFill :: Fill
 
 -- | enable feedback on moving mouse. works poorly with big latency links.
 enableMouseMoveFeedback :: Bool
-enableMouseMoveFeedback = False
+enableMouseMoveFeedback = True
 
 drawPointEv :: Event -> Canvas ()
 drawPointEv e = do
@@ -156,9 +156,10 @@ data CanvasGameState = CanvasGameState { boardDrawn :: DrawingBoard
                                        }
 
 makeCGS b p = CanvasGameState (drawBreakthroughGame b) Nothing b p False
-drawUpdateCGS ctx cgs = send ctx $ do
+drawUpdateCGS ctx cgs getPName = send ctx $ do
    drawBoard (lastHighlight cgs) (boardDrawn cgs)
-   drawCurrentPlayer (playerNow cgs)
+   let p = playerNow cgs
+   drawCurrentPlayer p (getPName p)
    let win = winner (boardState cgs)
    case win of
      Nothing -> return ()
@@ -188,15 +189,15 @@ drawWinner w = do
   strokeStyle (if w == P1 then "darkred" else "darkgreen")
   strokeText (txt, tpx, tpy)
   
-drawCurrentPlayer pl = do
+drawCurrentPlayer pl plName = do
   -- put text
-  let txt = "Current move: " ++ p2Txt pl
+  let txt = printf "Current move: %s (%s)" (p2Txt pl) plName
   font "15pt Sans"
-  clearRect (0,0,500,offset*0.9) -- fix for damaging board border
+  clearRect (0,0,1500,offset*0.9) -- fix for damaging board border
   fillStyle "black"
   fillText (txt, offset, offset/2)
   -- put symbol on the left side
-  clearRect (0,0,offset*0.9,500)
+  clearRect (0,0,offset*0.9,1500)
   let px = offset/2
       py = offset + (side * pside)
       pside = 0.5 + if pl == P1 then 0 else (maxTiles-1)
@@ -226,15 +227,18 @@ main = do
 
 pvc :: TNetwork -> Context -> IO ()
 pvc network context = do
-  let initial = makeCGS br P1
-      br = freshGame (maxTiles,maxTiles) :: Breakthrough
-      drawCGS' cgs = drawUpdateCGS context cgs
-  var <- newMVar =<< drawCGS' initial
   agent'0 <- runThrLocMainIO (mkAgent network) :: IO AgentSimple
   agent'1 <- runThrLocMainIO (mkAgent ()) :: IO AgentRandom
-  agent'2 <- runThrLocMainIO (mkAgent 300) :: IO AgentMCTS
-
+  agent'2 <- runThrLocMainIO (mkAgent 1000) :: IO AgentMCTS
+  agent'3 <- runThrLocMainIO (mkAgent (network, 3)) :: IO AgentGameTree
   let agent = agent'2
+
+  let initial = makeCGS br P1
+      br = freshGame (maxTiles,maxTiles) :: Breakthrough
+      getPlayerName P1 = "human"
+      getPlayerName P2 = agentName agent
+      drawCGS' cgs = drawUpdateCGS context cgs getPlayerName
+  var <- newMVar =<< drawCGS' initial
 
   let drawMove mPos = modifyMVar_ var $ \ cgs -> if allFinished cgs then return cgs else do
         let prevPos = lastHighlight cgs
@@ -306,7 +310,7 @@ pvp :: Context -> IO ()
 pvp context = do
   let initial = makeCGS br P1
       br = freshGame (maxTiles,maxTiles) :: Breakthrough
-      drawCGS' cgs = drawUpdateCGS context cgs
+      drawCGS' cgs = drawUpdateCGS context cgs (const "human")
   var <- newMVar =<< drawCGS' initial
 
   let drawMove mPos = modifyMVar_ var $ \ cgs -> if allFinished cgs then return cgs else do
