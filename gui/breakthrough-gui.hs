@@ -221,10 +221,15 @@ main :: IO ()
 main = do
   args <- getArgs
   let port = case args of
-               [x] -> read x
+               (x:_) -> read x
                _ -> 3000
-  -- network <- read `fmap` (readFile "assets/dbn.txt")
-  network <- decodeFile "assets/dbn.bin"
+
+  let dbn = case args of
+              (_:fn:_) -> fn
+              _ -> "assets/dbn.bin"
+  print ("port",port)
+  print ("dbn",dbn)
+  network <- decodeFile dbn
   blankCanvasParams port (pvc network) "." False Nothing
 
 pvc :: TNetwork -> Context -> IO ()
