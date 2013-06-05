@@ -18,12 +18,19 @@ main = mapM_ evaluateDBN'Short =<< getArgs
 evaluateDBN'Short :: FilePath -> IO ()
 evaluateDBN'Short fn = runThrLocMainIO $ do
   dbn <- read <$> readFile fn
-  agSmpl <- mkAgent (dbn :: TNetwork) :: IO AgentSimple
-  agMCT <- mkAgent 50 :: IO AgentMCTS
+  -- agSmpl <- mkAgent (dbn :: TNetwork) :: IO AgentSimple
+  agSmpl <- mkTimed "simple" (dbn :: TNetwork) :: IO (AgentTrace AgentSimple)
+  agTree <- mkTimed "tree" (dbn, 3) :: IO (AgentTrace AgentGameTree)
+  agMCT <- mkTimed "mcts" 50 :: IO (AgentTrace AgentMCTS)
+  agMCTNet <- mkTimed "mctNet" (2, 50, dbn) :: IO (AgentTrace (AgentParMCTS AgentSimple))
+
   agRnd <- mkAgent () :: IO AgentRandom
   putStrLnTL "======================================================================================"
   putStrLnTL ("FN=" ++ fn)
   _ <- reportWinCount 10 agSmpl agMCT P1
+  _ <- reportWinCount 10 agTree agMCT P1
+  _ <- reportWinCount 10 agMCTNet agMCT P1
+
   putStrLnTL "======================================================================================"
 
 
