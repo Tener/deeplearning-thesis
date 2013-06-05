@@ -234,12 +234,13 @@ main = do
 
 pvc :: TNetwork -> Context -> IO ()
 pvc network context = do
-  agent'0 <- runThrLocMainIO (mkAgent network) :: IO AgentSimple
-  agent'1 <- runThrLocMainIO (mkAgent ()) :: IO AgentRandom
-  agent'2 <- runThrLocMainIO (mkAgent 1000) :: IO AgentMCTS
-  agent'3 <- runThrLocMainIO (mkAgent (network, 3)) :: IO AgentGameTree
-  let agent = agent'0
+  let agent'0 = runThrLocMainIO (mkAgent network) :: IO AgentSimple
+      agent'1 = runThrLocMainIO (mkAgent ()) :: IO AgentRandom
+      agent'2 = runThrLocMainIO (mkAgent 1000) :: IO AgentMCTS
+      agent'3 = runThrLocMainIO (mkAgent (network, 3)) :: IO AgentGameTree
 
+  agent <- agent'0
+   
   let initial = makeCGS br P1
       br = freshGame (maxTiles,maxTiles) :: Breakthrough
       getPlayerName P1 = "human"
