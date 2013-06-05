@@ -19,10 +19,16 @@ import AgentGeneric
 -- | game tree, nodes annotated with game evaluation statistics and game state, leafs expanded upon selection.
 data Stats = Stats { visitCount :: Int
                    , totalScore :: Double
-                   }
+                   } deriving (Show)
 
 data GameTree game = TNode Stats Player2 game [GameTree game] 
                    | TLeaf Player2 game
+                     deriving (Show)
+
+instance Functor GameTree where
+    fmap f (TNode s p g gs) = TNode s p (f g) (fmap (fmap f) gs)
+    fmap f (TLeaf p g) = TLeaf p (f g)
+
 -- data GameGraphEl game = GNode Stats | GLeaf
 -- data GameGraph game = GameGraph (Map game (GameGraphEl game)) 
 
