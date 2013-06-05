@@ -70,8 +70,9 @@ main = runThrLocMainIO $ do
     let neurons = map fst scoredNeurons
         newLayer = mkLayer (neurons ++ mkBypass (getNeuronSize (head neurons)))
         dbnBigger = appendNetwork dbn newLayer
-        constraintsPackedBigger = take constraintsStage2Count $ drop (attempt * constraintsStage2Count) $ cycle $ 
-                                  map (packConstraint dbnBigger) $ concatMap (uncurry generateConstraintsSimpleAll) constraints
+        constraintsPackedBigger = take constraintsStage2Count $ 
+                                  map (packConstraint dbnBigger) $
+                                  concatMap (uncurry generateConstraintsSimpleAll) constraints
 
     printTL ("dbnBigger", dbnBigger)
     printTL ("newLayer", newLayer, length neurons)
