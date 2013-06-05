@@ -87,10 +87,12 @@ main = runThrLocMainIO $ do
     rndStr <- getRandomFileName
     writeFile (baseDir </> "dbn-final-data-ggexp5-"++rndStr++".txt") $ show $ finalNetwork
     wins <- evaluateLL dbnBigger bestFinal
-    writeFile (baseDir </> "dbn-final-info-ggexp5-"++rndStr++".txt") $ show $ (showExperimentConfig, ("wins",wins), ("bestFinal",bestFinal))
+    writeFile (baseDir </> "dbn-final-info-ggexp5-"++rndStr++".txt") $ showExperimentConfig wins bestFinal
 
-showExperimentConfig = unlines $
-        ["useCachedDBN         " ++ (show useCachedDBN         ) 
+showExperimentConfig wins bestFinal = unlines $
+        ["wins                 " ++ (show wins                 )
+        ,"bestFinal            " ++ (show bestFinal            )
+        ,"useCachedDBN         " ++ (show useCachedDBN         ) 
         ,"searchTimeout        " ++ (show searchTimeout        ) 
         ,"searchTimeoutMulti   " ++ (show searchTimeoutMulti   ) 
         ,"dbnGameCount         " ++ (show dbnGameCount         ) 
