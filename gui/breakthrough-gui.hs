@@ -218,18 +218,25 @@ drawCurrentPlayer pl plName = do
 
 main :: IO ()
 main = do
+  -- crude command line parsing
   args <- getArgs
   let port = case args of
                (x:_) -> read x
                _ -> 3000
+  print ("port",port)
 
   let dbn = case args of
               (_:fn:_) -> fn
               _ -> "assets/dbn.bin"
-  print ("port",port)
   print ("dbn",dbn)
   network <- decodeFile dbn
-  blankCanvasParams port (pvc network) "." False Nothing
+  
+  -- apps
+  let app1 = ("/pvc", (pvc network))
+      app2 = ("/pvp", pvp)
+
+  -- launch server
+  blankCanvasManyParams port [app1, app2] "." True 
 
 pvc :: TNetwork -> Context -> IO ()
 pvc network context = do
@@ -312,7 +319,6 @@ pvc network context = do
  
 
   return ()
-
 
 pvp :: Context -> IO ()
 pvp context = do

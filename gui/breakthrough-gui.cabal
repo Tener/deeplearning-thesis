@@ -23,5 +23,5 @@ extra-source-files:  Procfile
 
 executable breakthrough-gui
   main-is:           breakthrough-gui.hs
-  build-depends:     base, null-canvas == 0.2.5, array, deeplearning, hashmap, text, binary
+  build-depends:     base, null-canvas == 0.2.7, array, deeplearning, hashmap, text, binary
   ghc-options:       -rtsopts -Wall -feager-blackholing
