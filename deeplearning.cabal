@@ -20,19 +20,20 @@ flag build-utils
   description:  build utility executables
   default:      False
 
-Library
-  Hs-source-dirs:         lib
-  Exposed-modules:        Board, Agent, Simulation, 
-                          CommonDatatypes, NeuralNets,
-                          Tournament, Utils, MinimalNN, Constraints,
-                          Config, 
+flag abalone
+  description:  build code for Abalone game 
+  default:      False
+
+library
+  hs-source-dirs:         lib
+  exposed-modules:        NeuralNets, Utils, MinimalNN, Config, 
                           GenericGame, AgentGeneric, BreakthroughGame, HistogramGeneric,
                           ConstraintsGeneric, ThreadLocal,
                           LittleGolem, MinimalGA, MCTS
-  Build-depends:          base, mwc-random, grid == 2.0, process, containers, hashmap, game-tree, split, 
+  build-depends:          base, mwc-random, process, containers, hashmap, game-tree, split, 
                           hashable, 
                           vector, hmatrix, io-memoize, data-default, async,
-                          global-config, filepath, directory, transformers, global-variables,
+                          global-config, filepath, directory, transformers, 
                           bytestring, Histogram, gnuplot, zlib, chronograph, attoparsec, text, time, old-locale, 
                           GA, random, array, deepseq, data-timeout, binary > 0.7, ghc-prim
   ghc-options:            -Wall -Werror -feager-blackholing
@@ -42,10 +43,13 @@ Library
   else
      build-depends:       unix
 
+  if flag(abalone)
+     build-depends:       grid == 2.*, global-variables
+     exposed-modules:     CommonDatatypes, Constraints, Board, Tournament, Agent, NNBoard
 
   if flag(matlab)
-     Build-depends:       Interpolation
-     Exposed-modules:     Matlab, GenericGameExperiments, ConstraintsGA
+     build-depends:       Interpolation
+     exposed-modules:     Matlab, GenericGameExperiments, ConstraintsGA
 
 -- Executable abalone
 --   Main-is:                src/abalone.hs

@@ -2,7 +2,7 @@ module Tournament where
 
 import Board
 import Agent
-import NeuralNets
+import NNBoard
 import CommonDatatypes
 import Utils
 

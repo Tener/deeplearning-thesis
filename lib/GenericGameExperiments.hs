@@ -4,7 +4,7 @@
 module GenericGameExperiments where
 
 import AgentGeneric
-import Board
+-- import Board
 import BreakthroughGame
 import ConstraintsGeneric
 import GenericGame
@@ -39,7 +39,7 @@ import Data.Chronograph hiding (val)
 import qualified Control.Concurrent.Timeout as Timeout
 import Data.Timeout
 
-type MyGameA = Abalone
+-- type MyGameA = Abalone
 type MyGameB = Breakthrough
 type MyGame = MyGameB
 
@@ -192,7 +192,7 @@ getDBNCachedOrNew useCachedDBN gameCount gameProb matlabOpts = do
       fnBr = return "tmp-data/cixczsjvjhcawrnsjtpv/dbn.txt" -- (8,8), 750
       fnTN = sampleGamesTrainNetwork (freshGameDefaultParams :: MyGame) gameCount gameProb matlabOpts
 
-      isAbalone = (serializeRepr $ toRepr someGame) == (serializeRepr $ toRepr (freshGameDefaultParams :: Abalone))
+      isAbalone = False -- (serializeRepr $ toRepr someGame) == (serializeRepr $ toRepr (freshGameDefaultParams :: Abalone))
       isBreakthrough = (serializeRepr $ toRepr someGame) == (serializeRepr $ toRepr (freshGameDefaultParams :: Breakthrough))
 
   fn <- case (isAbalone, isBreakthrough, useCachedDBN) of
