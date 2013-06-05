@@ -26,14 +26,14 @@ useCachedDBN = False
 searchTimeout = 3 # Minute
 searchTimeoutMulti = 30 # Second
 dbnGameCount = 250000
-dbnGameProb = 0.07
-dbnMatlabOpts = Just (def {dbnSizes = [1000], numEpochs = 5, implementation = Matlab})
-constraintSource = CS_Gameplay playerUseCoinstraints gameplayConstraints'0
-playerUseCoinstraints = 40000
-constraintsStage2Count = 1500
-allowedBad = round $ 0.05 * fromIntegral workSetSize
-workSetSize = 1000
-singleNeuronTarget = 0.7
+dbnGameProb = 0.7
+dbnMatlabOpts = Just (def {dbnSizes = [1000], numEpochs = 5, implementation = Octave})
+constraintSource = CS_Gameplay playerUseCoinstraints gameplayConstraints'1
+playerUseCoinstraints = 5000
+constraintsStage2Count = 500
+allowedBad = round $ 0.10 * fromIntegral workSetSize
+workSetSize = 300
+singleNeuronTarget = 0.9
 localSearch = 0.003
 attemptsCount = 4
 
