@@ -37,7 +37,7 @@ Library
                           GA, random, array, deepseq, data-timeout, binary > 0.7, ghc-prim
   Ghc-options:            -Wall -Werror -O2 -fexcess-precision -fexpose-all-unfoldings -funfolding-creation-threshold=400 -funfolding-use-threshold=40
   extensions:             NoMonomorphismRestriction, 
-                          Rank2Types 
+                          RankNTypes, FlexibleContexts 
   if os(windows)
      cpp-options:         -DWINDOWS
   else
