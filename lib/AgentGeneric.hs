@@ -48,8 +48,8 @@ instance Agent2Eval AgEvalConst where evaluateGame (AgEvalConst val) _ _ = val
 -- | agent that picks a random move from all available moves
 data AgentRandom = AgentRandom GenIO
 
--- | agent that picks a weighted random move from all available moves. weights are provided by game evaluator agent and ammended by epsilon
-data AgentRandomSkew agEval = AgentRandomSkew Double -- epsilon, value added to each evaluation performed by agEval 
+-- | agent that picks a weighted random move from all available moves. weights are provided by game evaluator agent and ammended by bias
+data AgentRandomSkew agEval = AgentRandomSkew Double -- bias, value added to each evaluation performed by agEval 
                                               agEval -- game evaluator
                                               GenIO  -- cached GenIO
 
@@ -62,7 +62,7 @@ data AgentMCTS = AgentMCTS Int   -- how many games to evaluate for each possible
                            GenIO 
 
 -- | agent based on monte carlo tree search: evaluate moves counting how many times following that move and playing randomly till the end yields victory.
-data AgentParMCTS ag = AgentParMCTS Double -- epsilon, see AgentRandomSkew
+data AgentParMCTS ag = AgentParMCTS Double -- bias, see AgentRandomSkew
                                     Int    -- how many games to evaluate for each possible move
                                     ag     -- helper agent to evaluate moves
                                     GenIO 
@@ -118,10 +118,10 @@ instance Agent2Eval AgentRandom where
 
 instance (Agent2Eval agEval) => Agent2 (AgentRandomSkew agEval) where
     type AgentParams (AgentRandomSkew agEval) = (Double, agEval, GenIO)
-    mkAgent (epsilon,agEval,rgen) = return (AgentRandomSkew epsilon agEval rgen)
+    mkAgent (bias,agEval,rgen) = return (AgentRandomSkew bias agEval rgen)
     agentName _ = "AgentRandomSkew"
-    applyAgent (AgentRandomSkew epsilon agEval rgen) g p = do
-      let mv = map ((\g' -> epsilon + evaluateGame agEval p g') &&& id) (moves g p)
+    applyAgent (AgentRandomSkew bias agEval rgen) g p = do
+      let mv = map ((\g' -> bias + evaluateGame agEval p g') &&& id) (moves g p)
       when (null mv) (fail "AgentRandomSkew: Stuck, cant do anything.")      
       pickListWeighted rgen mv
 
@@ -195,10 +195,10 @@ instance Agent2 AgentMCTS where
 
 instance (Agent2 a, Agent2Eval a) => Agent2 (AgentParMCTS a) where
     type AgentParams (AgentParMCTS a) = (Double, Int, (AgentParams a))
-    mkAgent (epsilon, games, sub) = AgentParMCTS epsilon games <$> mkAgent sub <*> (withSystemRandom $ asGenIO $ return)
+    mkAgent (bias, games, sub) = AgentParMCTS bias games <$> mkAgent sub <*> (withSystemRandom $ asGenIO $ return)
     agentName (AgentParMCTS eps g sub _) = printf "AgentParMCTS(g=%d,eps=%f,sub=%s)" g eps (agentName sub)
-    applyAgent (AgentParMCTS epsilon games agEval rgen) g p = do
-      agRndSkew@(AgentRandomSkew _ _ _) <- mkAgent (epsilon, agEval, rgen)
+    applyAgent (AgentParMCTS bias games agEval rgen) g p = do
+      agRndSkew@(AgentRandomSkew _ _ _) <- mkAgent (bias, agEval, rgen)
       let mv = moves g p
           myeval move = do
             winners <- replicateM games (winner `fmap` randomGame move)
