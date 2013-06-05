@@ -1,22 +1,22 @@
-Name:                deeplearning
-Version:             0.2
-License:             BSD3
-License-file:        LICENSE
-Author:              Krzysztof Skrzętnicki
-Maintainer:          gtener@gmail.com
-Category:            Game
-Build-type:          Simple
-Cabal-version:       >=1.8
+name:                deeplearning
+version:             0.2
+license:             BSD3
+license-file:        LICENSE
+author:              Krzysztof Skrzętnicki
+maintainer:          gtener@gmail.com
+category:            Game
+build-type:          Simple
+cabal-version:       >=1.8
 
-Flag matlab
+flag matlab
   description:  expose Matlab/Octave based functionality
   default:      False
 
-Flag build-experiments
+flag build-experiments
   description:  build various executables
   default:      False
 
-Flag build-utils
+flag build-utils
   description:  build utility executables
   default:      False
 
@@ -35,9 +35,8 @@ Library
                           global-config, filepath, directory, transformers, global-variables,
                           bytestring, Histogram, gnuplot, zlib, chronograph, attoparsec, text, time, old-locale, 
                           GA, random, array, deepseq, data-timeout, binary > 0.7, ghc-prim
-  Ghc-options:            -Wall -Werror -O2 -fexcess-precision -fexpose-all-unfoldings -funfolding-creation-threshold=400 -funfolding-use-threshold=40
-  extensions:             NoMonomorphismRestriction, 
-                          RankNTypes, FlexibleContexts 
+  ghc-options:            -Wall -Werror -feager-blackholing
+  extensions:             RankNTypes, FlexibleContexts 
   if os(windows)
      cpp-options:         -DWINDOWS
   else
@@ -96,7 +95,7 @@ Library
 Executable gg-exp3
   Main-is:                src/gg-exp3.hs
   Build-depends:          base, deeplearning, async, data-timeout, directory, chronograph, data-default, text, deepseq, parallel, uglymemo
-  Ghc-options:            -rtsopts -threaded -Wall
+  Ghc-options:            -rtsopts -threaded -Wall  -feager-blackholing
   if flag(build-experiments) && flag(matlab)
     Buildable:            True
   else
@@ -112,7 +111,7 @@ Executable gg-exp3
 Executable gg-exp5
   Main-is:                src/gg-exp5.hs
   Build-depends:          base, deeplearning, data-timeout, data-default, parallel, deepseq, async, filepath, directory
-  Ghc-options:            -rtsopts -threaded -Wall -O2
+  Ghc-options:            -rtsopts -threaded -Wall -O2  -feager-blackholing
   if flag(build-experiments) && flag(matlab)
     Buildable:            True
   else
@@ -129,13 +128,11 @@ Executable experiment-progress-email-reporter
 Executable standalone-dbn-evaluator
   Main-is:                src/standalone-dbn-evaluator.hs
   Build-depends:          base, deeplearning
-  Ghc-options:            -rtsopts -threaded -Wall -O2
+  Ghc-options:            -rtsopts -threaded -Wall -O2  -feager-blackholing
   if flag(build-utils) && flag(matlab)
     Buildable:            True
   else
     Buildable:            False
-
-
 
 --  
 -- -- Executable repr-benchmark
