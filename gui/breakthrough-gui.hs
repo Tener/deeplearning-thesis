@@ -7,20 +7,19 @@ import Control.Concurrent
 import Control.Monad
 import Data.Array
 import Data.Maybe
-import Data.Tuple
 import Data.Binary (decodeFile)
+
 import System.Environment
 
 import BreakthroughGame
 import GenericGame
 import ThreadLocal
 import AgentGeneric
-import NeuralNets
 import MinimalNN
+import GenericGameExperiments (mkTimed)
 
 import qualified Data.HashMap as HashMap
 
-import qualified Data.Text as T
 import Text.Printf
 
 data Fill = FillEmpty | FillP1 | FillP2
