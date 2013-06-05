@@ -86,19 +86,20 @@ main = runThrLocMainIO $ do
 
     rndStr <- getRandomFileName
     writeFile (baseDir </> "dbn-final-data-ggexp5-"++rndStr++".txt") $ show $ finalNetwork
-    wins <- evaluateLL finalNetwork bestFinal
+    wins <- evaluateLL dbnBigger bestFinal
     writeFile (baseDir </> "dbn-final-info-ggexp5-"++rndStr++".txt") $ show $ (showExperimentConfig, ("wins",wins), ("bestFinal",bestFinal))
 
-showExperimentConfig = show $
-        (("useCachedDBN         ", useCachedDBN         ) 
-        ,("searchTimeout        ", searchTimeout        ) 
-        ,("searchTimeoutMulti   ", searchTimeoutMulti   ) 
-        ,("dbnGameCount         ", dbnGameCount         ) 
-        ,("dbnGameProb          ", dbnGameProb          ) 
-        ,("dbnMatlabOpts        ", dbnMatlabOpts        ) 
-        ,("constraintSource     ", constraintSource     ) 
-        ,("playerUseCoinstraints", playerUseCoinstraints) 
-        ,("allowedBad           ", allowedBad           ) 
-        ,("workSetSize          ", workSetSize          ) 
-        ,("singleNeuronTarget   ", singleNeuronTarget   ) 
-        ,("localSearch          ", localSearch          ))
+showExperimentConfig = unlines $
+        ["useCachedDBN         " ++ (show useCachedDBN         ) 
+        ,"searchTimeout        " ++ (show searchTimeout        ) 
+        ,"searchTimeoutMulti   " ++ (show searchTimeoutMulti   ) 
+        ,"dbnGameCount         " ++ (show dbnGameCount         ) 
+        ,"dbnGameProb          " ++ (show dbnGameProb          ) 
+        ,"dbnMatlabOpts        " ++ (show dbnMatlabOpts        ) 
+        ,"constraintSource     " ++ (show constraintSource     ) 
+        ,"playerUseCoinstraints" ++ (show playerUseCoinstraints) 
+        ,"allowedBad           " ++ (show allowedBad           ) 
+        ,"workSetSize          " ++ (show workSetSize          ) 
+        ,"singleNeuronTarget   " ++ (show singleNeuronTarget   ) 
+        ,"localSearch          " ++ (show localSearch          ) 
+        ]
