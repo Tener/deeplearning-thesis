@@ -54,4 +54,3 @@ lastLayerTN tn = zip b w
 sigmoid :: Floating a => a -> a
 sigmoid !x = 1 / (1 + exp (-x))
 {-# INLINE sigmoid #-}
-{-# SPECIALIZE sigmoid :: Double -> Double #-}
