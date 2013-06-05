@@ -1,6 +1,8 @@
-{-# LANGUAGE ParallelListComp #-}
+{-# LANGUAGE ParallelListComp, OverloadedStrings #-}
 
 module Main where
+
+import Web.Scotty
 
 import Graphics.Blank
 import Control.Concurrent
@@ -10,6 +12,7 @@ import Data.Maybe
 import Data.Binary (decodeFile)
 
 import System.Environment
+import System.FilePath
 
 import BreakthroughGame
 import GenericGame
@@ -34,6 +37,18 @@ data Field = Field { fFill :: Fill
 -- | enable feedback on moving mouse. works poorly with big latency links.
 enableMouseMoveFeedback :: Bool
 enableMouseMoveFeedback = False
+
+-- | path where static directory resides
+staticDataPath :: FilePath
+staticDataPath = "."
+
+-- game params
+maxTiles, offset, side :: (Num a) => a
+side = 50
+maxTiles = 8
+offset = 50
+      
+
 
 drawPointEv :: Event -> Canvas ()
 drawPointEv e = do
@@ -106,12 +121,6 @@ positionToIndex (px,py) = do
                           | x >= maxTiles -> Nothing
                           | otherwise -> Just x
 
-maxTiles, offset, side :: (Num a) => a
-side = 50
-maxTiles = 8
-offset = 50
-      
-
 drawFills :: [Fill] -> Canvas ()
 drawFills boardFills = do
   let pos = zip (zip boardFills (cycle [True,False,False]))
@@ -166,6 +175,7 @@ drawUpdateCGS ctx cgs getPName = send ctx $ do
      Just w -> drawWinner w
    return (cgs { allFinished = (win /= Nothing) })
 
+p2Txt :: Player2 -> String
 p2Txt P1 = "Player 1"
 p2Txt P2 = "Player 2"
 
@@ -191,7 +201,7 @@ drawWinner w = do
   
 drawCurrentPlayer pl plName = do
   -- put text
-  let txt = printf "Current move: %s (%s)" (p2Txt pl) plName
+  let txt = printf ("Current move: %s (%s)"::String) (p2Txt pl) plName
   font "15pt Sans"
   clearRect (0,0,1500,offset*0.9) -- fix for damaging board border
   fillStyle "black"
@@ -234,9 +244,13 @@ main = do
   -- apps
   let app1 = ("/pvc", (pvc network))
       app2 = ("/pvp", pvp)
-
+  apps <- mapM (\ (path, app) -> blankCanvasParamsScotty app staticDataPath True path) [app1, app2]
+  
+  -- main page
+  let index = get "/" (file (staticDataPath </> "static" </> "global-index.html"))
+                
   -- launch server
-  blankCanvasManyParams port [app1, app2] "." True 
+  scotty port (sequence_ (apps ++ [index]))
 
 pvc :: TNetwork -> Context -> IO ()
 pvc network context = do
@@ -324,7 +338,7 @@ pvp :: Context -> IO ()
 pvp context = do
   let initial = makeCGS br P1
       br = freshGame (maxTiles,maxTiles) :: Breakthrough
-      drawCGS' cgs = drawUpdateCGS context cgs (const "human")
+      drawCGS' cgs = drawUpdateCGS context cgs (const ("human" :: String))
   var <- newMVar =<< drawCGS' initial
 
   let drawMove mPos = modifyMVar_ var $ \ cgs -> if allFinished cgs then return cgs else do
