@@ -35,7 +35,6 @@ import Data.Packed.Vector (Vector)
 import System.Posix.Signals
 #endif
 
-import Data.Chronograph hiding (val)
 import qualified Control.Concurrent.Timeout as Timeout
 import Data.Timeout
 
@@ -96,17 +95,6 @@ parWorkThreads c fun = do
   ccs <- mapConcurrently (\ thr -> runThrLocIO (ThreadLocal mvar'stdout (show thr)) (fun (cnt thr)))
                          [1..threads] 
   return ccs
-
-
-timed :: (Show t) => t -> IO b -> ThrLocIO b
-timed s a = do
-  (Chronograph r t) <- chronoIO a
-  printTL (s,t)
-  return r
-
-mkTimed :: (Agent2 a, AgentParams a ~ (IOAct, arg)) => String -> arg -> ThrLocIO a
-mkTimed label arg = mkAgent ((IOAct (timed label)), arg)
-
 
 evaluateWinnersCountDef :: Int
 evaluateWinnersCountDef = 50

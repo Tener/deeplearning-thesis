@@ -19,7 +19,6 @@ import GenericGame
 import ThreadLocal
 import AgentGeneric
 import MinimalNN
-import GenericGameExperiments (mkTimed)
 
 import qualified Data.HashMap as HashMap
 

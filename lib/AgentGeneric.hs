@@ -19,6 +19,8 @@ import MinimalNN
 import ThreadLocal
 import NeuralNets(parseNetFromFile, doubleToEvalInt)
 
+import Data.Chronograph hiding (val)
+
 import Data.Packed.Vector as Vector
 import qualified Data.Tree.Game_tree.Negascout as GTreeAlgo
 import Data.Tree.Game_tree.Game_tree as GTree
@@ -103,6 +105,16 @@ instance (Agent2 a) => Agent2 (AgentTrace a) where
     mkAgent (trace, params) = AgentTrace trace <$> mkAgent params
     applyAgent (AgentTrace (IOAct trace) agent) g p = trace (applyAgent agent g p)
     agentName (AgentTrace _ a) = agentName a
+
+mkTimed :: (Agent2 a, AgentParams a ~ (IOAct, arg)) => String -> arg -> ThrLocIO a
+mkTimed label arg = mkAgent ((IOAct (timed label)), arg)
+
+timed :: (Show t) => t -> IO b -> ThrLocIO b
+timed s a = do
+  (Chronograph r t) <- chronoIO a
+  printTL (s,t)
+  return r
+
 
 instance Agent2 AgentRandom where
     type AgentParams AgentRandom = ()
