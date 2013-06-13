@@ -14,6 +14,7 @@ echo TMP=$TMP
 echo BASE=$BASE
 
 # prepare sdist for deeplearning package
+mkdir -p $BASE/prepared-sdists
 cd ..
 cabal-dev sdist 
 cd $BASE
