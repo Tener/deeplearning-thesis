@@ -4,7 +4,8 @@
 module GenericGame where
 
 import Data.ByteString (ByteString)
-import qualified Data.Packed.Vector as V
+-- import qualified Data.Packed.Vector as V
+import MyVectorType as V
 import qualified Data.ByteString as ByteString
 import qualified Data.ByteString.Char8 as BSC8
 

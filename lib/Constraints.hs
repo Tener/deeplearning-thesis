@@ -12,8 +12,7 @@ import Text.Printf
 import System.Random.MWC
 import Data.IORef
 
--- import qualified Data.Vector.Unboxed as U
-import qualified Data.Packed.Vector as Vector
+import MyVectorType as Vector
 
 -- 
 -- 

@@ -10,10 +10,11 @@ import MinimalGA
 import ConstraintsGeneric
 import ThreadLocal
 import GenericGameExperiments
+import MyVectorType as Vector
 
-import Numeric.Container (sumElements)
-import Data.Packed.Vector (Vector)
-import qualified Data.Packed.Vector as Vector
+-- import Numeric.Container (sumElements)
+-- import Data.Packed.Vector (Vector)
+-- import qualified Data.Packed.Vector as Vector
 
 import Control.Concurrent.Async
 import Control.Monad

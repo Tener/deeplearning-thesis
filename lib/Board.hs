@@ -16,7 +16,7 @@ import qualified Data.HashMap as HashMap
 import qualified Data.HashSet as HashSet
 -- import qualified Data.Hashable as Hashable
 
-import qualified Data.Packed.Vector as V
+import qualified MyVectorType as V
 
 import GenericGame
 

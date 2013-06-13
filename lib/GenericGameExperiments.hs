@@ -12,6 +12,7 @@ import LittleGolem
 import Matlab
 import MinimalNN
 import ThreadLocal
+import MyVectorType
 
 import Data.Default
 import System.FilePath
@@ -29,7 +30,7 @@ import System.IO
 import Data.Maybe
 import Data.Text (Text)
 import Text.Printf
-import Data.Packed.Vector (Vector)
+-- import Data.Packed.Vector (Vector)
 
 #ifndef WINDOWS
 import System.Posix.Signals
