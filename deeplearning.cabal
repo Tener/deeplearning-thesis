@@ -9,7 +9,7 @@ build-type:          Simple
 cabal-version:       >=1.8
 
 flag matlab
-  description:  expose Matlab/Octave based functionality
+  description:  build Matlab/Octave based functionality
   default:      False
 
 flag build-experiments
@@ -24,24 +24,69 @@ flag abalone
   description:  build code for Abalone game 
   default:      False
 
+-- flag accelerate
+--   description:  build code requiring Accelerate
+--   default:      False
+
+flag vector-hmatrix
+  description:  use hmatrix-based implementation of vector/matrix ops
+  default:      False
+
+flag vector-vector
+  description:  use vector-based implementation of vector/matrix ops
+  default:      True
+
+-- flag vector-dph
+--   description:  use dph-based implementation of vector/matrix ops
+--   default:      False
+
+flag vector-ddot
+  description:  use cblas_ddot-based implementation of vector/matrix ops (use together with -fvector-vector)
+  default:      False
+  
+
 library
   hs-source-dirs:         lib
   exposed-modules:        NeuralNets, Utils, MinimalNN, Config, 
                           GenericGame, AgentGeneric, BreakthroughGame, HistogramGeneric,
                           ConstraintsGeneric, ThreadLocal,
-                          LittleGolem, MinimalGA, MCTS
+                          LittleGolem, MinimalGA, MCTS, MyVectorType
   build-depends:          base, mwc-random, process, containers, hashmap, game-tree, split, 
                           hashable, 
-                          vector, hmatrix, io-memoize, data-default, async,
+                          vector, io-memoize, data-default, async, 
                           global-config, filepath, directory, transformers, 
                           bytestring, Histogram, gnuplot, zlib, chronograph, attoparsec, text, time, old-locale, 
-                          GA, random, array, deepseq, data-timeout, binary > 0.7, ghc-prim
-  ghc-options:            -Wall -Werror -feager-blackholing
+                          GA, random, array, deepseq, data-timeout, binary, ghc-prim
+  ghc-options:            -Wall -feager-blackholing 
   extensions:             RankNTypes, FlexibleContexts 
   if os(windows)
      cpp-options:         -DWINDOWS
   else
      build-depends:       unix
+
+  -- configurable functionality
+  if flag(vector-vector)
+     build-depends:       vector-binary-instances
+     cpp-options:         -DVECTOR_VECTOR
+  
+  if flag(vector-vector) && flag(vector-ddot)
+     extra-libraries:     gsl gslcblas m
+--     extra-lib-dirs:      /usr/lib
+--     ld-options:          ddot.o
+--     ld-options:          -lgslcblas
+     extensions:          ForeignFunctionInterface
+     cpp-options:         -DVECTOR_DDOT
+     
+
+  if flag(vector-hmatrix)
+     build-depends:       hmatrix
+     cpp-options:         -DVECTOR_HMATRIX
+
+--  if flag(vector-dph)
+--     build-depends:       dph-base, dph-prim-par, dph-lifted-vseg
+--     cpp-options:         -DVECTOR_DPH
+
+  -- optional functionality
 
   if flag(abalone)
      build-depends:       grid == 2.*, global-variables
@@ -50,6 +95,10 @@ library
   if flag(matlab)
      build-depends:       Interpolation
      exposed-modules:     Matlab, GenericGameExperiments, ConstraintsGA
+
+--  if flag(accelerate)
+--     build-depends:       accelerate, accelerate-cuda, accelerate-io
+--     exposed-modules:     ConstraintsAccelerate
 
 -- Executable abalone
 --   Main-is:                src/abalone.hs
@@ -137,6 +186,15 @@ Executable standalone-dbn-evaluator
     Buildable:            True
   else
     Buildable:            False
+
+Executable dbn-converter
+  Main-is:                src/dbn-converter.hs
+  Build-depends:          base, deeplearning, hmatrix, directory, filepath, binary
+  if flag(build-utils)
+    Buildable:            True
+  else
+    Buildable:            False
+
 
 --  
 -- -- Executable repr-benchmark

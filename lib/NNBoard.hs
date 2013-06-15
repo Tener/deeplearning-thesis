@@ -3,8 +3,7 @@
 module NNBoard where
 
 import qualified Data.Tree.Game_tree.Negascout as GTreeAlgo
-import qualified Numeric.Container as NC
-import qualified Data.Packed.Vector as Vector
+import qualified MyVectorType as V
 import Text.Printf
 import Data.Global
 import Control.Concurrent
@@ -47,7 +46,7 @@ instance Agent AgentNNSimple where
      where
        valInt = doubleToEvalInt $ valDbl
        valDbl = evalBoardNetOnePassN 1 colo (unwrap brd) neuralNetwork
-       valNet = unwords $ map (printf "%0.2f") $ Vector.toList $ computeTNetworkSigmoidSteps 1 neuralNetwork (boardToSparseNN (unwrap (brd :: BBoard)))
+       valNet = unwords $ map (printf "%0.2f") $ V.toList $ computeTNetworkSigmoidSteps 1 neuralNetwork (boardToSparseNN (unwrap (brd :: BBoard)))
        s <> v = (s, (show v))
                 
 
@@ -99,7 +98,7 @@ evalBoardNet col' brd net' (ll'b, ll'w) = result
       result'p1 = computeTNetworkSigmoid net' values
       result'p2 = computeTNetworkSigmoid net'll result'p1
 
-      combine = NC.sumElements
+      combine = V.sumElements
       result = combine result'p2
 
 evalBoardNetOnePass :: Color -> Board -> TNetwork -> Double
@@ -107,14 +106,14 @@ evalBoardNetOnePass col' brd net' = result
     where
       brdEval = if col' == White then brd else negateBoard brd
       values = boardToSparseNN brdEval
-      result = NC.sumElements $ computeTNetworkSigmoid net' values
+      result = V.sumElements $ computeTNetworkSigmoid net' values
 
 evalBoardNetOnePassN :: Int -> Color -> Board -> TNetwork -> Double
 evalBoardNetOnePassN steps col' brd net' = result
     where
       brdEval = if col' == White then brd else negateBoard brd
       values = boardToSparseNN brdEval
-      result = NC.sumElements $ computeTNetworkSigmoidSteps steps net' values
+      result = V.sumElements $ computeTNetworkSigmoidSteps steps net' values
      
 g0 :: (Num a) => [a]
 g0 = [1,0,1,0,0,0,0,0,1,1,1,1,0,1,1,0,1,1,1,0,1,1,1,0,1,0,0,1,0,1,1,1,1,1,0,1,0,0,1,0,0,1,0,1,1,1,0,0,1,1,0,1,0,0,1,0,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,1,0,0,0,0,0,0,0,1,0,1,1,0,0,0,0,1,1,0,0,1,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,1,0,1,0,0,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0]

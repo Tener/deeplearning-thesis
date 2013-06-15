@@ -11,9 +11,10 @@ import MinimalNN
 import NeuralNets (parseNetFromFile)
 import ThreadLocal
 
-import Numeric.Container (sumElements)
-import Data.Packed.Vector (Vector)
-import qualified Data.Packed.Vector as Vector
+-- import Numeric.Container (sumElements)
+-- import Data.Packed.Vector (Vector)
+-- import qualified Data.Packed.Vector as Vector
+import MyVectorType as Vector
 
 import Control.Monad
 import Control.DeepSeq

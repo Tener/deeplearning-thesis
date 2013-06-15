@@ -9,7 +9,7 @@ import Control.Concurrent
 import Control.Monad
 import Data.Array
 import Data.Maybe
-import Data.Binary (decodeFile)
+-- import Data.Binary (decodeFile)
 
 import System.Environment
 import System.FilePath
@@ -238,12 +238,12 @@ main = do
               (_:fn:_) -> fn
               _ -> "assets/dbn.bin"
   print ("dbn",dbn)
-  network <- decodeFile dbn
+  network <- MinimalNN.decodeFile dbn
   
   -- apps
   let app1 = ("/pvc", (pvc network))
       app2 = ("/pvp", pvp)
-  apps <- mapM (\ (path, app) -> blankCanvasParamsScotty app staticDataPath True path) [app1, app2]
+  apps <- mapM (\ (path, app) -> blankCanvasParamsScotty app staticDataPath False path) [app1, app2]
   
   -- main page
   let index = get "/" (file (staticDataPath </> "static" </> "global-index.html"))
@@ -258,6 +258,12 @@ pvc network context = do
       agent'2 = runThrLocMainIO (mkTimed "wtf2" 1000) :: IO (AgentTrace AgentMCTS)
       agent'3 = runThrLocMainIO (mkTimed "tree" (network, 4)) :: IO (AgentTrace AgentGameTree)
       agent'4 = runThrLocMainIO (mkTimed "wtf" (2, 50, network)) :: IO (AgentTrace (AgentParMCTS AgentSimple))
+
+--  let agent'0 = runThrLocMainIO (mkAgent network) :: IO (AgentSimple)
+--      agent'1 = runThrLocMainIO (mkAgent ()) :: IO (AgentRandom)
+--      agent'2 = runThrLocMainIO (mkAgent 1000) :: IO (AgentMCTS)
+--      agent'3 = runThrLocMainIO (mkAgent (network, 4)) :: IO (AgentGameTree)
+--      agent'4 = runThrLocMainIO (mkAgent (2, 50, network)) :: IO ((AgentParMCTS AgentSimple))
 
   agent <- agent'0
    
@@ -374,6 +380,12 @@ pvp context = do
                                       Just newState | valid newState -> drawCGS' (makeCGS newState (nextPlayer (playerNow cgs)))
                                                     | otherwise -> clickSelect sndPos cgs
 
+--  -- disabled: requires unreleased null-canvas-0.2.8
+--  when True $ do
+--    clickQ <- events context Click
+--    void $ forkIO $ forever $ do
+--      evnt <- readEventQueue clickQ
+--      print ("click",evnt)
 
   when enableMouseMoveFeedback $ do
     moveQ <- events context MouseMove

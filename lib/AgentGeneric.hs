@@ -7,7 +7,7 @@ import System.Random.MWC
 import Control.Applicative
 import Control.Arrow hiding (loop)
 import Control.Monad (when, replicateM)
-import Numeric.Container (sumElements)
+--import Numeric.Container (sumElements)
 import Data.Default
 import Data.List (groupBy, sortBy)
 import Data.IORef
@@ -17,11 +17,11 @@ import Text.Printf
 import GenericGame
 import MinimalNN
 import ThreadLocal
+import qualified MyVectorType as V
 import NeuralNets(parseNetFromFile, doubleToEvalInt)
 
 import Data.Chronograph hiding (val)
 
-import Data.Packed.Vector as Vector
 import qualified Data.Tree.Game_tree.Negascout as GTreeAlgo
 import Data.Tree.Game_tree.Game_tree as GTree
 
@@ -138,7 +138,7 @@ instance (Agent2Eval agEval) => Agent2 (AgentRandomSkew agEval) where
       pickListWeighted rgen mv
 
 showTn :: TNetwork -> String
-showTn tn = show $ (map Vector.dim (biases tn))
+showTn tn = show $ (map V.dim (biases tn))
 
 instance Agent2 AgentSimple where
     type AgentParams AgentSimple = TNetwork
@@ -239,7 +239,7 @@ pickListWeighted rgen xs = do
           return $ snd $ head $ dropWhile (\(w,_) -> w < p) xsCum
 
 evalGameTNetwork :: (Game2 g, Repr (GameRepr g)) => TNetwork -> g -> Double
-evalGameTNetwork tn g = sumElements $ computeTNetworkSigmoid tn (toReprNN g)
+evalGameTNetwork tn g = V.sumElements $ computeTNetworkSigmoid tn (toReprNN g)
 
 -- | data structure with callbacks for any occasion
 data GameDriverCallback g = GameDriverCallback 

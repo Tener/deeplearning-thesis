@@ -1,19 +1,16 @@
 {-# LANGUAGE BangPatterns, FlexibleInstances, DeriveDataTypeable #-} 
 {-# LANGUAGE DeriveGeneric #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
--- | minimal NN implementation based on hmatrix
+-- | minimal NN implementation
 
 module MinimalNN where
 
-import Data.Packed.Vector as Vector
-import Data.Packed.Matrix as Matrix 
-import Numeric.Container
-import Numeric.LinearAlgebra () -- instances
-import Data.List (foldl')
+import MyVectorType as V
 
 import Data.Typeable
 import Data.Binary
 import GHC.Generics (Generic)
+import Data.List (foldl')
 
 data TNetwork = TNetwork { weights :: ![Matrix Double] 
                          , biases :: ![Vector Double]
@@ -21,19 +18,24 @@ data TNetwork = TNetwork { weights :: ![Matrix Double]
 
 instance Binary TNetwork
 
-instance Ord (Matrix Double) where
-    compare a b = compare (toLists a) (toLists b)
+encodeFile :: FilePath -> TNetwork -> IO ()
+encodeFile fn (TNetwork ws bs) = Data.Binary.encodeFile fn (map toLists ws, map toList bs)
+
+decodeFile :: FilePath -> IO TNetwork
+decodeFile fn = do
+  (ws,bs) <- Data.Binary.decodeFile fn
+  return (TNetwork (map fromLists ws) (map fromList bs))
 
 computeTNetworkSigmoid :: TNetwork -> Vector Double -> Vector Double
-computeTNetworkSigmoid (TNetwork ws bs) inp0 = foldl' (\ inp (!w,!b) -> cmap sigmoid ((inp `vXm` w) `add` b) ) inp0 (zip ws bs)
+computeTNetworkSigmoid (TNetwork ws bs) inp0 = foldl' (\ inp (!w,!b) -> V.cmap sigmoid ((inp `vXm` w) `add` b) ) inp0 (zip ws bs)
 {-# INLINE computeTNetworkSigmoid #-}
 
 computeTNetworkSigmoidSteps :: Int -> TNetwork -> Vector Double -> Vector Double
-computeTNetworkSigmoidSteps steps (TNetwork ws bs) inp0 = foldl' (\ inp (w,b) -> cmap sigmoid ((inp `vXm` w) `add` b) ) inp0 (take steps $ zip ws bs)
+computeTNetworkSigmoidSteps steps (TNetwork ws bs) inp0 = foldl' (\ inp (w,b) -> V.cmap sigmoid ((inp `vXm` w) `add` b) ) inp0 (take steps $ zip ws bs)
 
 
 mkTNetwork :: [[[Double]]] -> [[Double]] -> TNetwork
-mkTNetwork w b | length w == length b = TNetwork (map (Matrix.trans . Matrix.fromLists) w) (map Vector.fromList b)
+mkTNetwork w b | length w == length b = TNetwork (map (V.trans . V.fromLists) w) (map V.fromList b)
                | otherwise = error "Inequal number of layers for biases and weights"
 {-# INLINE mkTNetwork #-}
 
@@ -48,8 +50,8 @@ appendNetwork tnet1 tnet2 = TNetwork (weights tnet1 ++ weights tnet2) (biases tn
 lastLayerTN :: TNetwork -> [(Double,[Double])]
 lastLayerTN tn = zip b w
     where
-      b = Vector.toList $ last $ biases $ tn
-      w = Matrix.toLists $ Matrix.trans $ last $ weights $ tn
+      b = V.toList $ last $ biases $ tn
+      w = V.toLists $ V.trans $ last $ weights $ tn
 
 sigmoid :: Floating a => a -> a
 sigmoid !x = 1 / (1 + exp (-x))
