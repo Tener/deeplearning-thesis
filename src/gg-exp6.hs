@@ -8,10 +8,12 @@ import ConstraintsGA
 import ConstraintsGeneric
 import GenericGameExperiments
 import Matlab
+import GraphNN
 import MinimalNN
 import NeuralNets
 import ThreadLocal
 
+import Control.Applicative
 import Control.Concurrent
 import Control.Concurrent.Async
 import Control.Monad
@@ -23,9 +25,9 @@ import Data.Timeout
 import System.FilePath
 
 useCachedDBN = False
-searchTimeout = 3 # Minute
-searchTimeoutMulti = 30 # Second
-dbnGameCount = 250000
+searchTimeout = 1 # Minute
+searchTimeoutMulti = 10 # Second
+dbnGameCount = 25000
 dbnGameProb = 0.7
 dbnMatlabOpts = Just (def {dbnSizes = [1000], numEpochs = 5, implementation = Octave})
 constraintSource = CS_Gameplay playerUseCoinstraints gameplayConstraints'1
@@ -37,10 +39,10 @@ singleNeuronTarget = 0.9
 localSearch = 0.003
 attemptsCount = 4
 
-mkLayer :: [SingleNeuron] -> TNetwork
-mkLayer neurons = let ws = [map ((\ [[w]] -> w ) . fst) neurons]
-                      bs = [map ((\ [[b]] -> b ) . snd) neurons]
-                  in mkTNetwork ws bs
+mkLayer :: [SingleNeuron] -> [[Int]] -> GNetwork
+mkLayer neurons refs = let ws = [map ((\ [[w]] -> w ) . fst) neurons]
+                           bs = [map ((\ [[b]] -> b ) . snd) neurons]
+                       in mkGNetwork ws bs refs
 
 getNeuronSize :: SingleNeuron -> Int
 getNeuronSize ([[w]],_) = length w
@@ -53,6 +55,7 @@ main = runThrLocMainIO $ do
   -- let fn = "tmp-data/iwssqgpqsryvajvoerqi/dbn.txt"
   printTL ("DBN FN=",fn)
   dbn <- getDBNFile fn
+  let dbnG = fromTNetwork dbn
 
   printTL "Constraint generation"
   constraints <- getConstraints constraintSource
@@ -64,12 +67,12 @@ main = runThrLocMainIO $ do
   printTL "Perform multiNeuronMinimalGAReprSearch"
   threads <- getNumCapabilities
   scoredNeurons <- multiNeuronMinimalGAReprSearch threads allowedBad workSetSize searchTimeoutMulti singleNeuronTarget constraintsPacked
+  let neurons = map fst scoredNeurons
 
   printTL "Do few times: train last layer network & evaluate"
   forM_ [1..attemptsCount] $ \ attempt -> do
-    let neurons = map fst scoredNeurons
-        newLayer = mkLayer (neurons ++ mkBypass (getNeuronSize (head neurons)))
-        dbnBigger = appendNetwork dbn newLayer
+    let newLayer = mkLayer neurons [[0]] -- (neurons ++ mkBypass (getNeuronSize (head neurons)))
+        dbnBigger = appendGNetwork dbnG newLayer
         constraintsPackedBigger = take constraintsStage2Count $ 
                                   map (packConstraint dbnBigger) $
                                   concatMap (uncurry generateConstraintsSimpleAll) constraints
@@ -82,13 +85,13 @@ main = runThrLocMainIO $ do
     (_, _bestGA) <- wt (\ thr -> async (singleNeuronMinimalGAReprSearch (searchCB bestRef) thr 1 constraintsPackedBigger Nothing))
     (_, bestFinal) <- wt (\ thr -> async (singleNeuronLocalReprSearch (searchCB bestRef) bestRef localSearch 1 thr constraintsPackedBigger))
 
-    let finalNetwork = appendNetwork dbnBigger (uncurry mkTNetwork (fst bestFinal))
+    let finalNetwork = appendGNetwork dbnBigger (fromTNetwork (uncurry mkTNetwork (fst bestFinal)))
         baseDir = takeDirectory fn
 
     rndStr <- getRandomFileName
-    writeFile (baseDir </> "dbn-final-data-ggexp5-"++rndStr++".txt") $ show $ finalNetwork
+    writeFile (baseDir </> "dbn-final-data-ggexp6-"++rndStr++".txt") $ show $ finalNetwork
     wins <- evaluateLL finalNetwork (snd bestFinal)
-    writeFile (baseDir </> "dbn-final-info-ggexp5-"++rndStr++".txt") $ showExperimentConfig wins bestFinal
+    writeFile (baseDir </> "dbn-final-info-ggexp6-"++rndStr++".txt") $ showExperimentConfig wins bestFinal
 
 showExperimentConfig wins bestFinal = unlines $
         ["wins                 " ++ (show wins                 )

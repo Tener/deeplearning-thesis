@@ -139,7 +139,7 @@ singleNeuronRandomSearch newBest target thrnum filename good'moves = do
         let bias = 0
         return ([[weights']],[[bias]])
 
-      constraints = concat $ map (uncurry generateConstraintsSimple) good'moves
+      constraints = Prelude.concat $ map (uncurry generateConstraintsSimple) good'moves
 
       go (best'neuron,best'score) | best'score >= target = return (best'neuron,best'score)
                                   | otherwise = do
@@ -224,7 +224,7 @@ singleNeuronLocalSearch newBest bestNeuronRef localSearchRange target thrnum fil
         let bias = 0
         return ([[zipWith (*) weights'best weights']],[[bias]])
  
-  let constraints = concat $ map (uncurry generateConstraintsSimple) good'moves
+  let constraints = Prelude.concat $ map (uncurry generateConstraintsSimple) good'moves
  
       go (best'neuron,best'score) | best'score >= target = return (best'neuron,best'score)
                                   | otherwise = do
