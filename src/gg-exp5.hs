@@ -60,7 +60,7 @@ main = runThrLocMainIO $ do
   printTL ("Total coinstraint count", length constraintsPacked)
   printTL "Evaluating packed constraints..."
   print $ head constraintsPacked
-  (constraintsPacked `using` parList rdeepseq) `deepseq` printTL "Done."
+--  (constraintsPacked `using` parList rdeepseq) `deepseq` printTL "Done."
   printTL "Perform multiNeuronMinimalGAReprSearch"
   threads <- getNumCapabilities
   scoredNeurons <- multiNeuronMinimalGAReprSearch threads allowedBad workSetSize searchTimeoutMulti singleNeuronTarget constraintsPacked
