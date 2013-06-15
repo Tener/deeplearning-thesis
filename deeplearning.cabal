@@ -189,7 +189,7 @@ Executable standalone-dbn-evaluator
 
 Executable dbn-converter
   Main-is:                src/dbn-converter.hs
-  Build-depends:          base, deeplearning, hmatrix, directory, filepath, binary
+  Build-depends:          base, deeplearning, hmatrix, directory, filepath, binary, ghc-prim
   if flag(build-utils)
     Buildable:            True
   else
