@@ -26,7 +26,7 @@ runThrLocIO :: ThreadLocal -> ThrLocIO a -> IO a
 runThrLocIO tl ma = let ?thrLoc = tl in ma
 
 fmtTimeNow :: IO String
-fmtTimeNow = formatTime defaultTimeLocale "%F %T" `fmap` getZonedTime
+fmtTimeNow = formatTime defaultTimeLocale "%F %T%Q" `fmap` getZonedTime
 
 putStrLnTL :: String -> ThrLocIO ()
 putStrLnTL val = do
