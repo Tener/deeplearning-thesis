@@ -47,7 +47,7 @@ flag vector-ddot
 
 library
   hs-source-dirs:         lib
-  exposed-modules:        NeuralNets, Utils, MinimalNN, Config, 
+  exposed-modules:        NeuralNets, Utils, MinimalNN, GraphNN, Config, 
                           GenericGame, AgentGeneric, BreakthroughGame, HistogramGeneric,
                           ConstraintsGeneric, ThreadLocal,
                           LittleGolem, MinimalGA, MCTS, MyVectorType
@@ -170,6 +170,16 @@ Executable gg-exp5
   else
     Buildable:            False
 
+Executable gg-exp6
+  Main-is:                src/gg-exp6.hs
+  Build-depends:          base, deeplearning, data-timeout, data-default, parallel, deepseq, async, filepath, directory
+  Ghc-options:            -rtsopts -threaded -Wall -O2  -feager-blackholing
+  if flag(build-experiments) && flag(matlab)
+    Buildable:            True
+  else
+    Buildable:            False
+
+
 Executable experiment-progress-email-reporter
   Main-is:                src/experiment-progress-email-reporter.hs
   Build-depends:          base, blaze-html, mime-mail, filepath, directory, process, text
@@ -189,7 +199,7 @@ Executable standalone-dbn-evaluator
 
 Executable dbn-converter
   Main-is:                src/dbn-converter.hs
-  Build-depends:          base, deeplearning, hmatrix, directory, filepath, binary
+  Build-depends:          base, deeplearning, hmatrix, directory, filepath, binary, ghc-prim
   if flag(build-utils)
     Buildable:            True
   else

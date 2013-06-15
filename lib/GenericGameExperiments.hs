@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings, FlexibleContexts, BangPatterns, ImplicitParams, Rank2Types, TypeFamilies, CPP #-} 
+{-# LANGUAGE ScopedTypeVariables #-}
 -- | various utility functions for writing near-complete experiments with generic games (@Game2@)
 
 module GenericGameExperiments where
@@ -11,6 +12,7 @@ import GenericGame
 import LittleGolem
 import Matlab
 import MinimalNN
+-- import GraphNN
 import ThreadLocal
 import MyVectorType
 
@@ -58,7 +60,7 @@ constraintsCacheFilename = let spec :: String
 
 
 genConstraints :: ThrLocIO [(MyGame, MyGame)]
-genConstraints = concat `fmap` parWorkThreads constraintCount genConstraintsCnt
+genConstraints = Prelude.concat `fmap` parWorkThreads constraintCount genConstraintsCnt
 
 
 genConstraintsCnt :: Int -> ThrLocIO [(MyGame, MyGame)]
@@ -236,13 +238,13 @@ foreverUntilFileChanged filename action = do
   while ((==ts0) `fmap` timestamp) action
   printTL ("Source file changed, exiting" :: String)
 
-packConstraint :: (Functor f, Game2 a) =>
-                  TNetwork -> f a -> f (Vector Double)
+packConstraint :: (Functor f, Game2 a, NeuralNetwork nn) =>
+                  nn -> f a -> f (Vector Double)
 packConstraint dbn cons = fmap (packGame dbn) cons
 
-packGame :: Game2 a =>
-            TNetwork -> a -> Vector Double
-packGame dbn game = computeTNetworkSigmoid dbn $ toReprNN game
+packGame :: (NeuralNetwork nn, Game2 a) =>
+            nn -> a -> Vector Double
+packGame dbn game = computeNetworkSigmoid dbn $ toReprNN game
 
 withTimeout :: IORef (a, Double) -> Timeout -> ThrLocIO [Async (a, Double)] -> ThrLocIO [Async (a, Double)]
 withTimeout bestRef searchTimeout act = do
@@ -281,19 +283,18 @@ searchCB ref = (\ (!bnNew,!bsNew,!acNew) -> do
 
 
 
-evaluateLL :: (Show b) => TNetwork -> (([[[Double]]], [[Double]]), b) -> ThrLocIO [Double]
-evaluateLL dbn bestFinal = do
-    putStrLnTL $ printf "FINAL SCORE %s" (show $ snd bestFinal)
+evaluateLL :: (NeuralNetwork nn, Show b) => nn -> b -> ThrLocIO [Double]
+evaluateLL evalNetwork score = do
+    putStrLnTL $ printf "FINAL SCORE %s" (show $ score)
 
     printTL ("BEGIN EVALUATE" :: String)
 
-    let llNetwork = uncurry mkTNetwork (fst bestFinal)
-        evalNetwork = appendNetwork dbn llNetwork
-        
-    agSmpl <- mkTimed "simple" evalNetwork :: IO (AgentTrace AgentSimple)
-    -- agTree <- mkTimed "tree" (evalNetwork, 3) :: IO (AgentTrace AgentGameTree)
-    -- agMtcNet <- mkTimed "mtcNet" (2, 5, evalNetwork) :: IO (AgentTrace (AgentParMCTS AgentSimple))
+--    let llNetwork = uncurry mkTNetwork (fst bestFinal)
+--        evalNetwork = appendNetwork dbn llNetwork
     
+    agSmpl :: AgentTrace (AgentSimple nn) <- mkTimed "simple" evalNetwork
+    -- agTree <- mkTimed "tree" (evalNetwork, 3) :: IO (AgentTrace AgentGameTree)
+    -- agMtcNet <- mkTimed "mtcNet" (2, 5, evalNetwork) :: IO (AgentTrace (AgentParMCTS AgentSimple))    
     -- agRnd <- mkTimed "random" () :: IO (AgentTrace AgentRandom)
     agMTC <- mkTimed "mcts" 50 :: IO (AgentTrace AgentMCTS)
 

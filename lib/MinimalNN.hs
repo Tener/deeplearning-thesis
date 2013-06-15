@@ -18,6 +18,16 @@ data TNetwork = TNetwork { weights :: ![Matrix Double]
 
 instance Binary TNetwork
 
+class NeuralNetwork nn where
+    computeNetworkSigmoid :: nn -> Vector Double -> Vector Double
+    showNetDims :: nn -> String
+    showNetName :: nn -> String
+
+instance NeuralNetwork TNetwork where
+    computeNetworkSigmoid = computeTNetworkSigmoid
+    showNetDims nn = show $ (map V.dim (biases nn))
+    showNetName _ = "TNetwork"
+
 encodeFile :: FilePath -> TNetwork -> IO ()
 encodeFile fn (TNetwork ws bs) = Data.Binary.encodeFile fn (map toLists ws, map toList bs)
 
@@ -32,7 +42,6 @@ computeTNetworkSigmoid (TNetwork ws bs) inp0 = foldl' (\ inp (!w,!b) -> V.cmap s
 
 computeTNetworkSigmoidSteps :: Int -> TNetwork -> Vector Double -> Vector Double
 computeTNetworkSigmoidSteps steps (TNetwork ws bs) inp0 = foldl' (\ inp (w,b) -> V.cmap sigmoid ((inp `vXm` w) `add` b) ) inp0 (take steps $ zip ws bs)
-
 
 mkTNetwork :: [[[Double]]] -> [[Double]] -> TNetwork
 mkTNetwork w b | length w == length b = TNetwork (map (V.trans . V.fromLists) w) (map V.fromList b)

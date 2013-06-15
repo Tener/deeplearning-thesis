@@ -31,6 +31,8 @@ add a = Numeric.Container.add a
 transFix :: Matrix Double -> Matrix Double
 transFix = id
 
+concat :: (Storable a) => [Vector a] -> Vector a
+concat = Vector.join
 #endif
 
 #ifdef VECTOR_VECTOR
@@ -91,6 +93,8 @@ sumElements = V.sum
 dim :: Vector Double -> Int
 dim = V.length
 
+concat :: [Vector a] -> Vector a
+concat = V.concat
 #endif
 
 -- #ifdef VECTOR_DPH

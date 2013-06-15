@@ -8,21 +8,25 @@ import MinimalNN
 import MCTS
 
 import Control.Applicative
-import Control.Monad (void)
 import System.Environment
 
 
 main :: IO ()
 main = mapM_ evaluateDBN'Short =<< getArgs
 
+-- TODO: make it work with GNetwork
+-- assertType :: a -> a -> ()
+-- assertType _ _ = ()
+
 evaluateDBN'Short :: FilePath -> IO ()
 evaluateDBN'Short fn = runThrLocMainIO $ do
   dbn <- read <$> readFile fn
+  -- let () = assertType dbn nn
   -- agSmpl <- mkAgent (dbn :: TNetwork) :: IO AgentSimple
-  agSmpl <- mkTimed "simple" (dbn :: TNetwork) :: IO (AgentTrace AgentSimple)
-  agTree <- mkTimed "tree" (dbn, 3) :: IO (AgentTrace AgentGameTree)
+  agSmpl <- mkTimed "simple" (dbn :: TNetwork) :: IO (AgentTrace (AgentSimple TNetwork))
+  agTree <- mkTimed "tree" (dbn, 3) :: IO (AgentTrace (AgentGameTree TNetwork))
   agMCT <- mkTimed "mcts" 50 :: IO (AgentTrace AgentMCTS)
-  agMCTNet <- mkTimed "mctNet" (2, 50, dbn) :: IO (AgentTrace (AgentParMCTS AgentSimple))
+  agMCTNet <- mkTimed "mctNet" (2, 50, dbn) :: IO (AgentTrace (AgentParMCTS (AgentSimple TNetwork)))
 
   agRnd <- mkAgent () :: IO AgentRandom
   putStrLnTL "======================================================================================"
@@ -37,11 +41,11 @@ evaluateDBN'Short fn = runThrLocMainIO $ do
 evaluateDBN :: FilePath -> IO ()
 evaluateDBN fn = runThrLocMainIO $ do
   dbn <- read <$> readFile fn
-  agSmpl <- mkTimed "simple" (dbn :: TNetwork) :: IO (AgentTrace AgentSimple)
-  agTree <- mkTimed "tree" (dbn, 3) :: IO (AgentTrace AgentGameTree)
+  agSmpl <- mkTimed "simple" (dbn :: TNetwork) :: IO (AgentTrace (AgentSimple TNetwork))
+  agTree <- mkTimed "tree" (dbn, 3) :: IO (AgentTrace (AgentGameTree TNetwork))
   agMCT <- mkTimed "mcts" 50 :: IO (AgentTrace AgentMCTS)
-  agMCTNet <- mkTimed "mctNet" (2, 5, dbn) :: IO (AgentTrace (AgentParMCTS AgentSimple))
-  agMCTS'Tree <- mkTimed "mcts'Tree" (2, 5, dbn) :: IO (AgentTrace (AgentProperMCTS'Tree AgentSimple))
+  agMCTNet <- mkTimed "mctNet" (2, 5, dbn) :: IO (AgentTrace (AgentParMCTS (AgentSimple TNetwork)))
+  agMCTS'Tree <- mkTimed "mcts'Tree" (2, 5, dbn) :: IO (AgentTrace (AgentProperMCTS'Tree (AgentSimple TNetwork)))
 
   putStrLnTL "======================================================================================"
   putStrLnTL ("FN=" ++ fn)

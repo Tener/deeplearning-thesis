@@ -21,6 +21,9 @@ run-g3:
 run-g5:
 	cabal-dev/bin/gg-exp5 +RTS -A8m -sstderr -N4 | tee -a g5.txt
 
+run-g6:
+	cabal-dev/bin/gg-exp6 +RTS -A8m -sstderr -N4 | tee -a g6.txt
+
 tournament:
 	cabal-dev install -j -funsafe && cabal-dev/bin/tournament +RTS -sstderr -N | tee -a tournament.log.txt
 

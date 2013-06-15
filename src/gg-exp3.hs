@@ -65,4 +65,5 @@ main = runThrLocMainIO $ do
     (_, _best) <- wt (\ thr -> asyncTL thr (singleNeuronRandomReprSearch (searchCB bestRef) thrG thr constraintsPacked))
     (_, bestFinal) <- wt (\ thr -> asyncTL thr (singleNeuronLocalReprSearch (searchCB bestRef) bestRef localSearch thrL (thr*2) constraintsPacked))
 
+    let finalNetwork = appendNetwork dbn (uncurry mkTNetwork (fst bestFinal))
     void $ evaluateLL dbn bestFinal
