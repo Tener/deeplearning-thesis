@@ -26,7 +26,9 @@ runThrLocIO :: ThreadLocal -> ThrLocIO a -> IO a
 runThrLocIO tl ma = let ?thrLoc = tl in ma
 
 fmtTimeNow :: IO String
-fmtTimeNow = formatTime defaultTimeLocale "%F %T%Q" `fmap` getZonedTime
+fmtTimeNow = cut `fmap` formatTime defaultTimeLocale "%F %T.%q" `fmap` getZonedTime
+    where
+      cut = reverse . drop 6 . reverse -- limit resolution
 
 putStrLnTL :: String -> ThrLocIO ()
 putStrLnTL val = do
