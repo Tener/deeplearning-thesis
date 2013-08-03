@@ -24,16 +24,18 @@ import Data.IORef
 import Data.Timeout
 import System.FilePath
 
+-- gameplayConstraints'3 = concatMap (\ (x,y) -> [x,y]) $ zip gameplayConstraints'1 gameplayConstraints'0
+
 useCachedDBN = False
-searchTimeout = 1 # Minute
-searchTimeoutMulti = 10 # Second
-dbnGameCount = 25000
+searchTimeout = 3 # Minute
+searchTimeoutMulti = 30 # Second
+dbnGameCount = 250000
 dbnGameProb = 0.7
-dbnMatlabOpts = Just (def {dbnSizes = [1000], numEpochs = 5, implementation = Octave})
-constraintSource = CS_Gameplay playerUseCoinstraints gameplayConstraints'1
+dbnMatlabOpts = Just (def {dbnSizes = [500, 500, 500], numEpochs = 5, implementation = Matlab})
+constraintSource = CS_Gameplay playerUseCoinstraints gameplayConstraints'0
 playerUseCoinstraints = 5000
-constraintsStage2Count = 500
-allowedBad = round $ 0.10 * fromIntegral workSetSize
+constraintsStage2Count = 1000
+allowedBad = 3000 -- round $ 0.10 * fromIntegral workSetSize
 workSetSize = 300
 singleNeuronTarget = 0.9
 localSearch = 0.003
@@ -54,8 +56,10 @@ main = runThrLocMainIO $ do
   -- let fn = "tmp-data/iybjioktvbdgmjocdtow/dbn.txt"
   -- let fn = "tmp-data/iwssqgpqsryvajvoerqi/dbn.txt"
   printTL ("DBN FN=",fn)
-  dbn <- getDBNFile fn
-  let dbnG = fromTNetwork dbn
+  let fixLastLayerRefs (GNetwork bs ws refs) = let newRefs = [0 .. ((length bs)-2)]
+                                                   refs' = (init refs) ++ [last refs ++ newRefs]
+                                               in (GNetwork bs ws refs')
+  dbn <- (fixLastLayerRefs . fromTNetwork) <$> getDBNFile fn
 
   printTL "Constraint generation"
   constraints <- getConstraints constraintSource
@@ -72,7 +76,7 @@ main = runThrLocMainIO $ do
   printTL "Do few times: train last layer network & evaluate"
   forM_ [1..attemptsCount] $ \ attempt -> do
     let newLayer = mkLayer neurons [[0]] -- (neurons ++ mkBypass (getNeuronSize (head neurons)))
-        dbnBigger = appendGNetwork dbnG newLayer
+        dbnBigger = appendGNetwork dbn newLayer
         constraintsPackedBigger = take constraintsStage2Count $ 
                                   map (packConstraint dbnBigger) $
                                   concatMap (uncurry generateConstraintsSimpleAll) constraints
