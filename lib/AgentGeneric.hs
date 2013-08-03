@@ -35,6 +35,7 @@ class Agent2 a where
     -- | get agent name
     agentName :: a -> String
 
+-- | agent for Game2 games, but only capable of providing numeric value to game it sees
 class Agent2Eval a where
     evaluateGame :: (Game2 g, Repr (GameRepr g)) => a -> Player2 -> g -> Double
 
