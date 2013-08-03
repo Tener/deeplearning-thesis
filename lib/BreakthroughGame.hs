@@ -3,6 +3,7 @@
 module BreakthroughGame where
 
 import GenericGame
+import Utils
 
 import qualified Data.HashMap as HashMap
 import qualified Data.HashSet as HashSet
@@ -66,7 +67,7 @@ instance Game2Features Breakthrough where
     type Feature Breakthrough = BrFeature
     type FeatureRepr Breakthrough = [Double] -- GameRepr Breakthrough
 
-    encodeFeature g feat =
+    encodeFeature g feat = map fixNaN $  
         case feat of
           MaxPos -> map (scaleX . fromIntegral) [maximum (allFst P1), minimum (allFst P2)]
           MinPos -> map (scaleX . fromIntegral) [minimum (allFst P1), maximum (allFst P2)]

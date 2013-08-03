@@ -20,6 +20,9 @@ instance (TypeTag a) => Show (Hidden a) where
 instance Eq (Hidden a) where
     _ == _ = True
 
+fixNaN x | isNaN x = 0
+         | otherwise = x
+
 shuffle :: [a] -> IO [a]
 shuffle lst = withSystemRandom . asGenST $ \ gen -> do
   ixs <- replicateM (length lst) (uniform gen)
