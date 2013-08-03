@@ -52,7 +52,7 @@ library
                           ConstraintsGeneric, ThreadLocal,
                           LittleGolem, MinimalGA, MCTS, MyVectorType
   build-depends:          base, mwc-random, process, containers, hashmap, game-tree, split, 
-                          hashable, 
+                          hashable == 1.2.0.4, 
                           vector, io-memoize, data-default, async, 
                           global-config, filepath, directory, transformers, 
                           bytestring, Histogram, gnuplot, zlib, chronograph, attoparsec, text, time, old-locale, 
