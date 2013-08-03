@@ -178,7 +178,7 @@ sampleGamesTrainNetwork game sampleCount prob mlopts = do
   return (outputDir </> "dbn.txt")
 
 -- | all recorded games 
-allGameRecords = map ("data-good" </>) ["player_game_list_breakthrough_DavidScott.txt"] -- , "player_game_list_breakthrough_edbonnet.txt", "player_game_list_breakthrough_halladba.txt", "player_game_list_breakthrough_kyledouglas.txt", "player_game_list_breakthrough_MojmirHanes.txt", "player_game_list_breakthrough_MojoRising.txt", "player_game_list_breakthrough_RayGarrison.txt", "player_game_list_breakthrough_StopSign.txt", "player_game_list_breakthrough_vic.txt", "player_game_list_breakthrough_wanderer_c.txt"]  
+allGameRecords = map ("data-good" </>) ["player_game_list_breakthrough_DavidScott.txt" , "player_game_list_breakthrough_edbonnet.txt", "player_game_list_breakthrough_halladba.txt", "player_game_list_breakthrough_kyledouglas.txt", "player_game_list_breakthrough_MojmirHanes.txt", "player_game_list_breakthrough_MojoRising.txt", "player_game_list_breakthrough_RayGarrison.txt", "player_game_list_breakthrough_StopSign.txt", "player_game_list_breakthrough_vic.txt", "player_game_list_breakthrough_wanderer_c.txt"]  
 
 -- | train DBN on randomly mutated games derived from real-life data.
 mutateRealGamesTrainNetwork :: (LittleGolemMoveParser g, Repr (GameRepr g), Game2 g) => g -> [FilePath] -> Int -> Float -> Maybe MatlabOpts -> ThrLocIO FilePath

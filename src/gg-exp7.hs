@@ -29,7 +29,7 @@ import Data.Ratio
 useCachedDBN = False
 searchTimeout = 3 # Minute
 searchTimeoutMulti = 30 # Second
-dbnGameCount = 100000
+dbnGameCount = 250000
 dbnGameMutProb = fromRational (1 % 5) -- mean game mutation length is inverse of this
 dbnMatlabOpts = Just (def {dbnSizes = [500], numEpochs = 5, implementation = Matlab})
 constraintSource = CS_Gameplay playerUseCoinstraints gameplayConstraints'0
