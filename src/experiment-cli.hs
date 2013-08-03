@@ -3,9 +3,11 @@
 module Main where
 
 import System.Process
+import System.Environment
 import System.Exit
 import Control.Applicative
 import Control.Monad
+import Data.Maybe
 
 data Experiment = Experiment { mainPane :: FilePath
                              , watchCommands :: [Command]
@@ -68,7 +70,17 @@ ggExp7 = Experiment "main" [("won games", "tail -n 1000000 -f g7.txt | grep --co
 
                     "GG-EXP7"
 
-main = do
-  createSession ggExp7
+defaultSession = ggExp7
 
-  return ()
+sessions = [("exp5", ggExp5)
+           ,("exp6", ggExp6)
+           ,("exp7", ggExp7)
+           ]
+
+main = do
+  args <- getArgs
+  case args of
+    [] -> createSession defaultSession
+    [x] -> maybe (fail ("unable to find session with ID " ++ show x)) createSession (lookup x sessions)
+    _ -> fail "provide either 0 arguments (default session) or 1 (specific single session)"
+      
