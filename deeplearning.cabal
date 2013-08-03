@@ -179,6 +179,15 @@ Executable gg-exp6
   else
     Buildable:            False
 
+Executable gg-exp7
+  Main-is:                src/gg-exp7.hs
+  Build-depends:          base, deeplearning, data-timeout, data-default, parallel, deepseq, async, filepath, directory
+  Ghc-options:            -rtsopts -threaded -Wall -O2  -feager-blackholing
+  if flag(build-experiments) && flag(matlab)
+    Buildable:            True
+  else
+    Buildable:            False
+
 
 Executable experiment-progress-email-reporter
   Main-is:                src/experiment-progress-email-reporter.hs

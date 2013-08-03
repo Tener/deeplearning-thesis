@@ -57,7 +57,8 @@ main = runThrLocMainIO $ do
     printTL ("Total coinstraint count", length constraintsPacked)
     printTL "Evaluating packed constraints..."
     print $ head constraintsPacked
-    (constraintsPacked `using` parList rdeepseq) `deepseq` printTL "Done."
+--    (constraintsPacked `using` parList rdeepseq) `deepseq`
+    printTL "Done."
     let wt thr'act = waitAnyCancel =<< withTimeout bestRef searchTimeout (mapM thr'act [1..threads])
 
     (_, _best2) <- wt (\ thr -> asyncTL thr (singleNeuronMinimalGAReprSearch (searchCB bestRef) thr thrL constraintsPacked Nothing))

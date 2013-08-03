@@ -15,11 +15,13 @@ import MinimalNN
 -- import GraphNN
 import ThreadLocal
 import MyVectorType
+import Utils (shuffle, ofType)
 
 import Data.Default
 import System.FilePath
 import System.Directory
 import Control.Arrow ((&&&))
+import Control.Applicative ((<$>))
 import Control.Concurrent
 import Control.Concurrent.Async
 import qualified Data.ByteString.Char8 as BSC8
@@ -165,13 +167,42 @@ sampleGamesTrainNetwork game sampleCount prob mlopts = do
             BSC8.hPutStrLn han (serializeGame (ofType g game))
             atomicModifyIORef sR (\ !d -> (d-1,()))
 
-          ofType :: a -> a -> a
-          ofType a _ = a
+--          ofType :: a -> a -> a
+--          ofType a _ = a
 
       sampleRandomGames ((>0) `fmap` readIORef sR) prob cb
       hFlush han
 
 --  filename'data'comp <- compressRemoveFile filename'data
+  print =<< prepAndRun (fromMaybe def mlopts) outputDir filename'data
+  return (outputDir </> "dbn.txt")
+
+-- | all recorded games 
+allGameRecords = map ("data-good" </>) ["player_game_list_breakthrough_DavidScott.txt"] -- , "player_game_list_breakthrough_edbonnet.txt", "player_game_list_breakthrough_halladba.txt", "player_game_list_breakthrough_kyledouglas.txt", "player_game_list_breakthrough_MojmirHanes.txt", "player_game_list_breakthrough_MojoRising.txt", "player_game_list_breakthrough_RayGarrison.txt", "player_game_list_breakthrough_StopSign.txt", "player_game_list_breakthrough_vic.txt", "player_game_list_breakthrough_wanderer_c.txt"]  
+
+-- | train DBN on randomly mutated games derived from real-life data.
+mutateRealGamesTrainNetwork :: (LittleGolemMoveParser g, Repr (GameRepr g), Game2 g) => g -> [FilePath] -> Int -> Float -> Maybe MatlabOpts -> ThrLocIO FilePath
+mutateRealGamesTrainNetwork game0 sourceFiles sampleCount gameDepthProb mlopts = do
+  outputDir <- ("tmp-data" </>) `fmap` getRandomFileName
+  createDirectoryIfMissing True outputDir
+  filename'data <- (\f -> outputDir </> f <.> "csv") `fmap` getRandomFileName
+
+  mygen <- withSystemRandom $ asGenIO $ return  
+  agRnd <- mkAgent () :: ThrLocIO AgentRandom
+
+  records <- mapM parseGameFileName sourceFiles
+  let recordsFlat = concatMap moveSequence $ filter (\ r -> result r `elem` ["1-0","0-1"]) $ Prelude.concat records
+  print (length $ recordsFlat)
+  gameStates <- cycle <$> shuffle recordsFlat
+  
+  withFile filename'data WriteMode $ \ han -> do
+    forM (zip [1..sampleCount] gameStates) $ \ (cnt,game) -> do
+      let cb = GameDriverCallback (\ _ -> return ()) (\ _ _ -> do
+                                                         chance <- uniform mygen
+                                                         return (chance < gameDepthProb))
+      newGame <- driverG2 (game `ofType` game0) agRnd agRnd cb
+      BSC8.hPutStrLn han (serializeGame newGame)
+    
   print =<< prepAndRun (fromMaybe def mlopts) outputDir filename'data
   return (outputDir </> "dbn.txt")
 
@@ -212,7 +243,7 @@ gameplayConstraints = gameplayConstraints'0
 data ConstraintSource = CS_Cache | CS_Generate | CS_Gameplay Int (FilePath, Text) deriving Show
 
 getConstraints :: ConstraintSource -> ThrLocIO [(MyGame, MyGame)]
-getConstraints constraintSource = case constraintSource of
+getConstraints constraintSource = shuffle =<< case constraintSource of
                    CS_Gameplay playerUseCoinstraints (filepath,playerName) -> getConstraintsPlayer playerUseCoinstraints filepath playerName 
                    CS_Generate -> genConstraints
                    CS_Cache    -> genConstraintsCached

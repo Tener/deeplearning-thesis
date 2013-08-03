@@ -3,6 +3,11 @@
 module Utils where
 
 import Text.Printf
+import System.Random.MWC
+import Data.List (sortBy)
+import Data.Ord (comparing)
+import Control.Monad (replicateM)
+
 
 data Hidden a = Hidden { unhide :: a }
 
@@ -14,3 +19,11 @@ instance (TypeTag a) => Show (Hidden a) where
 
 instance Eq (Hidden a) where
     _ == _ = True
+
+shuffle :: [a] -> IO [a]
+shuffle lst = withSystemRandom . asGenST $ \ gen -> do
+  ixs <- replicateM (length lst) (uniform gen)
+  return $ map snd $ sortBy (comparing fst) $ (zip (ixs::[Int]) lst)
+  
+ofType :: a -> a -> a
+ofType a _ = a

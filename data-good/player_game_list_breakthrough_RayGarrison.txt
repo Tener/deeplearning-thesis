@@ -99,7 +99,7 @@
 [Event "Tournament brkthr.ch.15.1.1"] 
 [Site "www.littlegolem.net"] 
 [White "Ray Garrison"] 
-[Black "Prastudy"] 
+[Black "smilingface"] 
 [Result "1-0"] 
 1. h2-g3 a7-b6 2. g2-f3 b7-c6 3. c2-d3 a8-b7 4. h1-g2 h7-g6 5. a2-b3 g7-f6 6. b2-c3 h8-g7 7. a1-b2 d7-d6 8. e2-e3 e7-e6 9. e3-d4 e6-e5 10. f2-e3 e8-e7 11. d3-e4 e7-e6 12. d2-d3 d6-d5 13. c3-c4 d5xe4 14. f3xe4 g6-f5 15. d1-e2 d8-d7 16. e1-d2 d7-d6 17. d2-c3 b6-c5 18. d4-d5 g7-g6 19. b3-a4 f5xe4 20. d3xe4 f6-f5 21. e2-f3 e6xd5 22. e4xd5 g6-g5 23. b2-b3 e5-e4 24. f3xe4 f5xe4 25. a4-b5 c8-d7 26. b3-a4 c6xb5 27. c4xb5 c7-b6 28. f1-e2 c5-c4 29. b1-c2 f7-e6 30. c3-b4 e6xd5 31. a4-a5 e4-d3 32. e2xd3 resign 1-0
 
@@ -6753,4 +6753,4 @@
 [Result "0-1"] 
 1. g2-g3 d7-d6 2. g3-f4 e7-e6 3. e2-e3 f7-f6 4. h2-g3 h7-h6 5. g3-g4 g7-g6 6. g1-g2 h6-h5 7. g2-h3 h5-h4 8. f1-g2 e6-e5 9. f4xe5 d6xe5 10. c2-c3 g6-g5 11. g4-h5 f6-f5 12. h5-h6 e5-f4 13. e3xf4 g5xf4 14. d2-e3 f4-g3 15. f2xg3 h4xg3 16. h6-h7 g8xh7 17. e1-e2 g3-f2 18. h3-h4 f2-f1 0-1
 
- 
+   

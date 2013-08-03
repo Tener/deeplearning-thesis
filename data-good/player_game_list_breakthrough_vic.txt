@@ -1,0 +1,806 @@
+[Event "Tournament brkthr.ch.18.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "slaapgraag"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. a2-b3 a7-b6 2. b2-c3 b7-c6 3. a1-b2 a8-b7 4. h2-g3 h7-g6 5. g2-f3 g7-f6 6. h1-g2 h8-g7 7. c3-b4 c6-b5 8. d2-c3 d7-c6 9. f3-g4 f6-g5 10. e2-f3 e7-f6 11. e1-e2 e8-e7 12. e2-e3 e7-e6 13. d1-d2 d8-d7 14. d2-d3 d7-d6 15. b2-a3 b7-a6 16. e3-f4 e6-f5 17. c3-c4 d6-c5 18. c2-c3 c7-d6 19. a3-a4 d6-d5 20. a4xb5 a6xb5 21. c4xb5 c6xb5 22. b4xc5 b6xc5 23. b3-b4 c5xb4 24. c3xb4 d5-d4 25. f1-e2 d4-c3 26. e2-e3 b5-a4 27. b4-b5 a4-b3 28. b5-c6 c3-c2 29. b1xc2 b3-a2 30. c6-d7 a2-a1 0-1
+
+[Event "Tournament brkthr.ch.18.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "michelwav"] 
+[Result "0-1"] 
+1. b2-c3 b7-c6 2. g2-f3 h7-g6 3. h2-g3 a7-b6 4. a2-b3 g7-f6 5. d2-e3 e7-e6 6. e3-e4 h8-g7 7. e2-e3 d7-d6 8. e3-f4 a8-b7 9. c2-d3 d8-d7 10. g3-h4 f6-f5 11. f2-g3 f7-f6 12. g3-g4 d6-e5 13. f4-g5 f5xg4 14. f3xg4 f6xg5 15. h4xg5 e8-f7 16. h1-h2 f7-f6 17. g5xf6 g7xf6 18. h2-h3 f6-g5 19. c1-d2 e5-f4 20. c3-d4 c7-d6 21. e4-e5 d6xe5 22. d4xe5 g8-g7 23. d3-e4 c6-d5 24. e4xd5 e6xd5 25. d2-d3 b6-c5 26. b3-c4 b7-c6 27. d1-e2 f4-e3 28. f1-f2 g5-f4 29. g1-g2 e3xf2 30. e1xf2 d5-d4 31. resign 0-1
+
+[Event "Tournament brkthr.ch.18.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "Micco"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. g2-f3 g7-f6 2. h2-g3 h7-g6 3. h1-g2 h8-g7 4. b2-c3 b7-c6 5. a2-b3 a7-b6 6. a1-b2 a8-b7 7. d2-d3 d7-d6 8. e2-e3 e7-e6 9. d3-c4 d6-c5 10. b3-b4 c7-d6 11. b4-b5 e6-d5 12. c2-b3 e8-d7 13. c4xd5 c6xb5 14. c3-c4 b7-c6 15. f3-e4 f6-e5 16. g3-f4 b5-b4 17. f4xe5 d6xe5 18. d5-d6 e5-d4 19. e3xd4 c5xd4 20. d1-c2 g7-f6 21. b3-a4 f6-e5 22. a4-b5 c6xb5 23. c4xb5 f7-e6 24. g2-f3 g6-f5 25. e4xf5 e6xf5 26. f2-g3 f5-f4 27. g3xf4 e5xf4 28. g1-f2 b8-b7 29. c2-b3 c8-c7 30. b3-a4 b4-b3 31. c1-c2 d4-c3 32. resign 0-1
+
+[Event "Tournament brkthr.ch.18.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "ypercube"] 
+[Result "0-1"] 
+1. b2-c3 a7-b6 2. g2-f3 b7-c6 3. e2-e3 h7-g6 4. c2-d3 a8-b7 5. d3-e4 g7-f6 6. e3-f4 h8-g7 7. f3-g4 c7-d6 8. c3-d4 d6-d5 9. d2-d3 e7-d6 10. h2-g3 d7-e6 11. h1-g2 c6-c5 12. f2-e3 c5xd4 13. e3xd4 b6-c5 14. d4xc5 d6xc5 15. g2-f3 f6-f5 16. e4-e5 d8-e7 17. g4-g5 f7-f6 18. a2-b3 e8-d7 19. g3-h4 d7-d6 20. e5xf6 e7xf6 21. a1-b2 e6-e5 22. g5xf6 e5xf4 23. f6xg7 f8xg7 24. b3-c4 b7-c6 25. b2-c3 d5xc4 26. d3xc4 d6-d5 27. c4xd5 c6xd5 28. d1-d2 b8-c7 29. d2-d3 g8-f7 30. e1-f2 f7-f6 31. c3-c4 c7-c6 32. g1-g2 d5-d4 33. f3-e4 f4-e3 34. resign 0-1
+
+[Event "Tournament brkthr.ch.18.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "MojoRising"] 
+[Black "vic"] 
+[Result "1-0"] 
+1. g2-f3 g7-f6 2. b2-c3 b7-c6 3. a2-b3 a7-b6 4. h2-g3 h7-g6 5. c3-d4 c6-d5 6. g3-f4 g6-f5 7. e2-e3 e7-e6 8. d2-d3 d7-d6 9. c2-c3 c7-c6 10. e3-e4 h8-g7 11. d1-d2 g7-g6 12. d2-e3 e6-e5 13. a1-b2 a8-b7 14. d4xe5 f6xe5 15. c3-d4 f7-f6 16. b3-c4 d5xc4 17. d3xc4 b6-b5 18. c4xb5 c6xb5 19. f2-g3 b7-c6 20. f4xe5 f6xe5 21. g3-f4 e5xd4 22. e3xd4 b5-b4 23. h1-g2 c6-b5 24. g2-g3 b5-c4 25. g3-g4 b4-b3 26. e1-e2 d8-c7 27. e4xf5 c7-b6 28. f5xg6 b6-b5 29. f4-g5 resign 1-0
+
+[Event "Tournament brkthr.ch.18.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "David Scott"] 
+[Result "1-0"] 
+1. b2-c3 h7-g6 2. h2-g3 g7-f6 3. a2-b3 a7-b6 4. g2-f3 g6-g5 5. g3-g4 f7-g6 6. f2-g3 f6-f5 7. d2-e3 c7-d6 8. e3-f4 e7-f6 9. b3-c4 b7-c6 10. c2-d3 d6-e5 11. e2-e3 b6-b5 12. c4-c5 c6-d5 13. c3-b4 a8-b7 14. d3-d4 e5-e4 15. f3xe4 d5xe4 16. g4xf5 g6xf5 17. f4-e5 h8-g7 18. e5-d6 e8-e7 19. d4-d5 e7xd6 20. c5xd6 b7-b6 21. e3-d4 f6-e5 22. d4-c5 b6xc5 23. b4xc5 g8-f7 24. c5-c6 f8-e7 25. c6xd7 resign 1-0
+
+[Event "Tournament brkthr.ch.18.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "kyle douglas"] 
+[Black "vic"] 
+[Result "1-0"] 
+1. h2-g3 g7-f6 2. b2-c3 a7-b6 3. c3-d4 b7-c6 4. a2-b3 c6-d5 5. a1-b2 h7-g6 6. g2-f3 a8-b7 7. h1-g2 h8-g7 8. d2-d3 d7-d6 9. f2-e3 f7-e6 10. c2-c3 c7-c6 11. e3-e4 e6-e5 12. e2-e3 e7-e6 13. b3-c4 b6-c5 14. d1-c2 d8-c7 15. c2-b3 c7-b6 16. g3-f4 g6-f5 17. g2-g3 g7-g6 18. g3-g4 b6-b5 19. g4-g5 e5xf4 20. e3xf4 e8-e7 21. e1-f2 b7-b6 22. e4-e5 f6xg5 23. f4xg5 d6xe5 24. d4xe5 f8-g7 25. f2-e3 g8-f7 26. e3-f4 d5-d4 27. d3-e4 b5-b4 28. c3xd4 c5xd4 29. e4xf5 e6xf5 30. f3-e4 c8-d7 31. e5-d6 e7xd6 32. e4-e5 d6xe5 33. f4xe5 resign 1-0
+
+[Event "Tournament brkthr.ch.18.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "halladba"] 
+[Result "0-1"] 
+1. b2-c3 g7-f6 2. h2-h3 b7-c6 3. a2-b3 a7-b6 4. c2-d3 h7-g6 5. d2-e3 d7-e6 6. g2-g3 e7-d6 7. e3-f4 d6-e5 8. f2-f3 c7-d6 9. h3-h4 e6-f5 10. e2-e3 c6-d5 11. g3-g4 a8-b7 12. f4-g5 d8-e7 13. h1-h2 h8-g7 14. a1-b2 f6xg5 15. h4xg5 f7-f6 16. g4xf5 g6xf5 17. f3-f4 f6xg5 18. f4xg5 e8-f7 19. h2-h3 e7-f6 20. h3-h4 f6xg5 21. h4xg5 f7-f6 22. g5-g6 f8-f7 23. g6xf7 g8xf7 24. b3-c4 b7-c6 25. c3-d4 b8-c7 26. b2-b3 e5xd4 27. e3xd4 f6-e5 28. d4xe5 d6xe5 29. b3-b4 c8-b7 30. d1-d2 d5xc4 31. d3xc4 e5-f4 32. d2-d3 f5-g4 33. resign 0-1
+
+[Event "Tournament brkthr.ch.17.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "smilingface"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. a2-b3 a7-b6 2. b2-c3 b7-c6 3. a1-b2 a8-b7 4. g2-f3 h7-g6 5. h2-g3 g7-f6 6. h1-g2 h8-g7 7. e2-e3 e7-e6 8. e1-e2 d7-d6 9. d2-d3 e8-e7 10. d1-d2 d8-d7 11. d3-d4 d6-d5 12. d2-d3 d7-d6 13. b3-c4 b6-c5 14. d4xc5 d6xc5 15. e3-d4 e7-d6 16. f3-e4 f6-e5 17. e2-e3 g6-f5 18. g2-f3 g7-g6 19. g3-f4 f7-f6 20. f2-g3 g6-g5 21. d4xe5 d6xe5 22. c4xd5 c6xd5 23. e4xf5 e6xf5 24. c3-c4 d5-d4 25. c1-d2 d4xe3 26. d2xe3 e5xf4 27. g3xf4 c5-d4 28. e3xd4 g5xf4 29. c4-d5 f4-e3 30. resign 0-1
+
+[Event "Tournament brkthr.ch.17.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "kingofthebesI"] 
+[Result "1-0"] 
+1. b2-c3 b7-c6 2. h2-g3 f7-e6 3. g2-f3 c7-d6 4. c2-d3 g7-f6 5. e2-e3 d6-e5 6. a2-b3 e6-d5 7. c3-c4 e7-d6 8. d2-c3 a7-b6 9. h1-g2 d7-e6 10. a1-b2 a8-b7 11. e3-d4 d8-c7 12. f2-e3 b6-c5 13. b3-b4 c7-b6 14. b2-b3 b7-a6 15. b3-a4 h7-g6 16. f3-e4 e8-f7 17. a4-a5 c8-c7 18. d1-c2 h8-g7 19. c2-b3 g6-f5 20. e4xd5 e6xd5 21. d4xc5 d6xc5 22. c4xd5 c6xd5 23. b4xc5 b6xc5 24. b3-b4 c5xb4 25. c3xb4 f5-e4 26. b4-b5 e4xd3 27. b5-c6 d3-c2 28. b1xc2 resign 1-0
+
+[Event "Tournament brkthr.ch.17.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "Stop Sign"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. a2-b3 a7-b6 2. b2-c3 b7-c6 3. h2-g3 h7-g6 4. d2-d3 d7-d6 5. h1-h2 g7-f6 6. e2-e3 f7-e6 7. d1-e2 h8-g7 8. d3-e4 a8-b7 9. f2-f3 d6-d5 10. g3-f4 c7-d6 11. a1-b2 e6-e5 12. e1-f2 e7-e6 13. h2-g3 c6-c5 14. b3-a4 c5-c4 15. b2-b3 d6-c5 16. b3xc4 d5xc4 17. e2-d3 c4xd3 18. c2xd3 e8-d7 19. f4xe5 f6xe5 20. d3-d4 d7-d6 21. a4-b5 c5-c4 22. d4-d5 e6xd5 23. e4xd5 b6-a5 24. e3-f4 c4-b3 25. d5-e6 a5-a4 26. resign 0-1
+
+[Event "Tournament brkthr.ch.17.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "MojoRising"] 
+[Result "1-0"] 
+1. b2-c3 b7-c6 2. h2-g3 g7-f6 3. a2-b3 a7-b6 4. g2-f3 h7-g6 5. f2-e3 e7-e6 6. d2-d3 d7-d6 7. h1-g2 b6-c5 8. c3-c4 f6-e5 9. c2-c3 f7-f6 10. d3-d4 a8-b7 11. e2-d3 e5xd4 12. e3xd4 f6-e5 13. d4xe5 d6xe5 14. f3-e4 c7-d6 15. g2-f3 e8-f7 16. a1-b2 g6-f5 17. b3-b4 h8-g7 18. b2-b3 g7-f6 19. b4-a5 d8-c7 20. g3-h4 f7-g6 21. b3-b4 c5xb4 22. c3xb4 d6-d5 23. c4-c5 f5xe4 24. f3xe4 b8-a7 25. d1-c2 g6-f5 26. e4xd5 e6xd5 27. c2-b3 c6-b5 28. b3-c4 resign 1-0
+
+[Event "Tournament brkthr.ch.17.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "halladba"] 
+[Black "vic"] 
+[Result "1-0"] 
+1. b2-c3 b7-c6 2. g2-f3 g7-f6 3. f3-e4 c7-d6 4. c3-d4 e7-e6 5. a2-b3 h7-g6 6. h2-g3 f6-f5 7. e2-f3 f7-f6 8. g3-f4 a7-b6 9. d2-c3 e6-e5 10. f2-e3 d7-e6 11. e1-f2 h8-g7 12. a1-b2 a8-b7 13. c3-b4 g6-g5 14. f2-g3 c6-d5 15. c2-d3 g7-g6 16. b3-c4 d5xe4 17. d3xe4 g5-g4 18. h1-g2 g6-h5 19. d1-e2 b7-c6 20. b4-b5 c6xb5 21. c4xb5 e5xf4 22. e3xf4 e8-f7 23. b5-a6 f5xe4 24. f3xe4 d6-d5 25. e2-d3 f6-f5 26. d3-c4 d5xc4 27. d4-d5 resign 1-0
+
+[Event "Tournament brkthr.ch.17.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "Mojmir Hanes"] 
+[Result "1-0"] 
+1. b2-c3 f7-e6 2. h2-g3 e6-e5 3. g2-f3 c7-d6 4. f2-e3 b7-c6 5. a2-b3 g7-f6 6. c2-d3 a7-b6 7. d3-d4 h7-g6 8. d2-d3 a8-b7 9. e3-e4 h8-g7 10. e2-e3 e7-e6 11. h1-g2 d6-c5 12. a1-b2 d7-d6 13. b3-a4 e6-d5 14. b2-b3 e5xd4 15. e3xd4 f6-e5 16. d4xe5 d6xe5 17. f3-f4 e5-d4 18. e1-d2 d5xe4 19. d3xe4 b6-b5 20. a4-a5 b5-b4 21. c3xb4 c5xb4 22. c1-b2 c6-c5 23. f1-e2 b7-c6 24. e2-d3 g7-f6 25. e4-e5 f6-f5 26. e5-d6 f5-g4 27. a5-b6 g6-f5 28. f4-e5 c6-d5 29. e5-e6 f5-e4 30. d6-d7 resign 1-0
+
+[Event "Tournament brkthr.ch.17.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "David Scott"] 
+[Black "vic"] 
+[Result "1-0"] 
+1. h2-g3 a7-b6 2. g2-f3 b7-c6 3. h1-g2 h7-g6 4. b2-c3 g7-f6 5. a2-b3 h8-g7 6. d2-e3 a8-b7 7. c2-d3 e7-e6 8. b3-a4 g6-h5 9. a1-b2 b6-b5 10. a4-a5 c6-c5 11. e3-d4 d7-d6 12. f2-e3 e8-d7 13. e3-e4 g7-g6 14. e2-e3 d7-c6 15. e1-e2 g6-g5 16. e3-f4 c5xd4 17. c3xd4 c6-c5 18. d4xc5 d6xc5 19. e4-e5 d8-e7 20. f3-e4 c5-d4 21. e5xf6 e7xf6 22. d1-d2 c7-d6 23. b2-c3 g5xf4 24. g3xf4 f6-e5 25. e2-e3 e5xf4 26. e3xf4 d6-c5 27. e4-e5 f8-e7 28. f4-g5 g8-g7 29. c3-c4 b7-c6 30. d3-e4 resign 1-0
+
+[Event "Tournament brkthr.ch.17.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "kyle douglas"] 
+[Result "1-0"] 
+1. b2-c3 g7-f6 2. g2-f3 f6-e5 3. a2-b3 h7-g6 4. c2-d3 h8-g7 5. h2-g3 b7-c6 6. f2-e3 a7-b6 7. e3-e4 e7-e6 8. b3-a4 c6-c5 9. e2-e3 a8-b7 10. d3-c4 c7-c6 11. d2-d3 g7-f6 12. a1-b2 e8-e7 13. b2-b3 e7-d6 14. h1-g2 d6-d5 15. g3-h4 d7-d6 16. f3-f4 g6-f5 17. e4xf5 e6xf5 18. h4-h5 d8-d7 19. g2-g3 d7-e6 20. g3-h4 e5xf4 21. e3xf4 f5-g4 22. f4-g5 f6xg5 23. h4xg5 resign 1-0
+
+[Event "Tournament brkthr.ch.16.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "emilioes"] 
+[Result "0-1"] 
+1. b2-c3 a7-b6 2. h2-g3 h7-g6 3. a2-b3 b7-c6 4. g2-f3 a8-b7 5. d2-e3 g7-f6 6. e2-d3 e7-e6 7. a1-b2 d7-d6 8. h1-g2 e6-e5 9. g3-f4 h8-g7 10. d3-e4 f7-e6 11. f2-g3 e8-f7 12. g3-g4 d8-e7 13. c2-d3 e5xf4 14. e3xf4 e6-e5 15. g2-g3 e5xf4 16. g3xf4 d6-e5 17. f4-f5 e7-e6 18. d1-e2 e6xf5 19. e4xf5 g6xf5 20. g4xf5 g7-g6 21. d3-e4 c7-d6 22. e2-e3 d6-d5 23. c3-c4 d5xe4 24. f3xe4 g6xf5 25. e4xf5 e5-e4 26. b2-c3 b6-c5 27. e1-e2 f6-g5 28. b3-b4 b7-b6 29. b1-c2 g5-g4 30. c2-d3 b6-b5 31. b4xc5 b5-a4 32. resign 0-1
+
+[Event "Tournament brkthr.ch.16.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "Roberto"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. a2-b3 b7-c6 2. b2-c3 a7-b6 3. a1-b2 a8-b7 4. g2-f3 g7-f6 5. h2-g3 h7-g6 6. h1-g2 d7-d6 7. e2-e3 e7-e6 8. d2-d3 h8-g7 9. b2-a3 b6-a5 10. b3-a4 c7-b6 11. c2-b3 e8-d7 12. b3-b4 b7-a6 13. d3-c4 e6-d5 14. c4xd5 c6xd5 15. d1-c2 d7-c6 16. e3-d4 f7-e6 17. e1-e2 d5-c4 18. e2-d3 e6-d5 19. f3-e4 d5xe4 20. d3xe4 f6-e5 21. f2-e3 c6-b5 22. a4xb5 a6xb5 23. g3-f4 g7-f6 24. g2-f3 a5-a4 25. b1-a2 b8-b7 26. e4-d5 b7-a6 27. d5-c6 g6-f5 28. d4-d5 g8-f7 29. g1-g2 a6-a5 30. f1-f2 e5-e4 31. f3xe4 f5xe4 32. c1-d2 e4-d3 33. c2xd3 c4-b3 34. a2xb3 a4xb3 35. resign 0-1
+
+[Event "Tournament brkthr.ch.16.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "Kd Hoffmann"] 
+[Result "1-0"] 
+1. b2-c3 a7-b6 2. h2-g3 h7-g6 3. a2-b3 g7-f6 4. g2-f3 b7-c6 5. d2-e3 c7-d6 6. e2-d3 f7-e6 7. f3-g4 h8-g7 8. h1-g2 a8-b7 9. a1-b2 e6-f5 10. f2-f3 d7-e6 11. d3-e4 d6-e5 12. g3-f4 e7-d6 13. c2-d3 d6-d5 14. g2-g3 c6-c5 15. d1-c2 g7-h6 16. f4xe5 f6xe5 17. g3-f4 h6-h5 18. e4xf5 e5xf4 19. g4xh5 e6xf5 20. h5xg6 f4xe3 21. c1-d2 d5-d4 22. c3xd4 c5xd4 23. g1-f2 f5-f4 24. d3-e4 d8-e7 25. b3-b4 b7-c6 26. f3-g4 c6-c5 27. g4-g5 c5-c4 28. g5-h6 resign 1-0
+
+[Event "Tournament brkthr.ch.16.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "David Milne"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. a2-a3 b7-c6 2. b2-b3 g7-f6 3. b3-b4 h7-g6 4. a3-a4 e7-d6 5. e2-d3 f7-e6 6. d3-c4 c7-b6 7. f2-e3 d6-c5 8. d2-c3 e6-d5 9. c2-b3 a7-a6 10. b4xc5 b6xc5 11. a4-a5 d8-c7 12. e3-d4 d7-d6 13. f1-e2 a8-a7 14. b3-b4 c5xb4 15. c4xd5 b4xc3 16. d5xc6 f6-e5 17. d4-d5 e8-d7 18. g2-f3 g6-f5 19. b1-c2 d7xc6 20. d5-e6 c6-b5 21. e2-d3 b5-b4 22. d3-c4 b4-a3 23. c4-d5 a3-a2 24. resign 0-1
+
+[Event "Tournament brkthr.ch.16.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "Stop Sign"] 
+[Result "1-0"] 
+1. b2-c3 a7-b6 2. d2-e3 h7-g6 3. f2-f3 b7-c6 4. h2-g3 a8-b7 5. a2-b3 g7-f6 6. c2-d3 h8-g7 7. f3-f4 e7-d6 8. e3-e4 d6-e5 9. e2-e3 d7-e6 10. g2-f3 d8-e7 11. h1-g2 e7-d6 12. g3-g4 b6-a5 13. g2-g3 e8-d7 14. e1-d2 e6-d5 15. d3-d4 b7-b6 16. d2-d3 d7-e6 17. d1-d2 b6-b5 18. c3-c4 c7-b6 19. d2-c3 b5-b4 20. a1-b2 g7-h6 21. d4xe5 f6xe5 22. f4xe5 d6xe5 23. f3-f4 f7-f6 24. f4xe5 f6xe5 25. c3-d4 e5xd4 26. e3xd4 d5xc4 27. b3xc4 h6-g5 28. e4-e5 a5-a4 29. e5-f6 a4-a3 30. d4-e5 b8-c7 31. g3-h4 g5-f4 32. g1-f2 f4-f3 33. h4-h5 g6xh5 34. g4xh5 a3xb2 35. c1xb2 e6-f5 36. h5-h6 resign 1-0
+
+[Event "Tournament brkthr.ch.16.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "Marius Halsor"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. h2-g3 h7-g6 2. g2-f3 g7-f6 3. a2-b3 a7-b6 4. b2-c3 b7-c6 5. e2-d3 f7-e6 6. d2-e3 d7-d6 7. e3-f4 h8-g7 8. d1-e2 a8-b7 9. e2-e3 e6-e5 10. e1-e2 e7-e6 11. e3-e4 d6-d5 12. e2-e3 c7-d6 13. e3-d4 e8-e7 14. h1-g2 d8-d7 15. a1-b2 c6-c5 16. f2-e3 d7-c6 17. g3-g4 b6-b5 18. f4-f5 e6xf5 19. g4xf5 g6xf5 20. e4xf5 f8-f7 21. e3-e4 c5xd4 22. c3xd4 e5xd4 23. e4xd5 c6xd5 24. f3-e4 d5xe4 25. d3xe4 d4-e3 26. e4-d5 d6-e5 27. b3-b4 e5-f4 28. b4-c5 f4-g3 29. resign 0-1
+
+[Event "Tournament brkthr.ch.16.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "Tore S"] 
+[Result "1-0"] 
+1. b2-c3 1-0
+
+[Event "Tournament brkthr.ch.16.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "smilingface"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. a2-b3 b7-c6 2. b2-c3 h7-g6 3. a1-b2 e7-d6 4. g2-f3 g7-f6 5. h1-g2 a7-b6 6. h2-g3 a8-b7 7. d2-d3 h8-g7 8. e2-e3 d7-e6 9. d3-d4 c6-c5 10. d1-d2 c7-c6 11. d2-d3 d8-c7 12. e1-e2 e8-e7 13. d4xc5 b6xc5 14. d3-d4 e6-d5 15. d4xc5 d6xc5 16. e2-d3 f6-e5 17. d3-d4 e7-d6 18. g3-f4 e5-e4 19. f1-e2 g7-f6 20. d4xc5 d6xc5 21. b3-b4 b7-b6 22. b2-b3 g6-f5 23. b4xc5 b6xc5 24. c2-d3 c6-b5 25. f3xe4 f5xe4 26. d3xe4 d5xe4 27. f4-f5 c5-c4 28. b3xc4 b5xc4 29. b1-c2 c7-c6 30. g2-f3 c6-b5 31. f3xe4 b5-a4 32. resign 0-1
+
+[Event "Tournament brkthr.ch.16.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "Diamante"] 
+[Result "1-0"] 
+1. b2-c3 h7-g6 2. h2-g3 g7-f6 3. a2-b3 e7-d6 4. c2-d3 c7-b6 5. g2-f3 d7-c6 6. d2-e3 b6-c5 7. d3-d4 f7-e6 8. e3-e4 a7-a6 9. e2-e3 a6-b5 10. e3-f4 b7-b6 11. f2-e3 c5-c4 12. b3xc4 b5xc4 13. d1-c2 b6-a5 14. g3-g4 a5-a4 15. h1-h2 a8-b7 16. h2-h3 h8-g7 17. h3-h4 b7-b6 18. e4-e5 f8-e7 19. e3-e4 d6xe5 20. d4xe5 d8-d7 21. g4-g5 f6xe5 22. f4xe5 d7-d6 23. c3-d4 c6-c5 24. d4xc5 b6xc5 25. f3-g4 c4-b3 26. c2xb3 a4xb3 27. h4-h5 b3-a2 28. b1xa2 g6xh5 29. g4xh5 e6-d5 30. h5-h6 g7xh6 31. g5-g6 e7-f6 32. g6-g7 resign 1-0
+
+[Event "Tournament brkthr.ch.15.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "smilingface"] 
+[Black "vic"] 
+[Result "1-0"] 
+1. a2-b3 h7-g6 2. b2-c3 a7-b6 3. a1-b2 e7-e6 4. h2-g3 d7-d6 5. g2-f3 b7-c6 6. h1-g2 g7-f6 7. d2-d3 a8-b7 8. e2-e3 h8-g7 9. d3-d4 d6-d5 10. e3-e4 e6-e5 11. d1-d2 d8-d7 12. d2-d3 d7-d6 13. e4xd5 c6xd5 14. b3-c4 f7-e6 15. e1-e2 e5xd4 16. c3xd4 c7-c6 17. e2-e3 b6-b5 18. c4-c5 f8-e7 19. e3-e4 c8-c7 20. f2-e3 d6xc5 21. d4xc5 e7-d6 22. d3-d4 b7-b6 23. c5xb6 c7xb6 24. f1-e2 1-0
+
+[Event "Tournament brkthr.ch.15.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "Reiner Martin"] 
+[Result "0-1"] 
+1. a2-b3 a7-b6 2. g2-f3 h7-g6 3. d2-d3 g7-f6 4. b2-c3 b7-c6 5. h2-g3 a8-b7 6. e2-e3 h8-g7 7. a1-b2 d7-d6 8. c3-b4 d6-c5 9. c2-c3 c6-b5 10. d3-c4 c7-c6 11. e3-d4 e7-d6 0-1
+
+[Event "Tournament brkthr.ch.15.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "muhafiz"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. e2-e3 e7-e6 2. e3-e4 h7-g6 3. f2-e3 a7-b6 4. g2-f3 b7-c6 5. h2-g3 c7-d6 6. b2-c3 g7-f6 7. d2-d3 d6-e5 8. d3-d4 d7-d6 9. c2-d3 e6-d5 10. a2-b3 f7-e6 11. a1-b2 a8-b7 12. h1-g2 h8-g7 13. f3-f4 c6-c5 14. b3-c4 b7-c6 15. d1-e2 b6-b5 16. c4xd5 c6xd5 17. g3-g4 c5-c4 18. f4-f5 b5-a4 19. f5xg6 c4-b3 20. c3-c4 e5xd4 21. e3xd4 f6-e5 22. e2-e3 e5xd4 23. e3xd4 e6-e5 24. d4xe5 d6-c5 25. c4xd5 c5-b4 26. resign 0-1
+
+[Event "Tournament brkthr.ch.15.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "halladba"] 
+[Result "0-1"] 
+1. a2-b3 g7-f6 2. h2-g3 h7-g6 3. d2-d3 g6-f5 4. e2-f3 f6-g5 5. g3-g4 f7-g6 6. g2-g3 c7-d6 7. d3-e4 d7-e6 8. c2-d3 d6-d5 9. f2-e3 a7-b6 10. b2-c3 b6-c5 0-1
+
+[Event "Tournament brkthr.ch.15.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "Mojmir Hanes"] 
+[Black "vic"] 
+[Result "1-0"] 
+1. e2-e3 e7-e6 2. e3-e4 h7-g6 3. c2-d3 a7-b6 4. f2-e3 g7-f6 5. g2-f3 c7-d6 6. h2-g3 b6-c5 7. b2-c3 d7-c6 8. a2-b3 b7-b6 9. a1-b2 h8-g7 10. h1-g2 a8-b7 11. d3-d4 e6-d5 12. d2-d3 f7-e6 13. f3-f4 1-0
+
+[Event "Tournament brkthr.ch.15.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "kyle douglas"] 
+[Result "0-1"] 
+1. a2-b3 g7-f6 2. h2-g3 a7-b6 3. g2-f3 f6-e5 4. b2-c3 b7-c6 5. c2-d3 h7-g6 6. d2-e3 c6-d5 7. e3-e4 e7-e6 8. e2-e3 f7-f6 9. f3-f4 c7-d6 10. f2-f3 h8-g7 11. g3-g4 e8-f7 12. a1-b2 g6-g5 13. f4-f5 g7-g6 14. e1-e2 a8-b7 15. h1-g2 b7-c6 0-1
+
+[Event "Tournament brkthr.ch.15.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "MojoRising"] 
+[Black "vic"] 
+[Result "0-1"] 
+0-1
+
+[Event "Tournament brkthr.ch.15.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "Ray Garrison"] 
+[Result "0-1"] 
+1. a2-b3 h7-g6 2. g2-f3 g7-f6 3. b2-c3 d7-e6 4. c2-d3 b7-c6 5. h2-g3 a7-b6 6. f2-e3 h8-g7 7. d3-d4 e6-d5 8. d2-d3 f7-e6 9. e3-e4 c7-d6 10. e2-e3 a8-b7 11. a1-b2 e6-e5 12. h1-g2 e7-e6 13. e1-f2 e8-d7 14. d1-c2 c6-c5 15. f3-f4 b7-c6 16. g2-f3 e6-f5 17. b3-c4 d7-e6 18. g3-g4 g7-h6 19. c2-b3 h6-g5 20. f2-g3 b6-b5 21. b2-a3 d8-c7 22. a3-a4 b5-b4 23. c1-b2 b4xc3 24. b2xc3 g5xf4 25. g3xf4 f5xe4 26. f3xe4 d5xe4 27. d3xe4 e5xd4 28. e3xd4 c5xd4 29. c3xd4 c6-c5 30. resign 0-1
+
+[Event "Tournament brkthr.ch.14.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "Felipe Herman van Riemsdijk"] 
+[Black "vic"] 
+[Result "0-1"] 
+0-1
+
+[Event "Tournament brkthr.ch.14.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "Aganju"] 
+[Result "1-0"] 
+1. a2-b3 b7-c6 2. b2-c3 c6-c5 3. f2-e3 a7-b6 4. e3-d4 c7-c6 5. e2-d3 a8-b7 6. g2-f3 g7-f6 7. d3-c4 c5xd4 8. c3xd4 h7-g6 9. f3-e4 b6-a5 10. b3-a4 b7-b6 11. d2-c3 d8-c7 12. c2-b3 c6-c5 13. e4-d5 c5xd4 14. c3xd4 a5-b4 15. c4-c5 b6-a5 16. a4-b5 b4-c3 17. c5-c6 a5-b4 18. b5-a6 resign 1-0
+
+[Event "Tournament brkthr.ch.14.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "BigChicken"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. c2-c3 g7-f6 2. a2-b3 f7-e6 3. b1-c2 b7-b6 4. g2-f3 e7-d6 5. h1-g2 d7-c6 6. h2-g3 f6-e5 7. d2-d3 e6-d5 8. e2-e3 c6-b5 9. d1-d2 c7-c6 10. e1-e2 b6-a5 11. d3-d4 d5-c4 12. b3xc4 b5xc4 13. b2-b3 c4xb3 14. c2xb3 c6-b5 15. d4xe5 d6-c5 16. f3-f4 c5-c4 17. c1-c2 c4xb3 18. c2xb3 a5-a4 19. b3xa4 b5xa4 20. resign 0-1
+
+[Event "Tournament brkthr.ch.14.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "kfiecio"] 
+[Result "1-0"] 
+1. a2-b3 a7-b6 2. b2-c3 b7-c6 3. e2-d3 a8-b7 4. f2-e3 g7-f6 5. g2-f3 h7-g6 6. c3-c4 b7-a6 7. d2-c3 f7-e6 8. c3-b4 e7-d6 9. b3-a4 d6-c5 10. b4-b5 c6xb5 11. c4xb5 a6xb5 12. a4xb5 c8-b7 13. c2-b3 d7-c6 14. b5xc6 b7xc6 15. f3-e4 f6-e5 16. e1-d2 g6-f5 17. h2-g3 c6-d5 18. e4xd5 e6xd5 19. d3-c4 d5xc4 20. b3xc4 c7-c6 21. d2-d3 e5-e4 22. d3-d4 c5xd4 23. e3xd4 e8-d7 24. g3-f4 d7-d6 25. f4-e5 d6xe5 26. d4xe5 resign 1-0
+
+[Event "Tournament brkthr.ch.14.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "Ragnar Wikman"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. a2-b3 g7-f6 2. d2-c3 f7-e6 3. h2-g3 c7-d6 4. g2-f3 a7-b6 5. f2-e3 d6-e5 6. g3-f4 h7-g6 7. h1-h2 e6-f5 8. h2-g3 g6-h5 9. f1-g2 f5-g4 10. f3xg4 h5xg4 11. e2-f3 g4xf3 12. g2xf3 e7-e6 13. c2-d3 e6-f5 14. c3-d4 d7-d6 15. b2-c3 b7-c6 16. c3-c4 b6-c5 17. d4-d5 c6xd5 18. c4xd5 e5xf4 19. g3xf4 d6-e5 20. f4xe5 f6xe5 21. e1-f2 h8-h7 22. f2-g3 h7-h6 23. d3-e4 f5-f4 24. e3xf4 e5xf4 25. g1-f2 h6-h5 26. d1-e2 c5-d4 27. c1-d2 h5-g4 28. resign 0-1
+
+[Event "Tournament brkthr.ch.14.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "Marius Halsor"] 
+[Result "1-0"] 
+1. a2-b3 a7-b6 2. h2-g3 b7-c6 3. g2-f3 h7-g6 4. b2-c3 g7-f6 5. d2-d3 e7-d6 6. e2-e3 d7-e6 7. e3-e4 d8-e7 8. f2-e3 e8-d7 9. d3-d4 d6-d5 10. c2-d3 d7-d6 11. g3-f4 e6-e5 12. f4-f5 e7-e6 13. f3-g4 b6-c5 14. h1-g2 d5xe4 15. d3xe4 c6-d5 16. e4xd5 e6xd5 17. a1-b2 h8-g7 18. b2-a3 g6xf5 19. g4xf5 g7-g6 20. f5xg6 f7xg6 21. a3-b4 c5-c4 22. b3xc4 d5xc4 23. d4-d5 c8-d7 24. b4-b5 a8-b7 25. c3-b4 c7-b6 26. g2-f3 f8-f7 27. e3-e4 b8-c7 28. f3-g4 f7-e6 29. e1-f2 c7-c6 30. b4-a5 resign 1-0
+
+[Event "Tournament brkthr.ch.14.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "Micco"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. b2-c3 g7-f6 2. g2-f3 b7-c6 3. h2-g3 f7-e6 4. a2-b3 c7-d6 5. e2-d3 d6-d5 6. d2-e3 d7-d6 7. g3-f4 e6-f5 8. f2-g3 d6-e5 9. c3-d4 e5-e4 10. f3xe4 d5xe4 11. d3xe4 f5xe4 12. h1-g2 c6-d5 13. a1-b2 h7-g6 14. g3-g4 e7-e6 15. g4-g5 f6xg5 16. f4xg5 e6-f5 17. d4-e5 f5-g4 18. e5-f6 e4-f3 19. g2xf3 g4xf3 20. e1-f2 g6-h5 21. c2-d3 h5-h4 22. g1-g2 h4-g3 23. resign 0-1
+
+[Event "Tournament brkthr.ch.14.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "Reiner Martin"] 
+[Result "1-0"] 
+1. d2-d3 a7-b6 2. e2-e3 b7-c6 3. b2-c3 a8-b7 4. g2-f3 h7-g6 5. d3-d4 g7-f6 6. c2-d3 h8-g7 7. e3-e4 d7-d6 8. f2-e3 e7-e6 9. d3-c4 d6-e5 10. f3-f4 c7-d6 11. d4-d5 e8-d7 12. f4xe5 f6xe5 13. a2-b3 b6-c5 14. e1-d2 e6-f5 15. d2-d3 g7-f6 16. b3-b4 b7-b6 17. d5xc6 d7xc6 18. e4-d5 d8-d7 19. b4-b5 c8-b7 20. d3-d4 c5xd4 21. e3xd4 c6-c5 22. d4xc5 b6xc5 23. b5-b6 f7-e6 24. c4-b5 e5-d4 25. b5-a6 resign 1-0
+
+[Event "Tournament brkthr.ch.13.3.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "groeneveld"] 
+[Result "1-0"] 
+1. b2-c3 e7-e6 2. h2-h3 d7-d6 3. c2-d3 e8-e7 4. g2-g3 f7-f6 5. f2-f3 f6-f5 6. h3-g4 g8-f7 7. d3-e4 f5xg4 8. f3xg4 f7-f6 9. d2-e3 d6-d5 10. e4-f5 f8-f7 11. e2-f3 e6-e5 12. f3-f4 e7-e6 13. c3-d4 e6xf5 14. g4xf5 e5-e4 15. d4-e5 d8-d7 16. e5xf6 g7xf6 17. f4-e5 h8-g7 18. g3-g4 d7-e6 19. e5xf6 g7xf6 20. g4-h5 e4-d3 21. h5-h6 d3-e2 22. d1xe2 resign 1-0
+
+[Event "Tournament brkthr.ch.13.3.1"] 
+[Site "www.littlegolem.net"] 
+[White "Beps"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. d2-d3 g7-f6 2. h2-h3 a7-b6 3. b2-a3 b6-b5 4. c2-c3 c7-c6 5. g2-g3 f6-f5 6. g3-f4 f7-f6 7. h3-h4 d7-d6 8. f4-g5 e8-f7 9. g5xf6 e7xf6 10. f2-f3 h7-h6 11. h4-h5 c6-d5 12. e2-e3 f6-g5 13. f3-f4 h8-g7 14. f4xg5 h6xg5 0-1
+
+[Event "Tournament brkthr.ch.13.3.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "George"] 
+[Result "1-0"] 
+1. b2-c3 e7-e6 2. c2-d3 f7-f6 3. d2-e3 d7-d6 4. h2-g3 b7-c6 5. g2-f3 f6-f5 6. e3-e4 f5xe4 7. f3xe4 d6-d5 8. f2-f3 d5xe4 9. f3xe4 g7-f6 10. d3-d4 c6-d5 11. e4-e5 f6xe5 12. d4xe5 e8-e7 13. g3-f4 h7-g6 14. f4-g5 c7-c6 15. c3-d4 d5-e4 16. e5-f6 e7xf6 17. g5xf6 a7-b6 18. d4-e5 c6-c5 19. h1-h2 c5-d4 20. h2-h3 g6-g5 21. h3-g4 g5-h4 22. g4-f5 e6xf5 23. e5-e6 f5-f4 24. f6-f7 g8xf7 25. e6xf7 f4-e3 26. f7-e8 1-0
+
+[Event "Tournament brkthr.ch.13.3.1"] 
+[Site "www.littlegolem.net"] 
+[White "VinceS"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. h2-g3 g7-f6 2. a2-b3 a7-b6 3. b2-c3 b7-c6 4. a1-b2 f7-g6 5. g2-f3 e7-e6 6. h1-g2 d7-d6 7. e2-e3 d6-c5 8. e1-e2 c7-d6 9. d2-d3 g6-f5 10. d1-d2 h7-g6 11. d3-d4 e6-e5 12. d2-d3 c6-d5 13. d4xc5 b6xc5 14. c3-c4 d5-d4 15. e3xd4 e5xd4 16. c4-d5 f6-e5 17. d3-c4 e5-e4 18. f3xe4 f5xe4 19. g2-f3 g6-f5 20. f3xe4 f5xe4 21. g3-f4 c5-b4 22. f4-e5 d6xe5 23. b3-a4 e5-f4 24. a4-b5 e4-e3 25. c4-c5 e3xf2 26. g1xf2 d4-e3 27. f2xe3 f4-g3 28. b5-b6 g3-f2 29. d5-d6 f2-e1 0-1
+
+[Event "Tournament brkthr.ch.13.3.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "Nevermind"] 
+[Result "1-0"] 
+1. b2-c3 a7-b6 2. a2-b3 b7-c6 3. h2-g3 a8-b7 4. g2-f3 h7-g6 5. f2-e3 g6-g5 6. g3-g4 g7-g6 7. f3-f4 g5xf4 8. e3xf4 h8-g7 9. c2-d3 f7-f6 10. d3-e4 e7-e6 11. d2-d3 d7-d6 12. e2-f3 f8-f7 13. c3-d4 c6-b5 14. f4-f5 e6xf5 15. e4xf5 g6xf5 16. g4xf5 f6-g5 17. f3-g4 g5-h4 18. g4-h5 g8-h7 19. h5-h6 g7xh6 20. f5-f6 h4-h3 21. f6-g7 h3-h2 22. g7-g8 1-0
+
+[Event "Tournament brkthr.ch.13.3.1"] 
+[Site "www.littlegolem.net"] 
+[White "khelvaster"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. g2-g3 g7-f6 2. f2-f3 e7-e6 3. e2-e3 d7-d6 4. h1-g2 a7-b6 5. c2-d3 b6-c5 6. b2-c3 b7-b6 7. e3-d4 e6-e5 8. d4-d5 b6-b5 9. f3-e4 h7-g6 10. d5-c6 e8-d7 11. e4-d5 a8-b7 12. d3-e4 b7xc6 13. d5xc6 d7xc6 14. d2-d3 d6-d5 15. e4xd5 c6xd5 16. a1-b2 f6-f5 17. g2-f3 c5-d4 18. c3xd4 e5xd4 19. e1-f2 d5-c4 20. d3xc4 b5xc4 21. d1-c2 c7-c6 22. c2-c3 d4-d3 23. b2-b3 c6-d5 24. b3xc4 d5xc4 25. g3-g4 f7-e6 26. h2-g3 e6-e5 27. f2-e3 e5-e4 28. g4xf5 e4xf3 29. resign 0-1
+
+[Event "Tournament brkthr.ch.13.3.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "MichaeI X"] 
+[Result "1-0"] 
+1. b2-c3 a7-b6 2. a2-b3 b7-c6 3. c3-b4 a8-b7 4. a1-b2 c6-b5 5. d2-d3 h7-g6 6. d3-c4 d7-c6 7. e2-d3 e8-d7 8. c2-c3 f7-e6 9. c3-d4 d7-d6 10. f2-e3 g7-f6 11. h2-g3 h8-g7 12. g2-f3 d6-c5 13. b4xc5 e7-d6 14. c5xb6 c7xb6 15. d3-e4 d6-d5 16. c4-c5 c8-c7 17. g3-f4 f6-f5 18. e4-e5 d5-c4 19. e5-d6 resign 1-0
+
+[Event "Tournament brkthr.ch.13.3.1"] 
+[Site "www.littlegolem.net"] 
+[White "siroman"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. d2-d3 g7-f6 2. d3-d4 f7-e6 3. e2-e3 f6-f5 4. d4-e5 c7-d6 5. e5xd6 e7xd6 6. c2-d3 b7-c6 7. b2-c3 d6-c5 8. f2-f3 d7-d6 9. a2-b3 h7-g6 10. g2-g3 d6-d5 11. g3-f4 a7-b6 12. f4-e5 g6-g5 13. h2-g3 b6-b5 14. a1-a2 b5-b4 15. c3xb4 c5xb4 16. b1-b2 c6-c5 17. c1-c2 a8-a7 18. d1-d2 a7-a6 19. d2-c3 a6-a5 20. c3xb4 a5xb4 21. c2-c3 e8-d7 22. c3xb4 c5xb4 23. a2-a3 g5-g4 24. f3xg4 b4xa3 25. b2xa3 f5xg4 26. g1-g2 e6-f5 27. e1-e2 h8-g7 28. e2-f3 g7-g6 29. f1-e2 f5-f4 30. h1-h2 f4xe3 31. resign 0-1
+
+[Event "Tournament brkthr.ch.12.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "Nagy Fathy"] 
+[Result "1-0"] 
+1. a2-b3 d7-d6 2. h2-g3 e7-e6 3. b2-a3 e6-d5 4. a3-b4 a7-b6 5. d2-c3 c7-c6 6. e2-d3 f7-e6 7. g2-f3 g7-f6 8. d3-e4 f6-e5 9. c2-d3 h7-g6 10. f2-e3 g6-f5 11. g3-g4 f5xe4 12. f3xe4 d5xe4 13. d3xe4 h8-g7 14. c3-d4 g7-f6 15. b3-c4 e5xd4 16. e3xd4 c6-c5 17. b4xc5 b6xc5 18. d4-d5 e6xd5 19. c4xd5 b7-b6 20. e4-f5 b6-b5 21. d5-e6 b5-a4 22. f5-g6 c5-b4 23. g4-h5 a4-a3 24. h5-h6 b4-b3 25. h6-h7 g8xh7 26. g6xh7 resign 1-0
+
+[Event "Tournament brkthr.ch.12.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "Nevermind"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. a2-b3 a7-b6 2. b3-b4 b7-c6 0-1
+
+[Event "Tournament brkthr.ch.12.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "Reiner Martin"] 
+[Result "1-0"] 
+1. a2-b3 a7-b6 2. h2-g3 h7-g6 3. g3-f4 g6-f5 4. g2-f3 g7-f6 5. e2-e3 h8-g7 6. d2-d3 b7-c6 7. b2-c3 b6-c5 8. b3-c4 a8-b7 9. c2-b3 d7-d6 10. e3-d4 e7-e6 11. f3-e4 f7-g6 12. a1-a2 g6-g5 13. f4xg5 f6xg5 14. a2-a3 g5-f4 15. b3-b4 c7-b6 16. a3-a4 f5-g4 17. e1-e2 e8-f7 18. e4-e5 d8-c7 19. e2-e3 f4-f3 20. d1-e2 f7-f6 21. e5xf6 g7xf6 22. e3-f4 e6-f5 23. e2xf3 g4xf3 24. h1-g2 f3xg2 25. f1xg2 c5xb4 26. c3xb4 d6-d5 27. d4-e5 f6xe5 28. f4xe5 f5-f4 29. c1-d2 d5-d4 30. e5-f6 c7-d6 31. b1-c2 d6-d5 32. g2-f3 c8-c7 33. g1-g2 b8-a7 34. f3-e4 d5xe4 35. d3xe4 c6-c5 36. e4-e5 c5xb4 37. f6-g7 f8xg7 38. e5-e6 b4-b3 39. e6-e7 b3-b2 40. e7-e8 1-0
+
+[Event "Tournament brkthr.ch.12.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "Xaver Gubas"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. h2-h3 h7-g6 2. a2-a3 a7-b6 3. e2-e3 g7-f6 4. d2-d3 b7-c6 5. e3-e4 c7-d6 6. a1-a2 d7-e6 7. d3-d4 f6-f5 8. f2-f3 e6-e5 9. c2-c3 c6-c5 10. d4-d5 e7-e6 11. c3-c4 e5-d4 12. d1-d2 f5-f4 13. e1-f2 e8-d7 14. h1-h2 e6xd5 15. e4xd5 g6-f5 16. h3-g4 f5xg4 17. f3xg4 d6-e5 18. a2-b3 e5-e4 19. g4-f5 d4-d3 20. resign 0-1
+
+[Event "Tournament brkthr.ch.12.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "Marius Halsor"] 
+[Result "0-1"] 
+1. a2-b3 a7-b6 2. b2-c3 b7-c6 3. c2-d3 e7-d6 4. d2-e3 d7-e6 5. h2-g3 h7-g6 6. g2-f3 g7-f6 7. f3-f4 e6-f5 8. f2-f3 d8-e7 9. e3-d4 e8-d7 10. d3-c4 e7-e6 11. e2-e3 h8-g7 12. e3-e4 a8-b7 13. a1-b2 e6-e5 14. c4-d5 d7-e6 15. b3-c4 b6-b5 16. b2-b3 e6xd5 17. e4xd5 b5xc4 18. b3xc4 e5xd4 19. c3xd4 c6xd5 20. c4xd5 c7-c6 21. d5xc6 b7xc6 22. f1-e2 f7-e6 23. e2-d3 e6-e5 24. d4xe5 d6xe5 25. d3-c4 g6-g5 26. f4xe5 f6xe5 27. e1-e2 f5-f4 28. g3xf4 e5xf4 29. resign 0-1
+
+[Event "Tournament brkthr.ch.12.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "antony"] 
+[Black "vic"] 
+[Result "1-0"] 
+1. d2-d3 a7-b6 2. e2-e3 b7-c6 3. h2-g3 h7-g6 4. a2-b3 c7-d6 5. b2-c3 g7-f6 6. g2-f3 d7-e6 7. a1-b2 b6-c5 8. h1-g2 g6-f5 9. b2-a3 f6-e5 10. a3-b4 e6-d5 11. b4-a5 f7-e6 12. d3-c4 d8-c7 13. e1-d2 d5xc4 14. b3xc4 e6-d5 15. c2-b3 h8-g7 16. d2-d3 e7-e6 17. d1-c2 d5-d4 18. e3xd4 e5xd4 19. c3xd4 c5xd4 20. b3-b4 c6-c5 21. b4-b5 d6-d5 22. b5-a6 c5-b4 23. c4-c5 d4-c3 24. a5-b6 resign 1-0
+
+[Event "Tournament brkthr.ch.12.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "isketzo067"] 
+[Result "1-0"] 
+1. a2-b3 d7-d6 2. h2-g3 d6-e5 3. g2-f3 e7-e6 4. f2-e3 e6-d5 5. b2-c3 f7-e6 6. c3-c4 b7-c6 7. c2-c3 a7-b6 8. d2-d3 c7-d6 9. g3-f4 g7-f6 10. d3-d4 h7-g6 11. e2-d3 g6-f5 12. b3-b4 b6-b5 13. c4-c5 d8-c7 14. c5xd6 c7xd6 15. d4-c5 d6xc5 16. b4xc5 c8-c7 17. d3-d4 e5xd4 18. e3xd4 f8-e7 19. f4-e5 f6xe5 20. d4xe5 e8-d7 21. c3-d4 a8-b7 22. f3-f4 h8-g7 23. f4-g5 b7-b6 24. h1-h2 b6xc5 25. d4xc5 d5-e4 26. h2-h3 e4-f3 27. e1-e2 f3xe2 28. d1xe2 b5-c4 29. h3-h4 f5-f4 30. h4-h5 resign 1-0
+
+[Event "Tournament brkthr.ch.12.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "kingofthebesI"] 
+[Black "vic"] 
+[Result "1-0"] 
+1. b2-c3 h7-g6 2. a2-b3 a7-b6 3. g2-f3 b7-c6 4. h2-g3 c7-d6 5. f3-e4 d7-e6 6. h1-g2 f7-f6 7. e2-f3 f6-f5 8. d2-e3 d6-d5 9. c2-d3 e7-d6 10. e3-d4 c6-c5 11. b3-c4 d5xc4 12. d3xc4 e6-e5 13. f2-e3 c5xd4 14. c3xd4 b6-c5 15. d4-d5 g7-f6 16. d1-c2 e5-d4 17. e1-d2 f6-e5 18. c2-c3 a8-b7 19. a1-b2 e8-d7 20. g3-f4 b7-c6 21. b1-c2 c6xd5 22. c4xd5 d8-c7 23. c3xd4 c5xd4 24. b2-c3 e5xf4 25. c3xd4 f4xe3 26. d2xe3 b8-b7 27. f1-e2 h8-g7 28. e2-d3 g7-f6 29. e4xf5 g6xf5 30. d3-e4 f5xe4 31. f3xe4 b7-c6 32. g1-f2 f6-e5 33. d5xc6 d7xc6 34. g2-f3 c6-c5 35. d4-d5 c8-d7 36. e4-f5 g8-f7 37. f5-f6 c5-c4 38. f3-e4 resign 1-0
+
+[Event "Tournament brkthr.ch.12.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "Henrik Sjøl"] 
+[Result "0-1"] 
+1. a2-b3 f7-f6 2. h2-g3 h7-g6 3. b2-a3 c7-c6 4. c2-c3 a7-b6 5. e2-d3 d7-d6 6. f2-e3 e7-e6 7. a3-b4 c6-b5 8. c3-d4 e6-d5 9. g2-f3 f6-e5 10. g3-f4 e5xd4 11. e3xd4 b7-c6 12. f3-e4 d5xe4 13. d3xe4 c6-c5 14. d2-c3 a8-b7 15. e1-d2 e8-d7 16. a1-b2 d7-e6 17. d2-d3 e6-f5 18. e4-e5 c5xb4 19. c3xb4 d6xe5 20. f4xe5 g6-g5 21. b4-c5 f5-f4 22. c5xb6 g5-g4 23. h1-g2 g4-g3 24. c1-d2 g7-g6 25. d4-d5 g6-g5 26. d5-d6 g8-f7 27. d1-e2 g5-g4 28. e2-f3 g3-h2 29. g1xh2 g4-g3 30. resign 0-1
+
+[Event "Tournament brkthr.ch.11.2.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "Looser"] 
+[Result "0-1"] 
+1. h2-g3 b7-c6 2. g2-f3 a7-b6 3. a2-b3 e7-d6 4. f3-g4 h7-g6 5. e2-f3 d8-e7 6. b2-c3 d7-e6 7. c2-d3 g7-f6 8. f2-e3 e6-f5 9. e3-d4 e8-d7 10. d3-e4 d7-e6 11. c3-c4 f5xe4 12. f3xe4 g6-g5 13. d2-e3 f7-g6 14. e3-f4 h8-g7 15. f4-f5 e6xf5 16. g4xf5 f8-f7 17. d4-d5 g6xf5 18. e4xf5 c6xd5 19. c4xd5 c8-d7 20. b3-c4 a8-b7 21. g3-g4 e7-e6 22. c1-d2 e6xf5 23. g4xf5 g7-g6 24. f5xg6 f7xg6 25. d2-e3 c7-c6 26. h1-g2 c6xd5 27. c4xd5 b7-c6 28. e3-e4 c6xd5 29. e4xd5 b8-b7 30. g2-f3 g8-f7 31. f3-e4 f7-e6 32. d1-d2 e6xd5 33. e4xd5 b7-c6 34. d5xc6 d7xc6 35. d2-d3 b6-c5 36. e1-d2 d6-d5 37. a1-b2 f6-e5 38. b2-c3 c6-b5 39. resign 0-1
+
+[Event "Tournament brkthr.ch.11.2.1"] 
+[Site "www.littlegolem.net"] 
+[White "rafi"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. h2-g3 a7-b6 2. h1-h2 b7-c6 3. a2-b3 g7-f6 4. b2-c3 c7-d6 5. a1-a2 f7-e6 6. b1-b2 d6-c5 7. e2-d3 e7-d6 8. g2-f3 b6-a5 9. d3-c4 h7-g6 10. h2-h3 e6-f5 11. g1-h2 f6-g5 12. f1-g2 d6-e5 13. d2-e3 c5-b4 14. c3xb4 a5xb4 15. a2-a3 c6-c5 16. a3xb4 c5xb4 17. c2-c3 b4xc3 18. b2xc3 d7-c6 19. e1-d2 e5-e4 20. f3xe4 f5xe4 21. d1-e2 g6-f5 22. c1-c2 d8-d7 23. f2-f3 d7-e6 24. d2-d3 e6-d5 25. c4xd5 c6xd5 26. b3-c4 d5xc4 27. d3xe4 f5xe4 28. f3xe4 a8-b7 29. g3-f4 b7-b6 30. f4xg5 b6-b5 31. e4-f5 b5-b4 32. resign 0-1
+
+[Event "Tournament brkthr.ch.11.2.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "MRFvR"] 
+[Result "1-0"] 
+1. h2-g3 a7-b6 2. a2-b3 h7-g6 3. g2-f3 b7-c6 4. e2-e3 g7-f6 5. b2-c3 a8-b7 6. c3-b4 h8-g7 7. d2-d3 d7-d6 8. h1-g2 f7-e6 9. f3-g4 c6-c5 10. c2-c3 b7-a6 11. d3-c4 b6-b5 12. b4-a5 d6-d5 13. c4xb5 a6xb5 14. b3-b4 c5-c4 15. e3-d4 b5-a4 16. d1-c2 f6-f5 17. d4-c5 e8-d7 18. b4-b5 d5-d4 19. a5-a6 d4-d3 20. c5-c6 d3xc2 21. b1xc2 resign 1-0
+
+[Event "Tournament brkthr.ch.11.2.1"] 
+[Site "www.littlegolem.net"] 
+[White "BigChicken"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. h2-g3 a7-b6 2. g2-f3 b7-c6 3. h1-g2 h7-g6 4. b2-c3 g7-f6 5. a2-b3 f6-g5 6. a1-b2 c7-d6 7. d2-d3 f7-f6 8. e2-e3 e7-e6 9. d3-d4 c6-d5 10. e3-e4 g6-f5 11. e4xf5 e6xf5 12. c2-d3 f6-e5 13. d4xe5 d6xe5 14. f2-e3 b6-c5 15. g3-g4 f5-f4 16. e3xf4 g5xf4 17. e1-f2 d7-e6 18. g4-g5 e6-f5 19. g5-h6 e5-e4 20. d3xe4 f5xe4 21. f3-g4 d5-d4 22. g4-g5 f8-g7 23. c3xd4 c5xd4 24. g2-h3 e4-e3 25. resign 0-1
+
+[Event "Tournament brkthr.ch.11.2.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "FatPhil"] 
+[Result "1-0"] 
+1. h2-g3 h7-g6 2. g2-f3 g7-f6 3. a2-b3 h8-g7 4. b2-c3 a7-b6 5. c2-d3 b7-c6 6. f2-e3 a8-b7 7. d3-d4 d7-d6 8. f3-g4 d8-d7 9. d2-d3 e7-e6 10. d3-e4 e8-e7 11. c3-c4 e6-e5 12. g3-f4 b6-c5 13. d4-d5 e7-e6 14. e2-d3 c5-d4 15. d1-d2 c6xd5 16. e4xd5 e6xd5 17. c4xd5 c7-c6 18. b3-c4 c6xd5 19. c4xd5 b7-c6 20. d3-c4 c6xd5 21. c4xd5 d4-d3 22. e1-e2 e5-e4 23. e2xd3 e4xd3 24. c1-c2 d3xc2 25. b1xc2 f7-e6 26. e3-e4 e6xd5 27. e4xd5 f6-f5 28. g4-g5 f5-e4 29. h1-g2 d6-c5 30. f1-e2 c5-c4 31. a1-b2 g6-f5 32. f4-e5 f5-f4 33. g1-f2 b8-c7 34. d5-d6 c7xd6 35. e5xd6 e4-e3 36. d2xe3 f4xe3 37. f2xe3 resign 1-0
+
+[Event "Tournament brkthr.ch.11.2.1"] 
+[Site "www.littlegolem.net"] 
+[White "muhafiz"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. b2-c3 b7-c6 2. e2-e3 h7-g6 3. h2-g3 a7-b6 4. a2-b3 e7-d6 5. g2-f3 g7-f6 6. h1-g2 d7-e6 7. a1-b2 c6-b5 8. c3-b4 d6-c5 9. d2-c3 c7-c6 10. e3-d4 c5-c4 11. e1-d2 e6-d5 12. f2-e3 f7-e6 13. d4-c5 a8-a7 14. c5xb6 a7xb6 15. e3-d4 e6-e5 16. d4-c5 d8-c7 17. d2-d3 f6-f5 18. d3-d4 e5-e4 19. c5xb6 c7xb6 20. d4-c5 c8-c7 21. b2-a3 c4xb3 22. c2xb3 d5-c4 23. b3xc4 b5xc4 24. b4-b5 b8-b7 25. c5xb6 c7xb6 26. b5xc6 b7xc6 27. f3xe4 f5xe4 28. d1-c2 g6-f5 29. a3-a4 e4-e3 30. g2-f3 b6-a5 31. g3-f4 a5-b4 32. a4-a5 b4xc3 33. a5-a6 c3-d2 34. resign 0-1
+
+[Event "Tournament brkthr.ch.11.2.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "Willem Gerritsen"] 
+[Result "0-1"] 
+1. h2-g3 h7-g6 2. g2-f3 g7-f6 3. f3-g4 h8-g7 4. e2-f3 b7-c6 5. a2-b3 a8-b7 6. d2-e3 a7-b6 7. b2-c3 e7-d6 8. h1-g2 d8-e7 9. f3-f4 d7-e6 10. f2-f3 d6-e5 11. b3-c4 e7-d6 12. f3-e4 d6-d5 13. c2-d3 b6-c5 14. f4xe5 f6xe5 15. g3-f4 f7-f6 16. d3-d4 c5xd4 17. c4xd5 e6xd5 18. c3xd4 e5xf4 19. e4xd5 f4xe3 20. d5-e6 e8-f7 21. e6xf7 g8xf7 22. c1-d2 e3xd2 23. e1xd2 f6-f5 24. g2-f3 c7-d6 25. d2-d3 b7-b6 26. d3-e4 f5xg4 27. f3xg4 b6-c5 28. d4xc5 d6xc5 29. e4-e5 c5-d4 30. g4-g5 d4-e3 31. resign 0-1
+
+[Event "Tournament brkthr.ch.11.2.1"] 
+[Site "www.littlegolem.net"] 
+[White "halladba"] 
+[Black "vic"] 
+[Result "1-0"] 
+1. a2-b3 a7-b6 2. b3-c4 b7-c6 3. d2-c3 h7-g6 4. c3-b4 e7-d6 5. h2-g3 d7-e6 6. g3-f4 g7-f6 7. e2-f3 g6-f5 8. g2-h3 f7-g6 9. h3-g4 d6-e5 10. f2-e3 g6-g5 11. f4xg5 f6xg5 12. e1-f2 c6-d5 13. c2-d3 f5-f4 14. b2-c3 g5-h4 15. h1-g2 h8-g7 16. a1-b2 c7-d6 17. d1-d2 d5xc4 18. d3xc4 d6-d5 19. b2-b3 e8-e7 20. e3xf4 e5xf4 21. c3-d4 e7-d6 22. d2-e3 d5xc4 23. b3xc4 f4xe3 24. f2xe3 d6-d5 25. c4-c5 b6xc5 26. b4xc5 a8-b7 27. d4-e5 d5-c4 28. f3-e4 b7-c6 29. e5-d6 c4-d3 30. d6-d7 resign 1-0
+
+[Event "Tournament brkthr.ch.10.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "Looser"] 
+[Result "1-0"] 
+1. a2-b3 d7-c6 2. b2-c3 e7-d6 3. h2-g3 e8-d7 4. g2-f3 f7-e6 5. c2-d3 a7-b6 6. d3-e4 c6-d5 7. d2-d3 d7-c6 8. e2-e3 b6-c5 9. f3-f4 e6-e5 10. f4-f5 c8-d7 11. f2-f3 g8-f7 12. h1-g2 d5-d4 13. e1-d2 d6-d5 14. f3-f4 c7-d6 15. g3-g4 g7-f6 16. a1-b2 d4xe3 17. d2xe3 d8-e7 18. g2-g3 d5-d4 19. d1-d2 e5xf4 20. g3xf4 d4xe3 21. d2xe3 e7-e6 22. b3-b4 c5xb4 23. c3xb4 b7-b6 24. d3-d4 a8-b7 25. e4-e5 b8-c7 26. e5xf6 e6xf5 27. g4xf5 h8-g7 28. f6xg7 1-0
+
+[Event "Tournament brkthr.ch.10.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "Chris Irwin"] 
+[Black "vic"] 
+[Result "1-0"] 
+1. e2-d3 h7-g6 2. h2-g3 a7-b6 3. d2-e3 b7-c6 4. g2-f3 g7-f6 5. d3-e4 c7-d6 6. h1-g2 d7-e6 7. f3-g4 d6-d5 8. c2-d3 f6-e5 9. g3-f4 e7-d6 10. f4-f5 c8-d7 11. e1-e2 e6xf5 12. e4xf5 d7-e6 13. e3-e4 d5xe4 14. d3xe4 e6xf5 15. e4xf5 g6xf5 16. g4xf5 h8-g7 17. f2-g3 d6-d5 18. b2-c3 c6-c5 19. a2-b3 g7-g6 20. g3-g4 d8-e7 21. d1-d2 e7-e6 22. f5-f6 g8-g7 23. f6xg7 f8xg7 24. d2-d3 e6-f5 25. e2-f3 c5-d4 26. c3-c4 d5xc4 27. b3xc4 f7-e6 28. d3-e4 e8-d7 29. g2-g3 f5-f4 30. g3xf4 e5xf4 31. e4-e5 b8-c7 32. g4-g5 resign 1-0
+
+[Event "Tournament brkthr.ch.10.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "halladba"] 
+[Result "1-0"] 
+1. a2-b3 h7-g6 2. h2-g3 g7-f6 3. g2-f3 f7-e6 4. b2-c3 f6-g5 5. e2-e3 a7-b6 6. c2-d3 b7-c6 7. d3-e4 e6-f5 8. d2-d3 e7-f6 9. e1-e2 b6-c5 10. g3-g4 d7-e6 11. e4xf5 e6xf5 12. d3-e4 f5xg4 13. f3xg4 e8-f7 14. f2-g3 f7-e6 15. e3-f4 c7-d6 16. h1-g2 c6-d5 17. g2-f3 d6-e5 18. e2-e3 a8-b7 19. e4xd5 e6xd5 20. f4xe5 f6xe5 21. f3-f4 g5xf4 22. g3xf4 e5-e4 23. c1-d2 e4-d3 24. b1-c2 c5-c4 25. f1-e2 c4xb3 26. c2xb3 d5-e4 27. g1-g2 h8-g7 28. e2xd3 e4xd3 29. e3-e4 g7-f6 30. e4-f5 g6xf5 31. g4xf5 b7-c6 32. b3-c4 d8-e7 33. f5-e6 b8-c7 34. f4-f5 f8-f7 35. c3-d4 resign 1-0
+
+[Event "Tournament brkthr.ch.10.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "Marius Halsor"] 
+[Black "vic"] 
+[Result "1-0"] 
+1. h2-g3 a7-b6 2. a2-b3 b7-c6 3. g2-f3 g7-f6 4. b2-c3 h8-g7 5. d2-e3 h7-g6 6. e2-d3 e7-e6 7. d1-e2 f6-e5 8. d3-e4 d7-d6 9. h1-g2 a8-b7 10. e2-d3 e6-d5 11. e3-f4 b6-c5 12. f3-g4 b7-b6 13. f4-g5 b6-b5 14. e4-f5 c7-b6 15. g3-h4 e5-d4 16. e1-d2 b5-b4 17. a1-b2 b6-b5 18. c3-c4 d5xc4 19. d3xc4 d6-d5 20. c2-d3 d8-e7 21. f2-g3 e7-d6 22. h4-h5 d5xc4 23. f5-f6 g6xh5 24. g4xh5 g7xf6 25. g5xf6 g8-g7 26. f6xg7 f8xg7 27. g3-g4 c4xd3 28. g4-g5 b4-c3 29. b2xc3 d4xc3 30. d2xc3 resign 1-0
+
+[Event "Tournament brkthr.ch.10.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "pim"] 
+[Result "0-1"] 
+1. a2-b3 b7-c6 2. b2-c3 d7-d6 3. g2-f3 e7-e6 4. h2-g3 h7-g6 5. e2-d3 a7-b6 6. c3-b4 a8-b7 7. c2-c3 g7-f6 8. f2-e3 h8-g7 9. a1-b2 e6-e5 10. d3-e4 d6-d5 11. d2-d3 f6-f5 12. h1-g2 e8-e7 13. e1-f2 e7-e6 14. c3-d4 c7-d6 15. g3-f4 f7-f6 16. g2-g3 g6-g5 17. d1-e2 c6-c5 18. b2-c3 b7-c6 19. f4xg5 f6xg5 20. g3-g4 g7-g6 21. f2-g3 d8-e7 22. g4xf5 g6xf5 23. g3-g4 f5-f4 24. e3xf4 e5xf4 25. resign 0-1
+
+[Event "Tournament brkthr.ch.10.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "kyle douglas"] 
+[Black "vic"] 
+[Result "1-0"] 
+1. a2-b3 h7-g6 2. b2-c3 a7-b6 3. a1-b2 b7-c6 4. f2-e3 g7-f6 5. e3-d4 d7-e6 6. e2-d3 h8-g7 7. c3-b4 f6-g5 8. b3-c4 e7-d6 9. c2-b3 e8-d7 10. c4-c5 d6xc5 11. d4xc5 b6xc5 12. b4xc5 f8-e7 13. d2-c3 e7-d6 14. c5xd6 c7xd6 15. h2-g3 e6-e5 16. g2-f3 c6-d5 17. b3-c4 d7-e6 18. f3-e4 d5xe4 19. d3xe4 g6-f5 20. e4-d5 a8-b7 21. b2-b3 d8-d7 22. c4-c5 c8-c7 23. c5xd6 c7xd6 24. d5xe6 f7xe6 25. b3-a4 d6-c5 26. d1-c2 e6-d5 27. c2-b3 e5-d4 28. c3xd4 c5xd4 29. b3-b4 d7-d6 30. b4-b5 d5-c4 31. a4-a5 resign 1-0
+
+[Event "Tournament brkthr.ch.10.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "Mojmir Hanes"] 
+[Result "0-1"] 
+1. a2-b3 e7-e6 2. b2-c3 e6-e5 3. c2-d3 b7-c6 4. g2-f3 c6-d5 5. h2-g3 g7-f6 6. f2-e3 f7-e6 7. e3-e4 a7-b6 8. h1-g2 a8-b7 9. a1-b2 b6-c5 10. e2-e3 h7-g6 11. e3-f4 h8-g7 12. d2-e3 d7-d6 13. e1-e2 c7-c6 14. d3-d4 c5-c4 15. d1-c2 c6-b5 16. e2-d3 b7-c6 17. d4xe5 f6xe5 18. e3-d4 g7-f6 19. b3xc4 b5xc4 20. b2-b3 e5xd4 21. c3xd4 c4-c3 22. e4xd5 e6xd5 23. f3-e4 d5xe4 24. d3xe4 f6-f5 25. g2-f3 f5xe4 26. f3xe4 d6-d5 27. e4-e5 d5-e4 28. g1-f2 g6-f5 29. resign 0-1
+
+[Event "Tournament brkthr.ch.10.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "Ray Garrison"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. f2-e3 h7-g6 2. a2-b3 a7-b6 3. b2-c3 g7-f6 4. h2-g3 b7-c6 5. g2-f3 c7-d6 6. e3-d4 d6-e5 7. c2-d3 f7-e6 8. d2-e3 e7-d6 9. f3-g4 e6-f5 10. e2-f3 d7-e6 11. h1-g2 h8-g7 12. a1-b2 c6-d5 13. c3-c4 d8-d7 14. c4-b5 a8-b7 15. d1-d2 d7-c6 16. d3-c4 e8-d7 17. b2-a3 e5xd4 18. e3xd4 f6-e5 19. d2-e3 c6xb5 20. c4xb5 d7-c6 21. a3-a4 e5xd4 22. e3xd4 e6-e5 23. d4xe5 d6xe5 24. g4-g5 d5-d4 25. g2-h3 d4-c3 26. e1-d2 e5-d4 27. resign 0-1
+
+[Event "Tournament brkthr.ch.9.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "eaeaeapepe"] 
+[Result "1-0"] 
+1. d2-d3 a7-b6 2. a2-b3 b7-c6 3. b3-b4 a8-b7 4. b2-b3 c6-b5 5. d3-c4 d7-c6 6. e2-d3 e7-d6 7. f2-e3 f7-e6 8. g2-f3 g7-f6 9. h2-g3 h7-g6 10. a1-b2 h8-g7 11. c2-c3 d8-d7 12. h1-g2 f6-f5 13. f3-f4 f5-g4 14. d1-e2 e8-f7 15. e2-f3 e6-f5 16. e1-f2 d7-e6 17. f3xg4 f5xg4 18. e3-e4 c8-d7 19. c3-d4 g7-f6 20. b2-c3 b8-a7 21. f2-f3 g6-h5 22. f4-f5 e6xf5 23. e4xf5 g8-g7 24. f3-f4 d7-e6 25. d3-e4 b5xc4 26. b3xc4 e6xf5 27. d4-d5 a7-a6 28. d5xc6 b7xc6 29. e4-d5 resign 1-0
+
+[Event "Tournament brkthr.ch.9.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "alkosan"] 
+[Black "vic"] 
+[Result "1-0"] 
+1. d2-d3 d7-d6 2. d3-d4 a7-b6 3. e2-d3 b7-c6 4. c2-c3 g7-f6 5. f2-f3 h7-g6 6. g2-g3 h8-g7 7. g3-g4 f6-f5 8. h2-g3 f7-f6 9. c3-c4 d6-e5 10. b2-c3 c6-c5 11. d4-d5 d8-d7 12. a2-b3 e7-e6 13. f1-e2 c7-c6 14. d3-e4 f5-f4 15. e1-f2 f6-f5 16. c1-d2 g7-f6 17. d2-e3 f6-g5 18. b1-c2 b6-b5 19. d5-d6 b5-b4 20. c3xb4 c5xb4 21. a1-b2 c6-c5 22. c2-c3 d7-c6 23. c3xb4 c5xb4 24. c4-c5 c8-c7 25. g3xf4 g5xf4 26. e3xf4 1-0
+
+[Event "Tournament brkthr.ch.9.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "brunbrun"] 
+[Result "1-0"] 
+1. d2-d3 h7-g6 2. b2-c3 a7-b6 3. a2-b3 b7-c6 4. h2-g3 g7-f6 5. g2-f3 a8-b7 6. a1-b2 h8-g7 7. d3-d4 e7-e6 8. c2-d3 b6-a5 9. d3-c4 d7-d6 10. e2-d3 c7-b6 11. f2-e3 g6-h5 12. d1-c2 g7-g6 13. b3-b4 d8-c7 14. c2-b3 c6-c5 15. b4-b5 e8-d7 16. f3-e4 g6-f5 17. h1-g2 h5-g4 18. e3-f4 f5xe4 19. d3xe4 e6-e5 20. d4xe5 d6xe5 21. c4-d5 f7-e6 22. c3-c4 e5xf4 23. g3xf4 c7-c6 24. d5-d6 c8-c7 25. e4-e5 f6xe5 26. d6-e7 f8xe7 27. f4-g5 resign 1-0
+
+[Event "Tournament brkthr.ch.9.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "pim"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. b2-c3 b7-c6 2. a1-b2 h7-g6 3. c3-c4 g7-f6 4. h2-g3 a7-b6 5. d2-c3 d7-d6 6. a2-b3 h8-g7 7. g2-f3 g6-h5 8. h1-g2 d6-e5 9. e2-e3 f6-g5 10. d1-e2 f7-f6 11. e3-e4 e7-e6 12. e2-e3 f6-f5 13. c2-d3 d8-e7 14. b3-b4 a8-b7 15. b2-b3 e7-d6 16. f3-f4 g7-f6 17. e4xf5 e6xf5 18. f4xg5 f6xg5 19. e3-e4 f5-f4 20. e4-f5 d6-d5 21. e1-d2 e5-e4 22. g3xf4 g5xf4 23. d3xe4 d5xe4 24. d2-e3 f4-f3 25. g2-g3 e4-d3 26. resign 0-1
+
+[Event "Tournament brkthr.ch.9.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "bennok"] 
+[Result "0-1"] 
+1. d2-d3 h7-g6 2. h2-g3 a7-b6 3. a2-b3 d7-c6 4. g2-f3 f7-f6 5. b2-c3 a8-a7 6. h1-g2 h8-h7 7. a1-b2 a7-a6 8. d3-e4 c7-d6 9. e2-e3 a6-b5 10. g3-h4 h7-h6 11. f3-g4 d6-e5 12. g2-g3 e7-e6 13. c2-d3 h6-h5 14. f2-f3 f6-f5 15. g4-g5 d8-e7 16. g3-f4 e5xf4 17. e3xf4 f5-g4 18. d1-e2 g4-h3 19. e1-f2 e6-f5 20. e4-e5 c8-d7 21. c3-d4 d7-e6 22. d3-e4 c6-d5 23. e4xd5 e6xd5 24. b3-b4 h5-g4 25. b4-c5 b6xc5 26. d4xc5 d5-e4 27. f3xg4 f5xg4 28. resign 0-1
+
+[Event "Tournament brkthr.ch.9.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "ypercube"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. c2-c3 a7-b6 2. a2-b3 b7-c6 3. c3-b4 a8-b7 4. b3-c4 h7-g6 5. b2-b3 g7-f6 6. a1-b2 f7-e6 7. e2-d3 e7-d6 8. f2-e3 f6-e5 9. g2-f3 c6-c5 10. d2-c3 d6-d5 11. e1-d2 c7-c6 12. d3-d4 d7-d6 13. d1-e2 g6-f5 14. h2-g3 h8-g7 15. d2-d3 d8-e7 16. d4xc5 d6xc5 17. d3-d4 e7-d6 18. e2-d3 e5-e4 19. f1-e2 e6-e5 20. d4xe5 e4xd3 21. e2xd3 d6xe5 22. b1-c2 g7-g6 23. h1-g2 g6-g5 24. g1-f2 c8-d7 25. b4xc5 b6xc5 26. b3-b4 d7-d6 27. c4xd5 c6xd5 28. b2-b3 d5-d4 29. e3xd4 c5xd4 30. c3xd4 e5xd4 31. c1-d2 d6-e5 32. b4-b5 f5-f4 33. b3-a4 f4xg3 34. f2xg3 g5-f4 35. resign 0-1
+
+[Event "Tournament brkthr.ch.9.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "kyle douglas"] 
+[Result "0-1"] 
+1. d2-d3 h7-g6 2. h2-g3 g7-f6 3. g2-f3 h8-g7 4. h1-g2 f7-e6 5. a2-b3 a7-b6 6. b2-c3 b7-c6 7. a1-b2 a8-b7 8. d3-e4 e6-f5 9. c2-d3 c7-d6 10. f2-e3 d6-e5 11. e3-d4 e7-d6 12. e2-e3 d6-d5 13. b3-c4 d7-e6 14. g3-f4 e5xf4 15. e3xf4 g6-g5 16. g2-g3 g7-g6 17. d1-e2 e8-e7 18. e2-e3 g5-g4 19. f3xg4 f5xg4 20. f1-g2 e6-f5 21. e4xf5 g6xf5 0-1
+
+[Event "Tournament brkthr.ch.9.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "Mojmir Hanes"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. e2-e3 h7-g6 2. e3-e4 g7-f6 3. b2-c3 a7-b6 4. f2-e3 b7-c6 5. c3-d4 c7-d6 6. a2-b3 h8-g7 7. g2-f3 d7-e6 8. c2-d3 f6-g5 9. h2-g3 a8-b7 10. a1-b2 f7-f6 11. h1-g2 g6-h5 12. d3-c4 f6-f5 13. d2-d3 e7-f6 14. b2-c3 f6-e5 15. d4-d5 d8-d7 16. d3-d4 g7-f6 17. e4xf5 c6xd5 18. e3-e4 b7-c6 19. g2-h3 e5-f4 20. g3-g4 d5xe4 21. f3xe4 h5-h4 22. e1-f2 h4-g3 23. f2xg3 f4xg3 24. d1-e2 g5-f4 25. c1-d2 d6-d5 26. resign 0-1
+
+[Event "Tournament brkthr.ch.9.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "Ray Garrison"] 
+[Result "1-0"] 
+1. d2-d3 a7-b6 2. h2-g3 b7-c6 3. a2-b3 a8-b7 4. b2-c3 f7-e6 5. g2-f3 h7-g6 6. c3-d4 e7-d6 7. e2-e3 c6-d5 8. c2-c3 c7-c6 9. f3-e4 g7-f6 10. f2-f3 c6-c5 11. a1-b2 b6-b5 12. f3-f4 c5-c4 13. d1-c2 d7-c6 14. b3xc4 d5xc4 15. e1-e2 b7-b6 16. d3xc4 b5xc4 17. e2-d3 d6-d5 18. b2-b3 c6-b5 19. e4-e5 e8-e7 20. b3xc4 d5xc4 21. d3xc4 b5xc4 22. h1-g2 f6-f5 23. g2-f3 g6-h5 24. f4-g5 d8-d7 25. e5-f6 e7xf6 26. g5xf6 d7-d6 27. e3-e4 f5xe4 28. f3xe4 g8-f7 29. d4-d5 e6xd5 30. e4-f5 c8-d7 31. f5-g6 resign 1-0
+
+[Event "Tournament brkthr.ch.8.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "FatPhil"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. a2-b3 h7-g6 2. b2-c3 a7-b6 3. a1-b2 b7-c6 4. g2-f3 g7-f6 5. h1-g2 a8-b7 6. h2-g3 h8-g7 7. f2-e3 f7-e6 8. c2-d3 d7-d6 9. d3-d4 c6-c5 10. e2-d3 d6-d5 11. d3-c4 c7-c6 12. f3-e4 d5xe4 13. c3-b4 c5xb4 14. d2-c3 c6-c5 15. c4-b5 e8-d7 16. g3-f4 d7-c6 17. c3-c4 e6-d5 18. e1-d2 e7-d6 19. d1-c2 c5xd4 20. e3xd4 c6-c5 21. c2-c3 d5xc4 22. b3xc4 b4-b3 23. d4-d5 e4-d3 24. b5-c6 b3-c2 25. b1xc2 d3xc2 26. g1-h2 c2-b1 0-1
+
+[Event "Tournament brkthr.ch.8.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "MichaeI X"] 
+[Result "1-0"] 
+1. a2-b3 c7-c6 2. b2-c3 a7-b6 3. h2-g3 b6-b5 4. c3-b4 b7-b6 5. d2-c3 c8-c7 6. g2-f3 c7-d6 7. f3-e4 d6-d5 8. f2-f3 f7-e6 9. e2-e3 d7-d6 10. e3-d4 a8-b7 11. a1-b2 d8-d7 12. e1-e2 e7-f6 13. e2-d3 b8-c7 14. c3-c4 e6-e5 15. d4xe5 f6xe5 16. e4xd5 f8-e7 17. b2-a3 e7-e6 18. f3-e4 g8-f7 19. a3-a4 b7-a6 20. a4xb5 c6xb5 21. b3-a4 b5xa4 22. b4-b5 a4-a3 23. b5xa6 resign 1-0
+
+[Event "Tournament brkthr.ch.8.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "Felipe Herman van Riemsdijk"] 
+[Black "vic"] 
+[Result "0-1"] 
+0-1
+
+[Event "Tournament brkthr.ch.8.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "dimitris"] 
+[Result "1-0"] 
+1. a2-b3 c7-b6 2. b2-c3 b7-c6 3. h2-g3 h7-g6 4. g2-f3 e7-f6 5. f3-e4 f6-e5 6. f2-f3 d7-e6 7. e2-e3 g7-f6 8. c3-d4 e6-d5 9. g3-f4 e5xd4 10. e3xd4 g6-g5 11. d2-e3 d5xe4 12. f3xe4 g5-g4 13. e1-f2 f7-e6 14. d1-e2 f6-f5 15. c2-d3 c6-d5 16. e4-e5 d5-e4 17. h1-g2 e6-d5 18. f4-g5 e8-e7 19. e5-f6 e7xf6 20. g5xf6 e4xd3 21. e2xd3 f5-e4 22. d3xe4 d5xe4 23. d4-e5 c8-d7 24. e3-f4 b8-c7 25. f4-f5 g8-f7 26. f5-g6 f7xg6 27. f6-f7 e4-d3 28. f7-e8 1-0
+
+[Event "Tournament brkthr.ch.8.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "Nagy Fathy"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. d2-d3 b7-c6 2. c2-c3 a7-b6 3. c3-d4 g7-f6 4. b2-c3 f7-e6 5. a2-b3 h7-g6 6. e2-e3 c6-d5 7. b3-c4 d7-d6 8. a1-b2 c7-c6 9. b2-b3 h8-g7 10. f2-f3 f6-e5 11. d4xe5 d6xe5 12. f3-e4 e7-d6 13. g2-f3 d8-e7 14. h2-g3 d6-c5 15. d1-d2 e7-d6 16. g3-f4 a8-b7 17. h1-g2 b6-b5 18. e1-e2 e8-d7 19. g2-g3 b5-b4 20. c1-b2 d5-d4 21. e3xd4 e5xd4 22. c3xd4 c5xd4 23. b1-c2 e6-e5 24. f1-f2 b7-b6 25. f4xe5 d6xe5 26. g1-g2 b6-a5 27. f3-f4 d7-d6 28. f4-g5 c6-c5 29. e2-f3 d4-c3 30. d2xc3 b4xc3 31. b2xc3 a5-b4 32. c3xb4 c5xb4 33. resign 0-1
+
+[Event "Tournament brkthr.ch.8.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "eaeaeapepe"] 
+[Result "0-1"] 
+1. a2-b3 a7-b6 2. h2-g3 h7-g6 3. g2-f3 g7-f6 4. f3-e4 b7-c6 5. b2-c3 a8-b7 6. e2-f3 h8-g7 7. c3-d4 f7-e6 8. c2-d3 c7-d6 9. f2-e3 d8-c7 10. a1-b2 e8-f7 11. e3-f4 c6-c5 12. d2-e3 c7-c6 13. d3-c4 c8-c7 14. e1-d2 b6-b5 15. d1-c2 b8-a7 16. c2-c3 a7-b6 17. d2-d3 g6-h5 18. h1-g2 g7-g6 19. d4-d5 e6xd5 20. e4xd5 b5xc4 21. d3xc4 c6xd5 22. c4xd5 e7-e6 23. f3-e4 e6xd5 24. e4xd5 g6-f5 25. g2-f3 f7-e6 26. e3-e4 f5xe4 27. f3xe4 e6xd5 28. e4xd5 f6-f5 29. b1-c2 h5-g4 30. c2-d3 g4-h3 31. resign 0-1
+
+[Event "Tournament brkthr.ch.8.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "Reiner Martin"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. h2-g3 h7-g6 2. g2-f3 a7-b6 3. h1-g2 b7-c6 4. a2-b3 c6-d5 5. b2-c3 d7-d6 6. a1-b2 g7-f6 7. f2-e3 e7-e6 8. e1-f2 e6-e5 9. c2-d3 f7-e6 10. f3-g4 c7-c6 11. d1-c2 h8-g7 12. e2-f3 a8-b7 13. e3-f4 e6-f5 14. d2-e3 b6-b5 15. g3-h4 c6-c5 16. h4-g5 d8-e7 17. f2-g3 f6xg5 18. f4xg5 e7-f6 19. g3-h4 e8-f7 20. g2-g3 f5xg4 21. f3xg4 f6-f5 22. g4xf5 g6xf5 23. h4-h5 e5-e4 24. f1-e2 f5-g4 25. g1-g2 d6-e5 26. c1-d2 f7-e6 27. b1-a2 e6-f5 28. d3-d4 f5-f4 29. resign 0-1
+
+[Event "Tournament brkthr.ch.8.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "bennok"] 
+[Result "1-0"] 
+1. a2-b3 h7-g6 2. b2-c3 g7-f6 3. c3-d4 g6-f5 4. h2-g3 b7-c6 5. g2-f3 d7-d6 6. c2-d3 a7-b6 7. d3-c4 h8-g7 8. e2-e3 d6-d5 9. d2-d3 e7-d6 10. e3-e4 f7-e6 11. g3-f4 g7-g6 12. h1-g2 a8-b7 13. g2-g3 b7-a6 14. g3-g4 a6-a5 15. a1-b2 d6-c5 16. e4-e5 d8-e7 17. e5xf6 e7xf6 18. d4-e5 f6xe5 19. f4xe5 g6-g5 20. e5-f6 g8-g7 21. g4-h5 e8-f7 22. h5-g6 f7xg6 23. f6-f7 resign 1-0
+
+[Event "Tournament brkthr.ch.7.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "alkosan"] 
+[Result "1-0"] 
+1. b2-c3 d7-d6 2. a2-b3 e7-e6 3. g2-f3 f7-f6 4. h2-g3 1-0
+
+[Event "Tournament brkthr.ch.7.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "Henrik Sjøl"] 
+[Black "vic"] 
+[Result "1-0"] 
+1. f2-f3 h7-g6 2. d2-e3 g7-f6 3. a2-b3 a7-b6 4. b2-c3 b7-c6 5. a1-b2 a8-b7 6. e2-d3 h8-g7 7. h2-g3 c7-d6 8. f3-g4 e7-e6 9. g2-f3 e6-e5 10. d3-e4 g6-g5 11. f3-f4 d7-e6 12. f4-f5 g7-g6 13. h1-g2 d8-e7 14. c2-d3 e6xf5 15. e4xf5 e7-e6 16. d3-e4 c6-d5 17. g2-f3 d5xe4 18. f3xe4 d6-d5 19. e4xd5 e6xd5 20. d1-e2 e5-e4 21. f1-g2 e8-e7 22. c3-d4 e7-e6 23. f5xg6 f7xg6 24. g3-f4 g8-g7 25. b2-c3 g5-h4 26. d4-e5 b8-c7 27. g4-g5 f6xe5 28. f4xe5 f8-e7 29. e3-f4 c8-d7 30. c3-d4 e6-f5 31. g5-f6 e7xf6 32. e5xf6 g7xf6 33. d4-e5 resign 1-0
+
+[Event "Tournament brkthr.ch.7.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "ahmedi"] 
+[Result "0-1"] 
+1. b2-c3 b7-c6 2. a1-b2 e7-d6 3. a2-b3 a7-b6 4. e2-d3 a8-b7 5. h2-g3 g7-f6 6. g2-f3 h7-g6 7. h1-g2 h8-g7 8. c3-c4 d6-d5 9. c2-c3 d7-d6 10. f2-e3 f7-e6 11. d3-d4 d6-c5 12. d2-d3 c7-d6 13. b3-b4 b7-a6 14. b2-b3 a6-b5 15. f1-e2 f6-e5 16. f3-e4 g6-f5 17. e2-f3 g7-g6 18. g3-f4 e5xf4 19. e3xf4 g6-h5 20. f4-g5 d8-e7 21. g5-h6 f5-f4 22. e1-f2 e7-f6 23. d1-e2 f6-g5 24. c1-d2 h5-h4 25. e4-e5 e8-e7 26. f3-g4 d5xc4 27. d3xc4 c5xd4 28. g4-h5 d4-d3 29. e2xd3 h4-h3 30. g2xh3 f4-f3 31. resign 0-1
+
+[Event "Tournament brkthr.ch.7.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "ypercube"] 
+[Black "vic"] 
+[Result "1-0"] 
+1. h2-g3 h7-g6 2. e2-f3 g7-f6 3. d2-e3 h8-g7 4. c2-d3 a7-b6 5. b2-c3 b7-c6 6. a2-b3 e7-d6 7. a1-b2 d7-e6 8. f3-g4 f6-g5 9. g2-f3 f7-f6 10. e3-f4 e6-f5 11. h1-g2 c6-d5 12. f2-e3 d8-d7 13. e3-e4 c7-c6 14. e4xf5 f8-f7 15. f4xg5 f6xg5 16. f3-f4 f7-f6 17. f5xg6 resign 1-0
+
+[Event "Tournament brkthr.ch.7.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "bennok"] 
+[Result "1-0"] 
+1. b2-c3 h7-g6 2. a2-b3 g6-f5 3. h2-g3 e7-f6 4. a1-b2 c7-d6 5. e2-f3 a7-b6 6. c2-d3 b7-c6 7. f3-e4 g7-g6 8. g2-f3 d6-e5 9. d3-d4 d7-d6 10. d2-d3 a8-b7 11. f2-e3 h8-h7 12. h1-g2 h7-h6 13. b3-c4 b7-a6 14. c3-b4 f7-e6 15. b2-b3 h6-g5 16. d1-d2 e8-d7 17. c4-c5 d6xc5 18. d4xc5 b6xc5 19. b4xc5 e6-d5 20. e4xd5 c6xd5 21. d2-c3 e5-e4 22. d3xe4 f5xe4 23. f3xe4 d5xe4 24. b3-a4 d7-c6 25. c3-d4 d8-c7 26. a4-a5 a6-b5 27. f1-e2 b5-c4 28. b1-c2 1-0
+
+[Event "Tournament brkthr.ch.7.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "kyle douglas"] 
+[Black "vic"] 
+[Result "1-0"] 
+1. h2-g3 g7-f6 2. a2-b3 h7-g6 3. b2-c3 h8-g7 4. a1-b2 a7-b6 5. c3-b4 b7-c6 6. e2-d3 a8-b7 7. d3-c4 d7-d6 8. c2-d3 e7-e6 9. g2-f3 c6-c5 10. d2-c3 c7-c6 11. h1-g2 f6-e5 12. f2-e3 f7-f6 13. b4-b5 c6xb5 14. c4xb5 e6-d5 15. b3-c4 d5xc4 16. d3xc4 e8-d7 17. f3-e4 f6-f5 18. g2-f3 d7-c6 19. e1-d2 c8-d7 20. d2-d3 c6xb5 21. c4xb5 f8-e7 22. e4-d5 e7-e6 23. c3-c4 g6-g5 24. d3-e4 g7-g6 25. b2-c3 f5xe4 26. f3xe4 g6-f5 27. e4xf5 e6xf5 28. e3-e4 f5xe4 29. g3-g4 resign 1-0
+
+[Event "Tournament brkthr.ch.7.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "Mojmir Hanes"] 
+[Result "0-1"] 
+1. b2-c3 e7-e6 2. a2-b3 e6-e5 3. h2-g3 b7-c6 4. g2-f3 c6-d5 5. e2-e3 g7-f6 6. d2-d3 a7-b6 7. h1-g2 f7-e6 8. a1-b2 c7-d6 9. f3-e4 a8-b7 10. f2-f3 h7-g6 11. c3-c4 b7-c6 12. c2-c3 h8-g7 13. b3-b4 d6-c5 14. b2-b3 d7-d6 15. e1-d2 f6-f5 16. e3-f4 g7-f6 17. d2-e3 d5-d4 18. d1-d2 c5xb4 19. c3xb4 c6-c5 20. b4-b5 e8-d7 21. e4-d5 e6xd5 22. c4xd5 c8-b7 23. g3-g4 c5-b4 24. c1-b2 d4xe3 25. d2xe3 d6-c5 26. f4xe5 f6xe5 27. f3-f4 e5-d4 28. resign 0-1
+
+[Event "Tournament brkthr.ch.7.1.1"] 
+[Site "www.littlegolem.net"] 
+[White "Ray Garrison"] 
+[Black "vic"] 
+[Result "1-0"] 
+1. d2-e3 a7-b6 2. a2-b3 g7-f6 3. b2-c3 b7-c6 4. a1-b2 a8-b7 5. g2-f3 h7-g6 6. h2-g3 h8-g7 7. h1-g2 d7-e6 8. f3-e4 f6-e5 9. c3-d4 f7-f6 10. f2-f3 c6-c5 11. d4-d5 e6xd5 12. e4xd5 d8-d7 13. f3-e4 e7-e6 14. e2-d3 c7-c6 15. b3-c4 f8-e7 16. b2-c3 c8-c7 17. d3-d4 e6xd5 18. c4xd5 c6xd5 19. e4xd5 b7-c6 20. d5xc6 d7xc6 21. c2-b3 c6-b5 22. d4-d5 e8-d7 23. g2-f3 g6-f5 24. e3-e4 e7-e6 25. c3-c4 b5xc4 26. b3xc4 f5xe4 27. f3xe4 f6-f5 28. d5xe6 d7xe6 29. c4-d5 resign 1-0
+
+[Event "Tournament brkthr.ch.6.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "FatPhil"] 
+[Result "1-0"] 
+1. a2-b3 h7-g6 2. h2-g3 g7-f6 3. b2-c3 h8-g7 4. g2-f3 b7-c6 5. d2-e3 a8-b7 6. h1-g2 a7-b6 7. f3-f4 e7-e6 8. e3-e4 f6-f5 9. e2-f3 f7-f6 10. g3-g4 d7-d6 11. f2-e3 d6-e5 12. c2-d3 c7-d6 13. a1-b2 g7-h6 14. e1-f2 h6-g5 15. f2-g3 c6-d5 16. c3-d4 b6-c5 17. b2-c3 b7-c6 18. b3-c4 d8-c7 19. g2-h3 e5xd4 20. e3xd4 c5xd4 21. c3xd4 c7-b6 22. h3-h4 g5xh4 23. g3xh4 b6-c5 24. e4-e5 f6xe5 25. d4xe5 d6xe5 26. f4xe5 f5-f4 27. e5-f6 g6-f5 28. h4-h5 f4-g3 29. h5-h6 f5-f4 30. h6-g7 f4-e3 31. g7-h8 1-0
+
+[Event "Tournament brkthr.ch.6.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "David Milne"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. a2-a3 h7-g6 2. b2-b3 a7-b6 3. a3-a4 g7-f6 4. b3-b4 b7-c6 5. e2-d3 h8-g7 6. d3-c4 f7-e6 7. d2-c3 e7-d6 8. f2-e3 a8-b7 9. e3-d4 c6-c5 10. c4-b5 f6-e5 11. d4xc5 d6xc5 12. g2-f3 g6-f5 13. c2-d3 e6-d5 14. b4-a5 b6xa5 15. c3-c4 d5-d4 16. h2-g3 c5-b4 17. c4-c5 d4-c3 18. d3-c4 b4-b3 19. c4-d5 a5-b4 20. a4-a5 c3-c2 21. d1xc2 b3xc2 22. b1xc2 b4-a3 23. b5-b6 a3-a2 24. resign 0-1
+
+[Event "Tournament brkthr.ch.6.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "Rob"] 
+[Result "1-0"] 
+1. e2-e3 a7-b6 2. a2-b3 h7-g6 3. h2-g3 a8-a7 4. b2-c3 h8-h7 5. a1-b2 f7-f6 6. g2-f3 b7-c6 7. d2-d3 d7-d6 8. h1-g2 f8-f7 9. f3-f4 c8-d7 10. c3-b4 c6-b5 11. d1-d2 a7-a6 12. d3-c4 d7-c6 13. e3-d4 e8-d7 14. f2-e3 g6-f5 15. d2-d3 g7-g6 16. c2-c3 f7-e6 17. e3-e4 g8-g7 18. g3-h4 f5-g4 19. e1-f2 g6-h5 20. d4-d5 e6-e5 21. f4-f5 e5-f4 22. d5xc6 d7xc6 23. f5-e6 resign 1-0
+
+[Event "Tournament brkthr.ch.6.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "Tore S"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. g2-g3 h7-g6 2. b2-c3 a7-b6 3. g3-g4 b7-c6 4. h1-g2 a8-b7 5. h2-g3 g7-f6 6. a2-b3 d7-d6 7. a1-b2 h8-g7 8. b3-b4 e7-e6 9. c2-b3 e6-e5 10. f2-f3 f6-f5 11. d1-c2 d6-d5 12. e2-e3 c7-d6 13. d2-d3 f7-f6 14. f1-e2 e8-e7 15. b3-a4 e7-e6 16. c3-c4 f5xg4 17. f3xg4 f6-f5 18. g4xf5 e6xf5 19. a4-a5 d8-c7 20. c2-c3 g6-g5 21. c3-d4 b6-b5 22. c4-c5 d5-c4 23. d3xc4 b5xc4 24. c5xd6 c7xd6 25. b4-c5 d6xc5 26. d4xc5 f8-e7 27. g1-f2 e5-e4 28. c1-c2 c6-b5 29. e3-d4 b5-b4 30. e1-d2 f5-f4 31. d4-d5 c4-c3 32. d5-d6 c3xb2 33. d6-d7 b2-c1 0-1
+
+[Event "Tournament brkthr.ch.6.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "eaeaeapepe"] 
+[Result "1-0"] 
+1. e2-e3 a7-b6 2. a2-b3 b7-c6 3. g2-f3 a8-b7 4. h2-g3 h7-g6 5. b2-c3 g7-f6 6. h1-g2 h8-g7 7. a1-b2 c7-d6 8. d2-d3 f7-e6 9. d3-e4 c8-c7 10. e3-d4 c6-c5 11. f2-e3 c7-c6 12. c3-c4 d8-c7 13. c2-c3 f8-f7 14. d1-d2 g6-g5 15. e3-f4 f7-g6 16. d2-e3 e8-f7 17. g3-g4 g5-h4 18. g4-g5 g6-h5 19. e1-f2 c5xd4 20. c3xd4 b6-a5 21. d4-d5 a5-b4 22. g2-h3 b8-a7 23. h3-g4 h5xg4 24. f3xg4 h4-h3 25. g4-h5 f6xg5 26. f4xg5 f7-f6 27. h5-h6 resign 1-0
+
+[Event "Tournament brkthr.ch.6.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "Zul Nadzri"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. a2-b3 h7-g6 2. b3-c4 a7-b6 3. b2-b3 b7-c6 4. b3-b4 a8-b7 5. c2-b3 g7-f6 6. d2-c3 h8-g7 7. e2-d3 e7-d6 8. f2-e3 c6-c5 9. d3-d4 d7-c6 10. a1-b2 f7-e6 11. g2-f3 c5xb4 12. c3xb4 c6-c5 13. b2-c3 c7-c6 14. f1-e2 e6-d5 15. e3-e4 d5xc4 16. b3xc4 c5xb4 17. c3xb4 c6-c5 18. b4xc5 d6xc5 19. e2-e3 c5-b4 20. c1-b2 b6-a5 21. d1-c2 a5-a4 22. resign 0-1
+
+[Event "Tournament brkthr.ch.6.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "brunbrun"] 
+[Result "1-0"] 
+1. e2-e3 h7-g6 2. h2-g3 a7-b6 3. a2-b3 g7-f6 4. g2-f3 b7-c6 5. f3-f4 c7-d6 6. d2-d3 g6-h5 7. f2-f3 f7-g6 8. b2-c3 h8-g7 9. a1-b2 d6-e5 10. d3-e4 d7-d6 11. c2-d3 a8-b7 12. e1-f2 b6-a5 13. h1-g2 d8-d7 14. g3-g4 d7-e6 15. b3-b4 b7-b6 16. b4xa5 b6xa5 17. f4xe5 f6xe5 18. e3-d4 g7-f6 19. f2-e3 f6-f5 20. g4-g5 g8-g7 21. f3-f4 e5xf4 22. e3xf4 e7-f6 23. e4-e5 d6xe5 24. d4xe5 f6xe5 25. f4xe5 e8-e7 26. d3-d4 f8-f7 27. d4-c5 b8-c7 28. b2-b3 f7-f6 29. e5xf6 e7xf6 30. b3-b4 a5xb4 31. c3xb4 c8-b7 32. b4-a5 f5-f4 33. c5-d6 resign 1-0
+
+[Event "Tournament brkthr.ch.6.2.2"] 
+[Site "www.littlegolem.net"] 
+[White "bennok"] 
+[Black "vic"] 
+[Result "1-0"] 
+1. a2-b3 a7-b6 2. b3-b4 g7-f6 3. h2-g3 h7-g6 4. b2-b3 b7-c6 5. a1-b2 f7-e6 6. g2-f3 f6-f5 7. d2-e3 e7-f6 8. e3-f4 c6-c5 9. c2-c3 d7-d6 10. e2-d3 e6-e5 11. d3-e4 c7-c6 12. b3-c4 b6-b5 13. b2-b3 e5-d4 14. e1-d2 d8-c7 15. f2-e3 d4xc3 16. d2xc3 c7-b6 17. g3-g4 f5xe4 18. f3xe4 b5xc4 19. b3xc4 b6-b5 20. b4xc5 d6xc5 21. c4-d5 c6xd5 22. e4xd5 b8-c7 23. e3-d4 c5-c4 24. f4-e5 f6xe5 25. d4-c5 f8-e7 26. c3-b4 e8-d7 27. b4-a5 resign 1-0
+
+[Event "Tournament brkthr.ch.5.3.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "Kaleidoscope"] 
+[Result "1-0"] 
+1. a2-b3 1-0
+
+[Event "Tournament brkthr.ch.5.3.1"] 
+[Site "www.littlegolem.net"] 
+[White "yashio"] 
+[Black "vic"] 
+[Result "0-1"] 
+0-1
+
+[Event "Tournament brkthr.ch.5.3.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "siroman"] 
+[Result "1-0"] 
+1. a2-b3 d7-c6 2. c2-c3 e7-d6 3. e2-e3 f7-e6 4. h2-g3 g7-g6 5. g2-f3 e6-f5 6. e3-e4 f5xe4 7. f3xe4 d6-e5 8. d2-e3 e8-e7 9. c3-d4 e5xd4 10. e3xd4 d8-d7 11. b3-c4 g8-f7 12. b2-c3 e7-d6 13. g3-f4 d7-e6 14. f2-f3 h8-g7 15. d4-e5 d6xe5 16. f4xe5 f7-f6 17. c3-d4 f6xe5 18. d4xe5 f8-e7 19. f3-f4 c7-d6 20. e5xd6 e7xd6 21. e4-e5 d6xe5 22. f4xe5 b8-c7 23. c4-c5 c8-d7 24. c5-d6 resign 1-0
+
+[Event "Tournament brkthr.ch.5.3.1"] 
+[Site "www.littlegolem.net"] 
+[White "SpiRiTeLLo"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. b2-c3 a7-b6 2. a1-b2 e7-e6 3. a2-b3 d7-d6 4. c2-d3 h7-g6 5. d1-c2 g7-f6 6. c3-c4 b7-c6 7. c2-c3 c6-c5 8. c1-c2 f6-e5 9. c4-b5 e6-d5 10. c3-c4 f7-e6 11. c2-c3 b6-a5 12. b1-a2 c5-b4 13. c3xb4 a5xb4 14. d2-c3 d6-c5 15. e1-d2 c7-b6 16. a2-a3 b4xa3 17. b2xa3 b6-a5 18. b5-b6 d5-d4 19. e2-e3 g6-f5 20. f1-e2 f8-e7 21. b3-b4 a5-a4 22. b4xc5 a4-b3 23. b6-a7 b8xa7 24. c5-c6 b3-b2 25. c6-b7 b2-b1 0-1
+
+[Event "Tournament brkthr.ch.5.3.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "Jan Arild Teland"] 
+[Result "1-0"] 
+1. a2-b3 h7-g6 2. d2-d3 a7-b6 3. e2-e3 c7-d6 4. g2-f3 f7-f6 5. h2-g3 h8-h7 6. f3-f4 f8-f7 7. f2-f3 d7-e6 8. b2-c3 d8-d7 9. d3-e4 c8-c7 10. e3-d4 c7-c6 11. c2-d3 h7-h6 12. c3-c4 h6-h5 13. a1-b2 b8-c7 14. b3-b4 a8-a7 15. h1-g2 g8-h7 16. d1-c2 a7-a6 17. c2-b3 a6-b5 18. d4-d5 h7-h6 19. c4xb5 c6xb5 20. d3-c4 d7-c6 21. d5xc6 b7xc6 22. c4xb5 c6xb5 23. b3-a4 c7-c6 24. a4-a5 resign 1-0
+
+[Event "Tournament brkthr.ch.5.3.1"] 
+[Site "www.littlegolem.net"] 
+[White "alokik"] 
+[Black "vic"] 
+[Result "0-1"] 
+0-1
+
+[Event "Tournament brkthr.ch.5.3.1"] 
+[Site "www.littlegolem.net"] 
+[White "vic"] 
+[Black "Matteo A."] 
+[Result "1-0"] 
+1. a2-b3 e7-d6 2. d2-d3 f8-e7 3. g2-f3 b7-c6 4. b2-c3 a7-b6 5. f2-e3 a8-b7 6. a1-b2 c6-d5 7. c3-d4 c7-c6 8. f3-f4 e7-f6 9. e2-f3 b8-c7 10. c2-c3 f7-e6 11. h1-g2 h7-g6 12. h2-g3 d8-e7 13. e3-e4 e8-f7 14. c3-c4 d5xc4 15. b3xc4 b6-a5 16. e4-e5 d6xe5 17. f4xe5 a5-b4 18. d1-c2 f6xe5 19. d4xe5 b7-b6 20. d3-d4 f7-f6 21. g3-f4 g8-f7 22. f3-e4 g6-g5 23. g2-g3 g5-g4 24. f1-g2 f6-f5 25. c2-d3 f5xe4 26. d3xe4 b4-b3 27. f4-g5 h8-h7 28. g3-f4 b6-b5 29. f4-f5 b5xc4 30. f5-f6 b3-c2 31. b1xc2 e7xf6 32. g5xf6 g7xf6 33. e5xf6 resign 1-0
+
+[Event "Tournament brkthr.ch.5.3.1"] 
+[Site "www.littlegolem.net"] 
+[White "Ragnar Wikman"] 
+[Black "vic"] 
+[Result "0-1"] 
+1. a2-b3 a7-b6 2. d2-c3 e7-e6 3. b3-c4 d7-d6 4. c3-d4 g7-f6 5. c2-d3 f6-e5 6. f2-e3 b7-c6 7. d3-e4 b6-c5 8. b2-c3 a8-b7 9. g2-f3 h7-g6 10. f3-f4 f7-f6 11. h2-g3 h8-g7 12. g3-g4 g6-g5 13. f4-f5 e6xf5 14. e4xf5 e8-f7 15. e2-f3 c5xd4 16. c3xd4 d6-d5 17. c4-c5 b7-b6 18. g4-h5 b6xc5 19. d4xc5 d8-d7 20. f5-g6 f7xg6 21. h5xg6 f6-f5 22. e1-f2 d7-d6 23. c5xd6 c7xd6 24. f2-g3 d5-e4 25. f3xe4 f5xe4 26. h1-g2 g5-g4 27. d1-e2 c6-d5 28. g3-f4 d5-d4 29. e3xd4 e5xf4 30. d4-d5 f8-f7 31. g6xf7 g8xf7 32. a1-b2 g4-g3 33. resign 0-1
+
+   

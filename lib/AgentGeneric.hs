@@ -247,7 +247,7 @@ instance (Game2 g, Show g) => Default (GameDriverCallback g) where
     def = GameDriverCallback (\g -> putStrLn $ "Game finished! Winner: " ++ show (winner g))
                              (\_ _ -> return True)
 
--- | a 'driver' for Game2 games. passed appropriate callback structure drives the game from given state to the end.
+-- | a 'driver' for Game2 games. passed appropriate callback structure drives the game from given state to the end. returns final state of game after finishing.
 driverG2 :: (Game2 g, Repr (GameRepr g), Agent2 a1, Agent2 a2) => g -> a1 -> a2 -> (GameDriverCallback g) -> ThrLocIO g
 driverG2 g0 a1 a2 cb = do 
   let allSteps = cycle [((applyAgent a1),P1),((applyAgent a2),P2)]
