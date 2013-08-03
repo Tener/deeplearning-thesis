@@ -199,7 +199,7 @@ mutateRealGamesTrainNetwork game0 sourceFiles sampleCount gameDepthProb mlopts =
     forM (zip [1..sampleCount] gameStates) $ \ (cnt,game) -> do
       let cb = GameDriverCallback (\ _ -> return ()) (\ _ _ -> do
                                                          chance <- uniform mygen
-                                                         return (chance < gameDepthProb))
+                                                         return (chance > gameDepthProb))
       newGame <- driverG2 (game `ofType` game0) agRnd agRnd cb
       BSC8.hPutStrLn han (serializeGame newGame)
     
