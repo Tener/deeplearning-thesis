@@ -84,14 +84,15 @@ instance LittleGolemMoveParser Breakthrough where
       let g0 = freshGame (8,8) :: Breakthrough
           mvs = concat movePairs
           applyMove' g m = case applyMove g m of
-                             Nothing -> error "invalid move"
+                             Nothing -> error ("LittleGolem: invalid move: " ++ show (g,m))
                              Just g' -> g'
-          all'games = scanl (applyMove') g0 mvs
+          all'games = scanl applyMove' g0 mvs
 
       return all'games
             
 parseGameFileName :: (LittleGolemMoveParser a) => FilePath -> IO [GameRecord a]
 parseGameFileName fn = do
+  print fn
   res <- parseOnly parseGameFile `fmap` Data.Text.IO.readFile fn
   case res of
      Left err -> print err >> return []
