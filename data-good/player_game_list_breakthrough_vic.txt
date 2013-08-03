@@ -1,4 +1,3 @@
-
 [Event "Tournament brkthr.ch.18.1.1"] 
 [Site "www.littlegolem.net"] 
 [White "slaapgraag"] 

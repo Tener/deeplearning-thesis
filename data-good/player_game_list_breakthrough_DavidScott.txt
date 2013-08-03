@@ -1,4 +1,3 @@
-
 [Event "Tournament brkthr.mc.2013.feb.2.1"] 
 [Site "www.littlegolem.net"] 
 [White "David Scott"] 

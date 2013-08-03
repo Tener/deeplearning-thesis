@@ -1,4 +1,3 @@
-
 [Event "Tournament brkthr.mc.2013.may.1.3"] 
 [Site "www.littlegolem.net"] 
 [White "wanderer_c"] 

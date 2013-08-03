@@ -1,4 +1,3 @@
-
 [Event "Tournament brkthr.in.DEFAULT.10"] 
 [Site "www.littlegolem.net"] 
 [White "Madris"] 
