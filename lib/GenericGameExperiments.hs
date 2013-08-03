@@ -243,7 +243,7 @@ gameplayConstraints = gameplayConstraints'0
 data ConstraintSource = CS_Cache | CS_Generate | CS_Gameplay Int (FilePath, Text) deriving Show
 
 getConstraints :: ConstraintSource -> ThrLocIO [(MyGame, MyGame)]
-getConstraints constraintSource = case constraintSource of
+getConstraints constraintSource = shuffle =<< case constraintSource of
                    CS_Gameplay playerUseCoinstraints (filepath,playerName) -> getConstraintsPlayer playerUseCoinstraints filepath playerName 
                    CS_Generate -> genConstraints
                    CS_Cache    -> genConstraintsCached

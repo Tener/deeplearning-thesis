@@ -11,6 +11,7 @@ import ConstraintsGeneric
 import ThreadLocal
 import GenericGameExperiments
 import MyVectorType as Vector
+import Utils (shuffle)
 
 -- import Numeric.Container (sumElements)
 -- import Data.Packed.Vector (Vector)
@@ -110,7 +111,8 @@ multiNeuronMinimalGAReprSearch threads allowedBad workSetSize searchTimeout sing
             
             wt thr'act = waitAnyCancel =<< withTimeout bestRef searchTimeout (mapM thr'act [1..threads])
 
-        let constraintsWorkingSet = take workSetSize constraintsRemaining
+        constraintsRemainingR <- shuffle constraintsRemaining
+        let constraintsWorkingSet = take workSetSize constraintsRemainingR
 
         (_,(neuron, score)) <- wt (\ thr -> async $ singleNeuronMinimalGAReprSearch callback thr singleNeuronTarget constraintsWorkingSet mconfig)
         let predicate constraint = checkConstraint (sumElements . computeTNetworkSigmoid (uncurry mkTNetwork neuron)) constraint
