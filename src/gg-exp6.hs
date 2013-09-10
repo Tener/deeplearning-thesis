@@ -27,10 +27,10 @@ import System.FilePath
 useCachedDBN = False
 searchTimeout = 1 # Minute
 searchTimeoutMulti = 10 # Second
-dbnGameCount = 25000
-dbnGameProb = 0.7
-dbnMatlabOpts = Just (def {dbnSizes = [1000], numEpochs = 5, implementation = Octave})
-constraintSource = CS_Gameplay playerUseCoinstraints gameplayConstraints'1
+dbnGameCount = 100000
+dbnGameProb = 0.01
+dbnMatlabOpts = Just (def {dbnSizes = [500, 500, 500], numEpochs = 5, implementation = Matlab})
+constraintSource = CS_Gameplay playerUseCoinstraints gameplayConstraints'0
 playerUseCoinstraints = 5000
 constraintsStage2Count = 500
 allowedBad = round $ 0.10 * fromIntegral workSetSize

@@ -30,11 +30,11 @@ flag abalone
 
 flag vector-hmatrix
   description:  use hmatrix-based implementation of vector/matrix ops
-  default:      False
+  default:      True
 
 flag vector-vector
   description:  use vector-based implementation of vector/matrix ops
-  default:      True
+  default:      False
 
 -- flag vector-dph
 --   description:  use dph-based implementation of vector/matrix ops
@@ -47,11 +47,11 @@ flag vector-ddot
 
 library
   hs-source-dirs:         lib
-  exposed-modules:        NeuralNets, Utils, MinimalNN, GraphNN, Config, 
+  exposed-modules:        NeuralNets, THUtils, Utils, MinimalNN, GraphNN, Config, 
                           GenericGame, AgentGeneric, BreakthroughGame, HistogramGeneric,
                           ConstraintsGeneric, ThreadLocal,
                           LittleGolem, MinimalGA, MCTS, MyVectorType
-  build-depends:          base, mwc-random, process, containers, hashmap, game-tree, split, 
+  build-depends:          base, mwc-random, process, containers, hashmap, game-tree, split, template-haskell,
                           hashable == 1.2.0.4, 
                           vector, io-memoize, data-default, async, 
                           global-config, filepath, directory, transformers, 
@@ -145,14 +145,14 @@ library
 --   Build-depends:          base, deeplearning, async, data-default
 --   Ghc-options:            -rtsopts
 --  
-Executable gg-exp3
-  Main-is:                src/gg-exp3.hs
-  Build-depends:          base, deeplearning, async, data-timeout, directory, chronograph, data-default, text, deepseq, parallel, uglymemo
-  Ghc-options:            -rtsopts -threaded -Wall  -feager-blackholing
-  if flag(build-experiments) && flag(matlab)
-    Buildable:            True
-  else
-    Buildable:            False
+-- Executable gg-exp3
+--   Main-is:                src/gg-exp3.hs
+--   Build-depends:          base, deeplearning, async, data-timeout, directory, chronograph, data-default, text, deepseq, parallel, uglymemo
+--   Ghc-options:            -rtsopts -threaded -Wall  -feager-blackholing
+--   if flag(build-experiments) && flag(matlab)
+--     Buildable:            True
+--   else
+--     Buildable:            False
   
 --  
 -- Executable gg-exp4
@@ -161,27 +161,63 @@ Executable gg-exp3
 --   Ghc-options:            -rtsopts -threaded -Wall
 --  
 
-Executable gg-exp5
-  Main-is:                src/gg-exp5.hs
-  Build-depends:          base, deeplearning, data-timeout, data-default, parallel, deepseq, async, filepath, directory
+-- Executable gg-exp5
+--   Main-is:                src/gg-exp5.hs
+--   Build-depends:          base, deeplearning, data-timeout, data-default, parallel, deepseq, async, filepath, directory
+--   Ghc-options:            -rtsopts -threaded -Wall -O2  -feager-blackholing
+--   if flag(build-experiments) && flag(matlab)
+--     Buildable:            True
+--   else
+--     Buildable:            False
+--  
+-- Executable gg-exp6
+--   Main-is:                src/gg-exp6.hs
+--   Build-depends:          base, deeplearning, data-timeout, data-default, parallel, deepseq, async, filepath, directory
+--   Ghc-options:            -rtsopts -threaded -Wall -O2  -feager-blackholing
+--   if flag(build-experiments) && flag(matlab)
+--     Buildable:            True
+--   else
+--     Buildable:            False
+--  
+-- Executable gg-exp7
+--   Main-is:                src/gg-exp7.hs
+--   Build-depends:          base, deeplearning, data-timeout, data-default, parallel, deepseq, async, filepath, directory
+--   Ghc-options:            -rtsopts -threaded -Wall -O2  -feager-blackholing
+--   if flag(build-experiments) && flag(matlab)
+--     Buildable:            True
+--   else
+--     Buildable:            False
+
+Executable gg-exp8
+  Main-is:                src/gg-exp8.hs
+  Build-depends:          base, deeplearning, data-timeout, data-default, parallel, deepseq, async, filepath, directory, containers
   Ghc-options:            -rtsopts -threaded -Wall -O2  -feager-blackholing
   if flag(build-experiments) && flag(matlab)
     Buildable:            True
   else
     Buildable:            False
 
-Executable gg-exp6
-  Main-is:                src/gg-exp6.hs
-  Build-depends:          base, deeplearning, data-timeout, data-default, parallel, deepseq, async, filepath, directory
+-- Executable gg-exp9
+--   Main-is:                src/gg-exp9.hs
+--   Build-depends:          base, deeplearning, data-timeout, data-default, parallel, deepseq, async, filepath, directory, containers, mwc-random
+--   Ghc-options:            -rtsopts -threaded -Wall -O2  -feager-blackholing
+--   if flag(build-experiments) && flag(matlab)
+--     Buildable:            True
+--   else
+--     Buildable:            False
+
+Executable gg-exp9
+  Main-is:                src/gg-exp9.hs
+  Build-depends:          base, deeplearning, data-timeout, data-default, parallel, deepseq, async, filepath, directory, containers, mwc-random
   Ghc-options:            -rtsopts -threaded -Wall -O2  -feager-blackholing
   if flag(build-experiments) && flag(matlab)
     Buildable:            True
   else
     Buildable:            False
 
-Executable gg-exp7
-  Main-is:                src/gg-exp7.hs
-  Build-depends:          base, deeplearning, data-timeout, data-default, parallel, deepseq, async, filepath, directory
+Executable gg-exp10
+  Main-is:                src/gg-exp10.hs
+  Build-depends:          base, deeplearning, data-timeout, data-default, parallel, deepseq, async, filepath, directory, containers, mwc-random, split
   Ghc-options:            -rtsopts -threaded -Wall -O2  -feager-blackholing
   if flag(build-experiments) && flag(matlab)
     Buildable:            True
@@ -189,30 +225,30 @@ Executable gg-exp7
     Buildable:            False
 
 
-Executable experiment-progress-email-reporter
-  Main-is:                src/experiment-progress-email-reporter.hs
-  Build-depends:          base, blaze-html, mime-mail, filepath, directory, process, text
-  if flag(build-utils)
-    Buildable:            True
-  else
-    Buildable:            False
-
-Executable standalone-dbn-evaluator
-  Main-is:                src/standalone-dbn-evaluator.hs
-  Build-depends:          base, deeplearning
-  Ghc-options:            -rtsopts -threaded -Wall -O2  -feager-blackholing
-  if flag(build-utils) && flag(matlab)
-    Buildable:            True
-  else
-    Buildable:            False
-
-Executable dbn-converter
-  Main-is:                src/dbn-converter.hs
-  Build-depends:          base, deeplearning, hmatrix, directory, filepath, binary, ghc-prim
-  if flag(build-utils)
-    Buildable:            True
-  else
-    Buildable:            False
+-- Executable experiment-progress-email-reporter
+--   Main-is:                src/experiment-progress-email-reporter.hs
+--   Build-depends:          base, blaze-html, mime-mail, filepath, directory, process, text
+--   if flag(build-utils)
+--     Buildable:            True
+--   else
+--     Buildable:            False
+--  
+-- Executable standalone-dbn-evaluator
+--   Main-is:                src/standalone-dbn-evaluator.hs
+--   Build-depends:          base, deeplearning
+--   Ghc-options:            -rtsopts -threaded -Wall -O2  -feager-blackholing
+--   if flag(build-utils) && flag(matlab)
+--     Buildable:            True
+--   else
+--     Buildable:            False
+--  
+-- Executable dbn-converter
+--   Main-is:                src/dbn-converter.hs
+--   Build-depends:          base, deeplearning, hmatrix, directory, filepath, binary, ghc-prim
+--   if flag(build-utils)
+--     Buildable:            True
+--   else
+--     Buildable:            False
 
 
 --  

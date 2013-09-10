@@ -8,10 +8,12 @@ import System.Random.MWC
 import Data.Default
 import Data.Array.IArray
 import Control.Monad
+import Control.Applicative
 import Data.List (sort, sortBy, group)
 import Data.Ord (comparing)
 import Control.Arrow ((&&&))
 import ThreadLocal
+import Utils
 
 class MinimalGA ent where
     -- | scoring datatype, lower means better
@@ -26,11 +28,15 @@ class MinimalGA ent where
     newEntity :: (WorkParams ent) -> (EntityParams ent) -> ThrLocIO ent
     crossover :: (WorkParams ent) -> ent -> ent -> ThrLocIO ent
     mutation :: (WorkParams ent) -> Double -> ent -> ThrLocIO ent
-    -- | score entity using provided dataset; lower means better. consider using 'negate' if your original score doesn't work this way.
-    scoreEntity :: ScoreDataset ent -> ent -> Score ent
+    -- | score entity using provided dataset; lower means better. consider using 'negate' if your original score doesn't work this way.    
+    scoreEntity :: ScoreDataset ent -> ent -> ThrLocIO (Score ent)
+    -- | score population. default implementation simply calls score entity for each element. advanced uses may use others members of population for scoring.
+    scorePopulation :: ScoreDataset ent -> [ent] -> ThrLocIO [((Score ent), ent)]
+    scorePopulation dataset pop = mapM (\p -> (\ s -> (s,p)) <$> scoreEntity dataset p) pop
 
 -- | encapsulates all evolution-related parameters supplied by caller
 data EvolveConfig ent = EvolveConfig { ecPopulationSize :: Int -- ^ population size
+                                     , ecKillCount :: Int -- ^ number of worst entities to drop from population
                                      , ecArchiveSize :: Int -- ^ archive (a list of best entities ever) size
                                      , ecMaxGenerations :: Int -- ^ maximum number of generations to create
                                      , ecMutatedRatio :: Double -- ^ percentage of entites bred by mutation (best works < 0.2)
@@ -43,6 +49,7 @@ type AlmostEvolveConfig ent = (EvolveStepParams ent -> ThrLocIO Bool) -> EvolveC
 
 instance Default (EvolveConfig ent) where
     def = EvolveConfig { ecPopulationSize = 300
+                       , ecKillCount = 0
                        , ecArchiveSize = 50
                        , ecMaxGenerations = 100
                        , ecMutatedRatio = 0.2
@@ -83,9 +90,11 @@ evolveStep esParams = do
   crossedEnt <- mapM (\ (ent1, ent2) -> crossover (esWorkParams esParams) ent1 ent2) =<< (replicateM crossCnt pick2Elems)
   mutatedEnt <- mapM (mutation (esWorkParams esParams) (ecMutationParam conf)) =<< (replicateM mutatCnt pick1Elem)
 
-  let newPop = scorePopulation (esDataset esParams) $ (mutatedEnt ++ crossedEnt)
-      newArch = take (ecArchiveSize conf) $ nubSort (oldArchive ++ newPop)
-      newBest = head newArch
+  newPop' <- scorePopulation (esDataset esParams) $ (mutatedEnt ++ crossedEnt)
+  let newBigPop = nubSort (oldArchive ++ newPop')
+      newArch = take (ecArchiveSize conf) $ newBigPop
+      newBest = head newBigPop
+      newPop = reverse . drop (ecKillCount conf) . reverse $ newBigPop
 
   newPop `seq` newArch `seq` newBest `seq` return ()
 
@@ -96,22 +105,13 @@ evolveStep esParams = do
                   , esBest = newBest
                   , esPopulation = newPop
                   }
-  
-mkGen :: IO GenIO
-mkGen = withSystemRandom $ asGenIO $ return
-
-nubSort :: (Ord el) => [el] -> [el]
-nubSort xs = map head $ group $ sort xs
-
-scorePopulation :: (MinimalGA ent) => (ScoreDataset ent) -> [ent] -> [((Score ent), ent)]
-scorePopulation dataset pop = map (scoreEntity dataset &&& id) pop
 
 evolve :: (MinimalGA ent, Show (Score ent), Ord (Score ent), Ord ent) => (EvolveConfig ent) -> (EntityParams ent) -> (WorkParams ent) -> (ScoreDataset ent) -> ThrLocIO [((Score ent), ent)]
 evolve ec entPar workPar dataset = do
   initialPop <- replicateM (ecPopulationSize ec) (newEntity workPar entPar)
-  rgen <- mkGen
-  let initialPopScored = scorePopulation dataset initialPop
-      bestEnt = head $ sortBy (comparing fst) initialPopScored
+  rgen <- mkGenIO
+  initialPopScored <- scorePopulation dataset initialPop
+  let bestEnt = head $ sortBy (comparing fst) initialPopScored
       esPar = EvolveStepParams { esConfig = ec 
                                , esWorkParams = workPar
                                , esEntityParams = entPar

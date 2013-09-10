@@ -24,16 +24,19 @@ evaluateDBN'Short fn = runThrLocMainIO $ do
   -- let () = assertType dbn nn
   -- agSmpl <- mkAgent (dbn :: TNetwork) :: IO AgentSimple
   agSmpl <- mkTimed "simple" (dbn :: TNetwork) :: IO (AgentTrace (AgentSimple TNetwork))
-  agTree <- mkTimed "tree" (dbn, 3) :: IO (AgentTrace (AgentGameTree TNetwork))
-  agMCT <- mkTimed "mcts" 50 :: IO (AgentTrace AgentMCTS)
+  agTree <- mkTimed "tree" (dbn, 4) :: IO (AgentTrace (AgentGameTree TNetwork))
+  agMCT <- mkTimed "mcts" 75 :: IO (AgentTrace AgentMCTS)
+  agSmpl'bare <- mkAgent (dbn :: TNetwork) :: IO (AgentSimple TNetwork)
+  agMCTEv <- mkTimed "mcts'eval" (75, agSmpl'bare) :: IO (AgentTrace (AgentMCTS'Eval (AgentSimple TNetwork)))
   agMCTNet <- mkTimed "mctNet" (2, 50, dbn) :: IO (AgentTrace (AgentParMCTS (AgentSimple TNetwork)))
 
   agRnd <- mkAgent () :: IO AgentRandom
   putStrLnTL "======================================================================================"
   putStrLnTL ("FN=" ++ fn)
-  _ <- reportWinCount 10 agSmpl agMCT P1
-  _ <- reportWinCount 10 agTree agMCT P1
-  _ <- reportWinCount 10 agMCTNet agMCT P1
+  _ <- reportWinCount 20 agMCTEv agMCT P1
+  _ <- reportWinCount 20 agSmpl agMCT P1
+  -- _ <- reportWinCount 20 agTree agMCT P1
+  -- _ <- reportWinCount 20 agMCTNet agMCT P1
 
   putStrLnTL "======================================================================================"
 
@@ -42,7 +45,7 @@ evaluateDBN :: FilePath -> IO ()
 evaluateDBN fn = runThrLocMainIO $ do
   dbn <- read <$> readFile fn
   agSmpl <- mkTimed "simple" (dbn :: TNetwork) :: IO (AgentTrace (AgentSimple TNetwork))
-  agTree <- mkTimed "tree" (dbn, 3) :: IO (AgentTrace (AgentGameTree TNetwork))
+  agTree <- mkTimed "tree" (dbn, 4) :: IO (AgentTrace (AgentGameTree TNetwork))
   agMCT <- mkTimed "mcts" 50 :: IO (AgentTrace AgentMCTS)
   agMCTNet <- mkTimed "mctNet" (2, 5, dbn) :: IO (AgentTrace (AgentParMCTS (AgentSimple TNetwork)))
   agMCTS'Tree <- mkTimed "mcts'Tree" (2, 5, dbn) :: IO (AgentTrace (AgentProperMCTS'Tree (AgentSimple TNetwork)))

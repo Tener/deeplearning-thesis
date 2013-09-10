@@ -24,7 +24,7 @@ import Text.Printf
 
 data Constraint g = CBetter !g !g -- ^ first state is better than the other. assumes this is P1 turn.
                   | CBetterAll !g ![g] -- ^ first state is better then ALL the others. assumes this is P1 turn.
-                    deriving Show
+                    deriving (Ord,Eq,Show)
 
 instance (NFData g) => NFData (Constraint g) where
     rnf (CBetter f1 f2) = f1 `seq` f2 `seq` ()

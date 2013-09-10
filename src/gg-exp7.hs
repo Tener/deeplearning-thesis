@@ -24,22 +24,22 @@ import Data.IORef
 import Data.Timeout
 import System.FilePath
 import Data.Ratio
--- gameplayConstraints'3 = concatMap (\ (x,y) -> [x,y]) $ zip gameplayConstraints'1 gameplayConstraints'0
 
 useCachedDBN = False
 searchTimeout = 3 # Minute
-searchTimeoutMulti = 30 # Second
-dbnGameCount = 250000
+searchTimeoutMulti = 5 # Second
+dbnGameCount = 400000
 dbnGameMutProb = fromRational (1 % 5) -- mean game mutation length is inverse of this
-dbnMatlabOpts = Just (def {dbnSizes = [500], numEpochs = 5, implementation = Matlab})
+dbnMatlabOpts = Just (def {dbnSizes = [1000], numEpochs = 5, implementation = Matlab})
 constraintSource = CS_Gameplay playerUseCoinstraints gameplayConstraints'0
 playerUseCoinstraints = 5000
-constraintsStage2Count = 1000
-allowedBad = 3000 -- round $ 0.10 * fromIntegral workSetSize
-workSetSize = 300
+constraintsStage2Count = 500
+allowedBad = 1750
+workSetSize = 50
 singleNeuronTarget = 0.9
 localSearch = 0.003
 attemptsCount = 4
+dbnPctRnd = 0.5
 
 mkLayer :: [SingleNeuron] -> [[Int]] -> GNetwork
 mkLayer neurons refs = let ws = [map ((\ [[w]] -> w ) . fst) neurons]
@@ -52,12 +52,10 @@ getNeuronSize ([[w]],_) = length w
 main :: IO ()
 main = runThrLocMainIO $ do
   printTL "DBN read/train"
-  fn <- mutateRealGamesTrainNetwork someGame allGameRecords dbnGameCount dbnGameMutProb dbnMatlabOpts
+  fn <- mutateRealGamesTrainNetwork someGame allGameRecords dbnGameCount dbnGameMutProb dbnPctRnd dbnMatlabOpts
   printTL ("DBN FN=",fn)
-  let fixLastLayerRefs (GNetwork bs ws refs) = let newRefs = [0 .. ((length bs)-2)]
-                                                   refs' = (init refs) ++ [last refs ++ newRefs]
-                                               in (GNetwork bs ws refs')
-  dbn <- (fixLastLayerRefs . fromTNetwork) <$> getDBNFile fn
+  dbn <- getDBNFile fn
+  let dbnG = fromTNetwork dbn
 
   printTL "Constraint generation"
   constraints <- getConstraints constraintSource
@@ -68,13 +66,13 @@ main = runThrLocMainIO $ do
   (constraintsPacked `using` parList rdeepseq) `deepseq` printTL "Done."
   printTL "Perform multiNeuronMinimalGAReprSearch"
   threads <- getNumCapabilities
-  scoredNeurons <- multiNeuronMinimalGAReprSearch threads allowedBad workSetSize searchTimeoutMulti singleNeuronTarget constraintsPacked
+  scoredNeurons <- multiNeuronOverlapMinimalGAReprSearch threads allowedBad workSetSize searchTimeoutMulti singleNeuronTarget constraintsPacked
   let neurons = map fst scoredNeurons
 
   printTL "Do few times: train last layer network & evaluate"
   forM_ [1..attemptsCount] $ \ attempt -> do
     let newLayer = mkLayer neurons [[0]] -- (neurons ++ mkBypass (getNeuronSize (head neurons)))
-        dbnBigger = appendGNetwork dbn newLayer
+        dbnBigger = appendGNetwork dbnG newLayer
         constraintsPackedBigger = take constraintsStage2Count $ 
                                   map (packConstraint dbnBigger) $
                                   concatMap (uncurry generateConstraintsSimpleAll) constraints
@@ -91,9 +89,9 @@ main = runThrLocMainIO $ do
         baseDir = takeDirectory fn
 
     rndStr <- getRandomFileName
-    writeFile (baseDir </> "dbn-final-data-ggexp6-"++rndStr++".txt") $ show $ finalNetwork
+    writeFile (baseDir </> "dbn-final-data-ggexp7-"++rndStr++".txt") $ show $ finalNetwork
     wins <- evaluateLL finalNetwork (snd bestFinal)
-    writeFile (baseDir </> "dbn-final-info-ggexp6-"++rndStr++".txt") $ showExperimentConfig wins bestFinal
+    writeFile (baseDir </> "dbn-final-info-ggexp7-"++rndStr++".txt") $ showExperimentConfig wins bestFinal
 
 showExperimentConfig wins bestFinal = unlines $
         ["wins                 " ++ (show wins                 )
@@ -109,5 +107,6 @@ showExperimentConfig wins bestFinal = unlines $
         ,"allowedBad           " ++ (show allowedBad           ) 
         ,"workSetSize          " ++ (show workSetSize          ) 
         ,"singleNeuronTarget   " ++ (show singleNeuronTarget   ) 
-        ,"localSearch          " ++ (show localSearch          ) 
+        ,"localSearch          " ++ (show localSearch          )
+        ,"dbnPctRnd            " ++ (show dbnPctRnd            )
         ]

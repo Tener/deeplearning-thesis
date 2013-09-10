@@ -253,17 +253,17 @@ main = do
 
 pvc :: TNetwork -> Context -> IO ()
 pvc network context = do
-  let agent'0 = runThrLocMainIO (mkTimed "wtf3" network) :: IO (AgentTrace AgentSimple)
+  let agent'0 = runThrLocMainIO (mkTimed "wtf3" network) :: IO (AgentTrace (AgentSimple TNetwork))
       agent'1 = runThrLocMainIO (mkTimed "rnd" ()) :: IO (AgentTrace AgentRandom)
       agent'2 = runThrLocMainIO (mkTimed "wtf2" 1000) :: IO (AgentTrace AgentMCTS)
-      agent'3 = runThrLocMainIO (mkTimed "tree" (network, 4)) :: IO (AgentTrace AgentGameTree)
-      agent'4 = runThrLocMainIO (mkTimed "wtf" (2, 50, network)) :: IO (AgentTrace (AgentParMCTS AgentSimple))
+--      agent'3 = runThrLocMainIO (mkTimed "tree" (network, 4)) :: IO (AgentTrace AgentGameTree)
+      agent'4 = runThrLocMainIO (mkTimed "wtf" (2, 50, network)) :: IO (AgentTrace (AgentParMCTS (AgentSimple TNetwork)))
 
---  let agent'0 = runThrLocMainIO (mkAgent network) :: IO (AgentSimple)
+--  let agent'0 = runThrLocMainIO (mkAgent network) :: IO ((AgentSimple TNetwork))
 --      agent'1 = runThrLocMainIO (mkAgent ()) :: IO (AgentRandom)
 --      agent'2 = runThrLocMainIO (mkAgent 1000) :: IO (AgentMCTS)
 --      agent'3 = runThrLocMainIO (mkAgent (network, 4)) :: IO (AgentGameTree)
---      agent'4 = runThrLocMainIO (mkAgent (2, 50, network)) :: IO ((AgentParMCTS AgentSimple))
+--      agent'4 = runThrLocMainIO (mkAgent (2, 50, network)) :: IO ((AgentParMCTS (AgentSimple TNetwork)))
 
   agent <- agent'0
    

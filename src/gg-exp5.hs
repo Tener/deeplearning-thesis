@@ -23,16 +23,16 @@ import Data.Timeout
 import System.FilePath
 
 useCachedDBN = False
-searchTimeout = 3 # Minute
-searchTimeoutMulti = 30 # Second
-dbnGameCount = 250000
-dbnGameProb = 0.7
-dbnMatlabOpts = Just (def {dbnSizes = [1000], numEpochs = 5, implementation = Octave})
-constraintSource = CS_Gameplay playerUseCoinstraints gameplayConstraints'1
-playerUseCoinstraints = 5000
+searchTimeout = 1 # Minute
+searchTimeoutMulti = 10 # Second
+dbnGameCount = 100000
+dbnGameProb = 0.01
+dbnMatlabOpts = Just (def {dbnSizes = [750], numEpochs = 15, implementation = Matlab})
+constraintSource = CS_Gameplay playerUseCoinstraints gameplayConstraints'0
+playerUseCoinstraints = 1000
 constraintsStage2Count = 500
 allowedBad = round $ 0.10 * fromIntegral workSetSize
-workSetSize = 300
+workSetSize = 100
 singleNeuronTarget = 0.9
 localSearch = 0.003
 attemptsCount = 4
@@ -49,6 +49,7 @@ main :: IO ()
 main = runThrLocMainIO $ do
   printTL "DBN read/train"
   fn <- getDBNCachedOrNew useCachedDBN dbnGameCount dbnGameProb dbnMatlabOpts
+  -- fn <- mutateRealGamesTrainNetwork someGame allGameRecords dbnGameCount (dbnGameProb/5) 0.5 dbnMatlabOpts
   -- let fn = "tmp-data/iybjioktvbdgmjocdtow/dbn.txt"
   -- let fn = "tmp-data/iwssqgpqsryvajvoerqi/dbn.txt"
   printTL ("DBN FN=",fn)
@@ -56,7 +57,7 @@ main = runThrLocMainIO $ do
 
   printTL "Constraint generation"
   constraints <- getConstraints constraintSource
-  let constraintsPacked = map (packConstraint dbn) $ concatMap (uncurry generateConstraintsSimpleAll) constraints
+  let constraintsPacked = map (packConstraint dbn) $ concatMap (uncurry generateConstraintsSimple) constraints
   printTL ("Total coinstraint count", length constraintsPacked)
   printTL "Evaluating packed constraints..."
   print $ head constraintsPacked
@@ -68,11 +69,12 @@ main = runThrLocMainIO $ do
   printTL "Do few times: train last layer network & evaluate"
   forM_ [1..attemptsCount] $ \ attempt -> do
     let neurons = map fst scoredNeurons
-        newLayer = mkLayer (neurons ++ mkBypass (getNeuronSize (head neurons)))
+        -- newLayer = mkLayer (neurons ++ mkBypass (getNeuronSize (head neurons)))
+        newLayer = mkLayer neurons
         dbnBigger = appendNetwork dbn newLayer
         constraintsPackedBigger = take constraintsStage2Count $ 
                                   map (packConstraint dbnBigger) $
-                                  concatMap (uncurry generateConstraintsSimpleAll) constraints
+                                  concatMap (uncurry generateConstraintsSimple) constraints
 
     printTL ("dbnBigger", dbnBigger)
     printTL ("newLayer", newLayer, length neurons)

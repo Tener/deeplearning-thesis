@@ -31,7 +31,8 @@ add a = Numeric.Container.add a
 transFix :: Matrix Double -> Matrix Double
 transFix = id
 
-concat :: (Storable a) => [Vector a] -> Vector a
+-- concat :: (Storable a) => [Vector a] -> Vector a
+concat :: [Vector Double] -> Vector Double
 concat = Vector.join
 #endif
 

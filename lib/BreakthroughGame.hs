@@ -67,6 +67,7 @@ instance Game2Features Breakthrough where
     type Feature Breakthrough = BrFeature
     type FeatureRepr Breakthrough = [Double] -- GameRepr Breakthrough
 
+    encodeFeature _ _ = []
     encodeFeature g feat = map fixNaN $  
         case feat of
           MaxPos -> map (scaleX . fromIntegral) [maximum (allFst P1), minimum (allFst P2)]

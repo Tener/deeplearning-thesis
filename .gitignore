@@ -24,3 +24,8 @@ dist/
 gui/heroku.*
 gui/assets
 *.txt
+thesis/
+.cabal-sandbox/
+*#*#*
+*.hi
+*.o

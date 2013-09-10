@@ -19,6 +19,7 @@ import MinimalNN
 import ThreadLocal
 import qualified MyVectorType as V
 import NeuralNets(parseNetFromFile, doubleToEvalInt)
+import Utils
 
 import Data.Chronograph hiding (val)
 
@@ -63,6 +64,12 @@ data AgentSimple nn = AgentSimple nn GenIO
 data AgentMCTS = AgentMCTS Int   -- how many games to evaluate for each possible move
                            AgentRandom -- cached AgentRandom for random game walks
                            GenIO 
+
+-- | mix results from MCTS and Agent2Eval agent
+data AgentMCTS'Eval ag = AgentMCTS'Eval Int -- how many games to evaluate for each possible move
+                                        AgentRandom -- cached AgentRandom for random game walks
+                                        ag -- agent eval
+                                        GenIO 
 
 -- | agent based on monte carlo tree search: evaluate moves counting how many times following that move and playing randomly till the end yields victory.
 data AgentParMCTS ag = AgentParMCTS Double -- bias, see AgentRandomSkew
@@ -199,6 +206,33 @@ instance Agent2 AgentMCTS where
       when (null best'moves) (fail "AgentMCTS: Stuck, no moves left.")
       return (head best'moves)
 
+instance (Agent2 ag, Agent2Eval ag) => Agent2 (AgentMCTS'Eval ag) where
+    type AgentParams (AgentMCTS'Eval ag) = (Int, ag)
+    mkAgent (games,ag) = AgentMCTS'Eval games <$> mkAgent () <*> pure ag <*> (withSystemRandom $ asGenIO $ return)
+    agentName (AgentMCTS'Eval g _ ag _) = printf "AgentMCTS'Eval(g=%d,sub=%s)" g (agentName ag)
+    applyAgent (AgentMCTS'Eval games agRnd agEval _) g p = do
+      let mv = moves g p
+          minVal = (minimum subvalues) - (delta * 0.01)
+          maxVal = (maximum subvalues) + (delta * 0.01)
+          delta = (maximum subvalues) - (minimum subvalues)
+          subvalues = map (evaluateGame agEval p) mv
+          myeval (subvalue,move) = do
+            winners <- replicateM games (winner `fmap` randomGame move)
+            let count = length $ filter (==(Just p)) winners
+                rescale low high val = (val - low) / (high-low)
+                scaled = rescale minVal maxVal subvalue
+                value = scaled * (fromIntegral count)
+            -- printTL (value, subvalue, scaled, count)
+            return (value, move)
+          randomGame game = driverG2 game agRnd agRnd (GameDriverCallback (\_ -> return ()) (\_ _ -> return True))
+          takeBest n some'moves = take n $ reverse $ map snd $ sortBy (comparing fst) $ some'moves
+      
+      best'moves <- takeBest 1 `fmap` mapM myeval (zip subvalues mv)
+
+      when (null best'moves) (fail "AgentMCTS'Eval: Stuck, no moves left.")
+      return (head best'moves)
+
+
 instance (Agent2 a, Agent2Eval a) => Agent2 (AgentParMCTS a) where
     type AgentParams (AgentParMCTS a) = (Double, Int, (AgentParams a))
     mkAgent (bias, games, sub) = AgentParMCTS bias games <$> mkAgent sub <*> (withSystemRandom $ asGenIO $ return)
@@ -218,19 +252,6 @@ instance (Agent2 a, Agent2Eval a) => Agent2 (AgentParMCTS a) where
       when (null best'moves) (fail "AgentMCTS: Stuck, no moves left.")
       return (head best'moves)
 
-
-
-pickList :: GenIO -> [a] -> IO a
-pickList rgen xs = do
-          pick <- uniformR (0, (length xs) - 1) rgen
-          return (xs !! pick)
-
-pickListWeighted :: GenIO -> [(Double, a)] -> IO a
-pickListWeighted rgen xs = do
-          let wSum = sum (map fst xs)
-              xsCum = scanl1 (\ (w0,_x0) (w1,x1) -> (w0+w1, x1)) xs
-          p <- uniformR (0, wSum) rgen
-          return $ snd $ head $ dropWhile (\(w,_) -> w < p) xsCum
 
 evalGameNetwork :: (NeuralNetwork nn, Game2 g, Repr (GameRepr g)) => nn -> g -> Double
 evalGameNetwork tn g = V.sumElements $ computeNetworkSigmoid tn (toReprNN g)

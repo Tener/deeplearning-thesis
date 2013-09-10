@@ -94,8 +94,8 @@ parWorkThreads c fun = do
   threads <- getNumCapabilities
   let oneThr = c `div` threads
       re = c - (oneThr * threads)
-      cnt 1 = oneThr+re
-      cnt _ = oneThr
+      cnt num | num <= re = oneThr+1
+              | otherwise = oneThr
   let mvar'stdout = tl_stdout ?thrLoc
   ccs <- mapConcurrently (\ thr -> runThrLocIO (ThreadLocal mvar'stdout (show thr)) (fun (cnt thr)))
                          [1..threads] 
@@ -166,10 +166,6 @@ sampleGamesTrainNetwork game sampleCount prob mlopts = do
       let cb g = do
             BSC8.hPutStrLn han (serializeGame (ofType g game))
             atomicModifyIORef sR (\ !d -> (d-1,()))
-
---          ofType :: a -> a -> a
---          ofType a _ = a
-
       sampleRandomGames ((>0) `fmap` readIORef sR) prob cb
       hFlush han
 
@@ -181,8 +177,12 @@ sampleGamesTrainNetwork game sampleCount prob mlopts = do
 allGameRecords = map ("data-good" </>) ["player_game_list_breakthrough_DavidScott.txt" , "player_game_list_breakthrough_edbonnet.txt", "player_game_list_breakthrough_halladba.txt", "player_game_list_breakthrough_kyledouglas.txt", "player_game_list_breakthrough_MojmirHanes.txt", "player_game_list_breakthrough_MojoRising.txt", "player_game_list_breakthrough_RayGarrison.txt", "player_game_list_breakthrough_StopSign.txt", "player_game_list_breakthrough_vic.txt", "player_game_list_breakthrough_wanderer_c.txt"]  
 
 -- | train DBN on randomly mutated games derived from real-life data.
-mutateRealGamesTrainNetwork :: (LittleGolemMoveParser g, Repr (GameRepr g), Game2 g) => g -> [FilePath] -> Int -> Float -> Maybe MatlabOpts -> ThrLocIO FilePath
-mutateRealGamesTrainNetwork game0 sourceFiles sampleCount gameDepthProb mlopts = do
+mutateRealGamesTrainNetwork :: (LittleGolemMoveParser g, Repr (GameRepr g), Game2 g) => g -> [FilePath] -> Int -> Float -> Double -> Maybe MatlabOpts -> ThrLocIO FilePath
+mutateRealGamesTrainNetwork game0 sourceFiles sampleCount' gameDepthProb pctRnd mlopts = do
+  let sampleCount'1, sampleCount'2 :: Int
+      sampleCount'1 = sampleCount' - sampleCount'2
+      sampleCount'2 = round ((fromIntegral sampleCount') * (pctRnd :: Double))
+      -- pctRnd = 0.5
   outputDir <- ("tmp-data" </>) `fmap` getRandomFileName
   createDirectoryIfMissing True outputDir
   filename'data <- (\f -> outputDir </> f <.> "csv") `fmap` getRandomFileName
@@ -192,16 +192,35 @@ mutateRealGamesTrainNetwork game0 sourceFiles sampleCount gameDepthProb mlopts =
 
   records <- mapM parseGameFileName sourceFiles
   let recordsFlat = concatMap moveSequence $ filter (\ r -> result r `elem` ["1-0","0-1"]) $ Prelude.concat records
-  print (length $ recordsFlat)
-  gameStates <- cycle <$> shuffle recordsFlat
+  printTL (length $ recordsFlat)
+  gameStates <- cycle <$> shuffle recordsFlat -- must be infinite and non-empty
   
   withFile filename'data WriteMode $ \ han -> do
-    forM (zip [1..sampleCount] gameStates) $ \ (cnt,game) -> do
-      let cb = GameDriverCallback (\ _ -> return ()) (\ _ _ -> do
-                                                         chance <- uniform mygen
-                                                         return (chance > gameDepthProb))
-      newGame <- driverG2 (game `ofType` game0) agRnd agRnd cb
-      BSC8.hPutStrLn han (serializeGame newGame)
+
+    let go games n | n > 0 = do
+           let cb = GameDriverCallback (\ _ -> return ()) (\ _ _ -> do
+                                                              chance <- uniform mygen
+                                                              return (chance > gameDepthProb))
+           newGame <- driverG2 ((head games) `ofType` game0) agRnd agRnd cb
+           if winner newGame /= Nothing 
+            then go (tail games) n -- game finished, ignore that state
+            else BSC8.hPutStrLn han (serializeGame newGame) >> go (tail games) (n-1)
+                   | otherwise = return ()
+    
+    go gameStates sampleCount'1 
+
+--    forM_ (zip [1..sampleCount'1] gameStates) $ \ (cnt,game) -> do
+--      let cb = GameDriverCallback (\ _ -> return ()) (\ _ _ -> do
+--                                                         chance <- uniform mygen
+--                                                         return (chance > gameDepthProb))
+--      newGame <- driverG2 (game `ofType` game0) agRnd agRnd cb
+--      BSC8.hPutStrLn han (serializeGame newGame)
+
+    sR <- newIORef sampleCount'2
+    let cb g = do
+          BSC8.hPutStrLn han (serializeGame (ofType g game0))
+          atomicModifyIORef sR (\ !d -> (d-1,()))
+    sampleRandomGames ((>0) `fmap` readIORef sR) gameDepthProb cb
     
   print =<< prepAndRun (fromMaybe def mlopts) outputDir filename'data
   return (outputDir </> "dbn.txt")
@@ -326,15 +345,28 @@ evaluateLL evalNetwork score = do
     agSmpl :: AgentTrace (AgentSimple nn) <- mkTimed "simple" evalNetwork
     -- agTree <- mkTimed "tree" (evalNetwork, 3) :: IO (AgentTrace AgentGameTree)
     -- agMtcNet <- mkTimed "mtcNet" (2, 5, evalNetwork) :: IO (AgentTrace (AgentParMCTS AgentSimple))    
-    -- agRnd <- mkTimed "random" () :: IO (AgentTrace AgentRandom)
+    agRnd <- mkTimed "random" () :: IO (AgentTrace AgentRandom)
     agMTC <- mkTimed "mcts" 50 :: IO (AgentTrace AgentMCTS)
 
     putStrLnTL "======================================================================================"
     w1 <- reportWin agSmpl agMTC P1
-    -- w2 <- reportWin agSmpl agRnd P1
+    w2 <- reportWin agSmpl agRnd P1
     -- w3 <- reportWin agRnd agSmpl P2
     -- w2 <- reportWin agTree agMTC P1
     --  reportWin agMtcNet agMTC P1
     putStrLnTL "======================================================================================"
 
-    return [w1]
+    return [w1, w2]
+
+evaluateNetworkParams :: (NeuralNetwork nn) => nn -> Int -> Int -> ThrLocIO Double
+evaluateNetworkParams evalNetwork evalCount mtcsCount = do
+    printTL ("evaluateNetworkParams::start" :: String)
+    agSmpl :: AgentTrace (AgentSimple nn) <- mkTimed "simple" evalNetwork
+    agRnd <- mkTimed "random" () :: IO (AgentTrace AgentRandom)
+    agMTC <- mkTimed "mcts" mtcsCount :: IO (AgentTrace AgentMCTS)
+    putStrLnTL "======================================================================================"
+    w1 <- reportWinCount evalCount agSmpl agMTC P1
+    w2 <- reportWinCount (evalCount*10) agSmpl agRnd P1
+    putStrLnTL "======================================================================================"
+    printTL ("evaluateNetworkParams::finished" :: String)
+    return (w1/100) -- [w1, w2]

@@ -70,11 +70,51 @@ ggExp7 = Experiment "main" [("won games", "tail -n 1000000 -f g7.txt | grep --co
 
                     "GG-EXP7"
 
+ggExp8 = Experiment "main" [("won games", "tail -n 1000000 -f g8.txt | grep --color=always \"won \"")
+                           ,("scores", "tail -n 1000000 -f g8.txt | grep --color=always SCORE")
+                           ,("wins", "tail -n 1000000 -f g8.txt | grep --color=always WINS")
+                           ,("multi", "tail -n 1000000 -f g8.txt | grep --color=always multiNeuron")
+                           ,("killall", "zsh")
+                           ,("console", "zsh")
+                           ]
+                    [";", "send-keys", "-t", "killall", ": killall -USR1 gg-exp8\n",
+                     ";", "send-keys", "-t", "main", "zsh\nwhile (true) { make && make run-g8 }\n"]
+
+                    "GG-EXP8"
+
+ggExp9 = Experiment "main" [("won games", "tail -n 1000000 -f g9.txt | grep --color=always \"won \"")
+                           ,("scores", "tail -n 1000000 -f g9.txt | grep --color=always SCORE")
+                           ,("wins", "tail -n 1000000 -f g9.txt | grep --color=always WINS")
+                           ,("multi", "tail -n 1000000 -f g9.txt | grep --color=always multiNeuron")
+                           ,("killall", "zsh")
+                           ,("console", "zsh")
+                           ]
+                    [";", "send-keys", "-t", "killall", ": killall -USR1 gg-exp9\n",
+                     ";", "send-keys", "-t", "main", "zsh\nwhile (true) { make && make run-g9 }\n"]
+
+                    "GG-EXP9"
+
+ggExp10 = Experiment "main" [("won games", "tail -n 1000000 -f g10.txt | grep --color=always \"won \"")
+                           ,("scores", "tail -n 1000000 -f g10.txt | grep --color=always SCORE")
+                           ,("wins", "tail -n 1000000 -f g10.txt | grep --color=always WINS")
+                           ,("multi", "tail -n 1000000 -f g10.txt | grep --color=always multiNeuron")
+                           ,("exp10", "tail -n 1000000 -f g10.txt | grep --color=always exp10")
+                           ,("killall", "zsh")
+                           ,("console", "zsh")
+                           ]
+                    [";", "send-keys", "-t", "killall", ": killall -USR1 gg-exp10\n",
+                     ";", "send-keys", "-t", "main", "zsh\nwhile (true) { make && make run-g10 }\n"]
+
+                    "GG-EXP10"
+
 defaultSession = ggExp7
 
 sessions = [("exp5", ggExp5)
            ,("exp6", ggExp6)
            ,("exp7", ggExp7)
+           ,("exp8", ggExp8)
+           ,("exp9", ggExp9)
+           ,("exp10", ggExp10)
            ]
 
 main = do
