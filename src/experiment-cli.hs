@@ -107,6 +107,19 @@ ggExp10 = Experiment "main" [("won games", "tail -n 1000000 -f g10.txt | grep --
 
                     "GG-EXP10"
 
+ggExp11 = Experiment "main" [("won games", "tail -n 1000000 -f g11.txt | grep --color=always \"won \"")
+                           ,("scores", "tail -n 1000000 -f g11.txt | grep --color=always SCORE")
+                           ,("wins", "tail -n 1000000 -f g11.txt | grep --color=always WINS")
+                           ,("multi", "tail -n 1000000 -f g11.txt | grep --color=always multiNeuron")
+                           ,("exp11", "tail -n 1000000 -f g11.txt | grep --color=always exp11")
+                           ,("killall", "zsh")
+                           ,("console", "zsh")
+                           ]
+                    [";", "send-keys", "-t", "killall", ": killall -USR1 gg-exp11\n",
+                     ";", "send-keys", "-t", "main", "zsh\nwhile (true) { make && make run-g11 }\n"]
+
+                    "GG-EXP11"
+
 defaultSession = ggExp7
 
 sessions = [("exp5", ggExp5)
@@ -115,6 +128,7 @@ sessions = [("exp5", ggExp5)
            ,("exp8", ggExp8)
            ,("exp9", ggExp9)
            ,("exp10", ggExp10)
+           ,("exp11", ggExp11)
            ]
 
 main = do

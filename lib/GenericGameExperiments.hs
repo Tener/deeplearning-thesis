@@ -34,6 +34,7 @@ import System.IO
 import Data.Maybe
 import Data.Text (Text)
 import Text.Printf
+import System.ProgressBar as Bar
 -- import Data.Packed.Vector (Vector)
 
 #ifndef WINDOWS
@@ -154,6 +155,25 @@ compressRemoveFile file'orig = do
   removeFile file'orig
   return file'out
 
+-- train DBN on randomly sampled @sampleCount@ games of type @game@. Returns filepath with DBN.
+-- sampleGamesTrainNetwork :: (Repr (GameRepr g), Game2 g) => g -> Int -> Float -> Maybe MatlabOpts -> ThrLocIO FilePath
+-- sampleGamesTrainNetwork game sampleCount prob mlopts = do
+--   outputDir <- ("tmp-data" </>) `fmap` getRandomFileName
+--   createDirectoryIfMissing True outputDir
+--   filename'data <- (\f -> outputDir </> f <.> "csv") `fmap` getRandomFileName
+--  
+--   withFile filename'data WriteMode $ \ han -> do
+--       sR <- newIORef sampleCount
+--       let cb g = do
+--             BSC8.hPutStrLn han (serializeGame (ofType g game))
+--             atomicModifyIORef sR (\ !d -> (d-1,()))
+--       sampleRandomGames ((>0) `fmap` readIORef sR) prob cb
+--       hFlush han
+--  
+-- --  filename'data'comp <- compressRemoveFile filename'data
+--   print =<< prepAndRun (fromMaybe def mlopts) outputDir filename'data
+--   return (outputDir </> "dbn.txt")
+
 -- | train DBN on randomly sampled @sampleCount@ games of type @game@. Returns filepath with DBN.
 sampleGamesTrainNetwork :: (Repr (GameRepr g), Game2 g) => g -> Int -> Float -> Maybe MatlabOpts -> ThrLocIO FilePath
 sampleGamesTrainNetwork game sampleCount prob mlopts = do
@@ -161,17 +181,59 @@ sampleGamesTrainNetwork game sampleCount prob mlopts = do
   createDirectoryIfMissing True outputDir
   filename'data <- (\f -> outputDir </> f <.> "csv") `fmap` getRandomFileName
 
-  withFile filename'data WriteMode $ \ han -> do
-      sR <- newIORef sampleCount
-      let cb g = do
-            BSC8.hPutStrLn han (serializeGame (ofType g game))
-            atomicModifyIORef sR (\ !d -> (d-1,()))
-      sampleRandomGames ((>0) `fmap` readIORef sR) prob cb
-      hFlush han
-
---  filename'data'comp <- compressRemoveFile filename'data
+  withFile filename'data WriteMode $ \ hanRaw -> do
+    hanVar <- newMVar hanRaw
+    sR <- newIORef sampleCount
+    let cb g = withMVar hanVar $ \ hanShared -> do
+          BSC8.hPutStrLn hanShared (serializeGame (ofType g game))
+          remaining <- atomicModifyIORef sR (\ !d -> (d-1,d-1))
+          let progress = total - fromIntegral remaining
+              total = fromIntegral sampleCount
+          when (progress `mod` 1000 == 0) (progressBar (Bar.msg "sampleGamesTrainNetwork") Bar.exact 120 progress total)
+    void $ parWorkThreads sampleCount (\ cnt -> sampleRandomGamesCount cnt prob cb)
   print =<< prepAndRun (fromMaybe def mlopts) outputDir filename'data
   return (outputDir </> "dbn.txt")
+
+-- | train DBN on randomly sampled @sampleCount@ games of type @game@. Returns filepath with DBN.
+--   also store expected answers calculated by MCTS.
+sampleGamesTrainNetworkSolveMCTS :: (Repr (GameRepr g), Game2 g) => g -> Int -> Float -> Maybe MatlabOpts -> Int -> ThrLocIO FilePath
+sampleGamesTrainNetworkSolveMCTS game sampleCount prob mlopts mctsLevel = do
+  outputDir <- ("tmp-data" </>) `fmap` getRandomFileName
+  createDirectoryIfMissing True outputDir
+  data'rnd'name <- getRandomFileName
+  let filename'data = outputDir </> (data'rnd'name ++ "_data") <.> "csv"
+      filename'train = outputDir </> (data'rnd'name ++ tag) <.> "csv"
+      tag = printf "_training_MCTS_%d" mctsLevel
+
+  sR <- newIORef sampleCount
+  let tickProgressCounter = do
+        remaining <- atomicModifyIORef sR (\ !d -> (d-1,d-1))
+        let progress = total - fromIntegral remaining
+            total = fromIntegral sampleCount
+        when (progress `mod` 500 == 0) (do
+                                           putStrLn ""
+                                           putStrLnTL "-- ping --"
+                                           putStrLn ""
+                                       )
+        progressBar (Bar.msg "sampleGamesTrainNetworkSolveMCTS") Bar.exact 120 progress total
+
+  withFile filename'data WriteMode $ \ hanRaw -> do
+    withFile filename'train WriteMode $ \ hanTrain -> do
+      hanVar <- newMVar hanRaw
+      let cb g = do
+            agMCTS <- mkAgent mctsLevel
+            !evaluation <- evaluateGameM (agMCTS :: AgentMCTS) P1 g
+            withMVar hanVar $ \ hanShared -> do
+              BSC8.hPutStrLn hanShared (serializeGame (ofType g game))
+              BSC8.hPutStrLn hanTrain (serializeRepr [evaluation])
+              tickProgressCounter
+      void $ parWorkThreads sampleCount (\ cnt -> sampleRandomGamesCount cnt prob cb)
+
+  -- fixme!!! add nn training here
+  print =<< prepAndRun (fromMaybe def mlopts) outputDir filename'data
+  let dbnFile = (outputDir </> "dbn.txt")
+  return dbnFile
+
 
 -- | all recorded games 
 allGameRecords = map ("data-good" </>) ["player_game_list_breakthrough_DavidScott.txt" , "player_game_list_breakthrough_edbonnet.txt", "player_game_list_breakthrough_halladba.txt", "player_game_list_breakthrough_kyledouglas.txt", "player_game_list_breakthrough_MojmirHanes.txt", "player_game_list_breakthrough_MojoRising.txt", "player_game_list_breakthrough_RayGarrison.txt", "player_game_list_breakthrough_StopSign.txt", "player_game_list_breakthrough_vic.txt", "player_game_list_breakthrough_wanderer_c.txt"]  

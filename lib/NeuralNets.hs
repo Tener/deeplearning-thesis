@@ -22,6 +22,7 @@ printE p = do
 doubleToEvalInt :: Double -> Int
 doubleToEvalInt d = round (d * (fromIntegral ((maxBound :: Int) `div`10)))
 
+#ifdef ABALONE
 sparse :: IO Bool
 sparse = fetchConfig configUseSparseRepr
 
@@ -31,16 +32,18 @@ nn'filename = do
   let if' b t f = if b then t else f
   if' sparse' (fetchConfig configNeuralNetworkSparse) (fetchConfig configNeuralNetworkDense)
 
+parseNetFromFile' :: IO (TNetwork, [Int])
+parseNetFromFile' = do
+  nnfname <- nn'filename 
+  join $ parseNetFromFile'' nnfname
+#endif
+
+
 getDBNFile :: FilePath -> IO TNetwork
 getDBNFile fn = (fst . parseNetFromFile) `fmap` readFile fn
 
 parseNetFromFile'' :: FilePath -> IO (IO (TNetwork, [Int]))
 parseNetFromFile'' fp = ioMemo' (parseNetFromFile `fmap` readFile fp)
-
-parseNetFromFile' :: IO (TNetwork, [Int])
-parseNetFromFile' = do
-  nnfname <- nn'filename 
-  join $ parseNetFromFile'' nnfname
 
 parseNetFromFile'LL :: IO (TNetwork, [Int])
 parseNetFromFile'LL = join $ parseNetFromFile'' "nn_ll.txt"

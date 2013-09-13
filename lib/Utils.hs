@@ -4,10 +4,16 @@ module Utils where
 
 import Text.Printf
 import System.Random.MWC
-import Data.List (sortBy, group, nub, nubBy, sort)
+import Control.Monad
+import Data.List (sortBy, group, nub, nubBy, sort, transpose)
+import Data.List.Split (splitEvery)
 import Data.Ord (comparing)
 import Control.Monad (replicateM)
-
+import Control.Concurrent
+import Control.Concurrent.Async
+import Control.Applicative ((<$>))
+import System.ProgressBar as Bar
+import System.IO
 
 data Hidden a = Hidden { unhide :: a }
 
@@ -19,6 +25,37 @@ instance (TypeTag a) => Show (Hidden a) where
 
 instance Eq (Hidden a) where
     _ == _ = True
+
+splitWorkThreads :: [a] -> IO [[a]]
+splitWorkThreads lst = do
+  caps <- getNumCapabilities
+  return (splitWorkCaps caps lst)
+
+runWorkThreadsProgress_ :: [IO a] -> IO ()
+runWorkThreadsProgress_ acts = do
+  hSetBuffering stdout NoBuffering
+  progVar <- newMVar 0
+  let total = fromIntegral $ length acts
+      fract = max 1 (total `div` 100)
+      incProgVar = modifyMVar_ progVar (return . (+1))
+      dispProg = withMVar progVar $ \ progress -> do
+        when (progress `mod` fract == 0) (progressBar (Bar.msg "runWorkThreads_::jobProgress") Bar.exact 120 progress total)
+      acts' = map (\a -> incProgVar >> dispProg >> a) acts
+  jobLists <- splitWorkThreads acts'
+  print ("runWorkThreads_::jobLists", length jobLists, map length jobLists)
+  mapConcurrently sequence_ jobLists
+  putStrLn ""
+  print ("runWorkThreads_::done")  
+  return ()
+
+runWorkThreads_ :: [IO a] -> IO ()
+runWorkThreads_ acts = void (mapConcurrently sequence_ =<< splitWorkThreads acts)
+
+runWorkThreads :: [IO a] -> IO [a]
+runWorkThreads acts = concat <$> (mapConcurrently sequence =<< splitWorkThreads acts)
+
+splitWorkCaps :: Int -> [a] -> [[a]]
+splitWorkCaps caps lst = transpose $ splitEvery caps $ lst
 
 fixNaN x | isNaN x = 0
          | otherwise = x

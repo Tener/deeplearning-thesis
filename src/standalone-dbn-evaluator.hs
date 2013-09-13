@@ -33,9 +33,12 @@ evaluateDBN'Short fn = runThrLocMainIO $ do
   agRnd <- mkAgent () :: IO AgentRandom
   putStrLnTL "======================================================================================"
   putStrLnTL ("FN=" ++ fn)
-  _ <- reportWinCount 20 agMCTEv agMCT P1
-  _ <- reportWinCount 20 agSmpl agMCT P1
-  -- _ <- reportWinCount 20 agTree agMCT P1
+  _ <- reportWinCount 10 agMCT agSmpl  P2
+  _ <- reportWinCount 10 agSmpl  agMCT P1
+  _ <- reportWinCount 10 agTree  agMCT P1
+  _ <- reportWinCount 10 agMCTEv agMCT P1
+  _ <- reportWinCount 10 agMCT agTree  P2
+  _ <- reportWinCount 10 agMCT agMCTEv P2
   -- _ <- reportWinCount 20 agMCTNet agMCT P1
 
   putStrLnTL "======================================================================================"

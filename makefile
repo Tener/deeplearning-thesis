@@ -46,6 +46,9 @@ run-g9:
 run-g10:
 	.cabal-sandbox/bin/gg-exp10 +RTS -A8m -sstderr -N4 | tee -a g10.txt
 
+run-g11:
+	.cabal-sandbox/bin/gg-exp11 +RTS -A8m -sstderr -N4 | tee -a g11.txt
+
 tournament:
 	cabal-dev install -j -funsafe && .cabal-sandbox/bin/tournament +RTS -sstderr -N | tee -a tournament.log.txt
 

@@ -1,5 +1,5 @@
 name:                deeplearning
-version:             0.2
+version:             0.3
 license:             BSD3
 license-file:        LICENSE
 author:              Krzysztof Skrzętnicki
@@ -43,26 +43,35 @@ flag vector-vector
 flag vector-ddot
   description:  use cblas_ddot-based implementation of vector/matrix ops (use together with -fvector-vector)
   default:      False
+
+flag histogram
+  description:  build HistogramGeneric
+  default:      False
   
 
 library
   hs-source-dirs:         lib
   exposed-modules:        NeuralNets, THUtils, Utils, MinimalNN, GraphNN, Config, 
-                          GenericGame, AgentGeneric, BreakthroughGame, HistogramGeneric,
+                          GenericGame, AgentGeneric, BreakthroughGame,
                           ConstraintsGeneric, ThreadLocal,
                           LittleGolem, MinimalGA, MCTS, MyVectorType
-  build-depends:          base, mwc-random, process, containers, hashmap, game-tree, split, template-haskell,
+  build-depends:          base, mwc-random, process, containers == 0.5.*, hashmap, game-tree, split, template-haskell,
                           hashable == 1.2.0.4, 
                           vector, io-memoize, data-default, async, 
-                          global-config, filepath, directory, transformers, 
-                          bytestring, Histogram, gnuplot, zlib, chronograph, attoparsec, text, time, old-locale, 
-                          GA, random, array, deepseq, data-timeout, binary, ghc-prim
+                          filepath, directory, transformers, 
+                          bytestring, gnuplot, zlib, chronograph, attoparsec, text, time, old-locale, 
+                          GA, random, array, deepseq, data-timeout, binary, ghc-prim,
+                          terminal-progress-bar
   ghc-options:            -Wall -feager-blackholing 
   extensions:             RankNTypes, FlexibleContexts 
   if os(windows)
      cpp-options:         -DWINDOWS
   else
      build-depends:       unix
+
+--   if flag(histogram)
+--      exposed-modules:     HistogramGeneric
+--      build-depends:       Histogram
 
   -- configurable functionality
   if flag(vector-vector)
@@ -90,6 +99,7 @@ library
 
   if flag(abalone)
      build-depends:       grid == 2.*, global-variables
+     cpp-options:         -DABALONE
      exposed-modules:     CommonDatatypes, Constraints, Board, Tournament, Agent, NNBoard
 
   if flag(matlab)
@@ -217,12 +227,23 @@ Executable gg-exp9
 
 Executable gg-exp10
   Main-is:                src/gg-exp10.hs
-  Build-depends:          base, deeplearning, data-timeout, data-default, parallel, deepseq, async, filepath, directory, containers, mwc-random, split
+  Build-depends:          base, deeplearning, data-timeout, data-default, parallel, deepseq, async, filepath, directory, containers == 0.5.*, mwc-random, split
   Ghc-options:            -rtsopts -threaded -Wall -O2  -feager-blackholing
   if flag(build-experiments) && flag(matlab)
     Buildable:            True
   else
     Buildable:            False
+
+
+Executable gg-exp11
+  Main-is:                src/gg-exp11.hs
+  Build-depends:          base, deeplearning, data-timeout, data-default, parallel, deepseq, async, filepath, directory, containers == 0.5.*, mwc-random, split
+  Ghc-options:            -rtsopts -threaded -Wall -O2  -feager-blackholing
+  if flag(build-experiments) && flag(matlab)
+    Buildable:            True
+  else
+    Buildable:            False
+
 
 
 -- Executable experiment-progress-email-reporter
@@ -233,14 +254,14 @@ Executable gg-exp10
 --   else
 --     Buildable:            False
 --  
--- Executable standalone-dbn-evaluator
---   Main-is:                src/standalone-dbn-evaluator.hs
---   Build-depends:          base, deeplearning
---   Ghc-options:            -rtsopts -threaded -Wall -O2  -feager-blackholing
---   if flag(build-utils) && flag(matlab)
---     Buildable:            True
---   else
---     Buildable:            False
+Executable standalone-dbn-evaluator
+  Main-is:                src/standalone-dbn-evaluator.hs
+  Build-depends:          base, deeplearning
+  Ghc-options:            -rtsopts -threaded -Wall -O2  -feager-blackholing
+  if flag(build-utils) && flag(matlab)
+    Buildable:            True
+  else
+    Buildable:            False
 --  
 -- Executable dbn-converter
 --   Main-is:                src/dbn-converter.hs
